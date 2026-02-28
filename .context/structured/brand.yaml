@@ -1,0 +1,1329 @@
+# AISearchArena Brand Extension Guide - Structured YAML Extraction
+# Source: /Users/jamiewatters/DevProjects/aisearcharena/docs/foundation/brand-extension-guide.md
+# Extracted: 2026-02-28
+
+meta:
+  document_type: "Brand Extension Framework"
+  version: "1.0"
+  created: "2026-02-23"
+  owner: "@brand-strategy"
+  parent_brand: "AI Search Mastery"
+  status: "Active"
+  review_cadence: "Annually, or when brand architecture changes"
+  dependencies:
+    - "vision-mission.md (v1.0)"
+    - "positioning-statement.md (v1.0)"
+  purpose: >
+    Governs how the AISearchArena sub-brand extends from the AI Search Mastery parent brand.
+    Defines what is inherited, what diverges, and why. Addresses the central tension: AISearchArena
+    is part of a branded house whose other properties include products that compete in the market
+    the benchmark evaluates.
+
+brand_architecture:
+  model: "Branded House"
+  parent:
+    name: "AI Search Mastery"
+    role: "Parent Hub"
+    values:
+      - "Clarity Over Cleverness"
+      - "Honesty Over Hype"
+      - "Action Over Analysis"
+      - "Accessibility Is The Mission"
+      - "Build To Evolve"
+    archetype: "The Guide"
+    brand_essence: "Clarity"
+  sub_properties:
+    - name: "aisearchmastery.com"
+      role: "Knowledge and strategy hub"
+      accent_color: "#2563EB"
+      accent_name: "Signal Blue"
+    - name: "aimpactscanner.com"
+      role: "Diagnostic tool (product)"
+      accent_color: "#0D9488"
+      accent_name: "Clarity Teal"
+    - name: "llmtxtmastery.com"
+      role: "Optimization tool (product)"
+      accent_color: "#D97706"
+      accent_name: "Action Amber"
+    - name: "aisearcharena.com"
+      role: "Independent benchmark"
+      accent_color: "#475569"
+      accent_name: "Arena Slate"
+
+  aisearcharena:
+    brand_essence: "Rigor"
+    archetype: "The Evaluator"
+    archetype_description: "A Guide who helps through structured measurement rather than instruction"
+    tone_emphasis: "Data-driven, methodology-forward"
+    content_format: "Benchmark reports, tool profiles, methodology documentation, trend analyses"
+    commercial_posture: "Evaluates market; does not promote"
+    disclosure_requirement: "Prominent conflict of interest disclosure on every report and page"
+
+    inherited_from_parent:
+      - element: "Typography"
+        standard: "Inter (exclusively), modular scale"
+        application: "Identical. No additional typefaces"
+      - element: "Primary colour palette"
+        standard: "Mastery Blue #1E3A5F as anchor colour"
+        application: "Used in shared navigation, footer, and parent attribution"
+      - element: "Values framework"
+        standard: "5 parent values"
+        application: "Inherited as foundation. Extended with 5 benchmark-specific values"
+      - element: "Brand archetype"
+        standard: "The Guide"
+        application: "Expressed as The Evaluator"
+      - element: "Voice principles"
+        standard: "Plain language, practitioner-grounded, honest about limitations"
+        application: "Adapted for data-forward benchmark context"
+      - element: "Footer attribution"
+        standard: "Part of AI Search Mastery"
+        application: "Applied consistently on every page"
+      - element: "Card-based layout patterns"
+        standard: "Consistent card styling across properties"
+        application: "Used for tool profiles and category displays"
+      - element: "CTA standards"
+        standard: "Action-oriented, benefit-clear"
+        application: "Benchmark-specific actions (View Methodology, Compare Tools)"
+
+    divergences:
+      - element: "Brand essence"
+        parent: "Clarity"
+        arena: "Rigor"
+        rationale: "Benchmark credibility demands a distinct quality. Rigor is the mechanism that produces clarity in a comparative evaluation context"
+      - element: "Accent colour"
+        parent: "Signal Blue #2563EB"
+        arena: "Arena Slate #475569"
+        rationale: "Neutral, authoritative tone suited to evaluation. Deliberately avoids the energy/warmth of product sub-brands"
+      - element: "Tone emphasis"
+        parent: "Educational, encouraging"
+        arena: "Data-driven, methodology-forward"
+        rationale: "The benchmark teaches through evidence, not instruction"
+      - element: "Content format"
+        parent: "Articles, guides, tutorials"
+        arena: "Benchmark reports, tool profiles, methodology documentation, trend analyses"
+        rationale: "Structured data output rather than editorial content"
+      - element: "Commercial posture"
+        parent: "Promotes ecosystem products"
+        arena: "Evaluates market; does not promote"
+        rationale: "Editorial independence is a structural requirement"
+      - element: "Disclosure requirements"
+        parent: "Standard business disclosures"
+        arena: "Prominent conflict of interest disclosure on every report and page"
+        rationale: "The benchmark evaluates a market that includes parent brand products"
+
+    independence_belonging_tension:
+      description: "AISearchArena must simultaneously signal belonging to AI Search Mastery and editorial independence from AI Search Mastery's commercial interests"
+      mechanisms:
+        visual: "Arena Slate accent colour is deliberately cooler and more neutral than the warmer product-brand accents. Signals analytical distance without breaking from the visual system."
+        verbal: "Benchmark content uses data-forward language and does not include cross-promotional language for parent brand products."
+        structural: "Conflict of interest disclosure appears prominently. Methodology is published and locked per cycle. Vendor disclosure process applies equally to parent brand products."
+      goal: "Not to hide the relationship. To demonstrate that the relationship does not compromise the evaluation."
+
+colors:
+  primary:
+    arena_slate:
+      hex: "#475569"
+      name: "Arena Slate"
+      usage: "Headers, primary CTAs, navigation accents, benchmark branding, dominant accent on all AISearchArena pages"
+    arena_slate_light:
+      hex: "#64748B"
+      name: "Arena Slate Light"
+      usage: "Secondary text, supporting UI elements, section dividers, wordmark 'Search' portion"
+    arena_slate_pale:
+      hex: "#CBD5E1"
+      name: "Arena Slate Pale"
+      usage: "Backgrounds, card borders, inactive states, category badge backgrounds"
+
+  secondary:
+    mastery_blue:
+      hex: "#1E3A5F"
+      name: "Mastery Blue"
+      usage: "Footer, parent attribution bar, shared navigation elements, email footer attribution. Parent anchor colour only."
+
+  accent:
+    signal_blue:
+      hex: "#2563EB"
+      name: "Signal Blue"
+      property: "aisearchmastery.com"
+      usage_on_arena: "PROHIBITED - reserved for parent hub sub-brand"
+    clarity_teal:
+      hex: "#0D9488"
+      name: "Clarity Teal"
+      property: "aimpactscanner.com"
+      usage_on_arena: "PROHIBITED - reserved for diagnostic tool sub-brand"
+    action_amber:
+      hex: "#D97706"
+      name: "Action Amber"
+      property: "llmtxtmastery.com"
+      usage_on_arena: "PROHIBITED - reserved for optimization tool sub-brand"
+
+  functional:
+    confidence_green:
+      hex: "#059669"
+      name: "Confidence Green"
+      usage: "High confidence scores, positive trend indicators, improvement arrows"
+    caution_amber:
+      hex: "#D97706"
+      name: "Caution Amber"
+      usage: "Medium confidence scores, caution indicators. Functional context only, never as brand accent. Context (confidence tags, trend arrows) prevents association with LLM.txt Mastery sub-brand."
+      note: "Shares hex value with Action Amber. On AISearchArena appears ONLY in functional confidence/trend contexts."
+    insufficient_red:
+      hex: "#DC2626"
+      name: "Insufficient Red"
+      usage: "Low confidence, insufficient data indicators, decline trends, decline arrows"
+    neutral_grey:
+      hex: "#9CA3AF"
+      name: "Neutral Grey"
+      usage: "Baseline states, no-change indicators, disabled elements, parent attribution text, sparkline axis labels"
+
+  neutrals:
+    white:
+      hex: "#FFFFFF"
+      usage: "Table row backgrounds (odd rows), badge backgrounds, icon backgrounds"
+    pale_grey:
+      hex: "#F8FAFC"
+      usage: "Alternating table row backgrounds (even rows)"
+    dark_grey:
+      hex: "#4B5563"
+      usage: "Insufficient data badge text colour"
+    dark_amber:
+      hex: "#92400E"
+      usage: "Medium confidence badge text colour"
+    dark_red:
+      hex: "#991B1B"
+      usage: "Low confidence badge text colour"
+
+    tailwind_slate_scale:
+      50: "#F8FAFC"
+      100: "#F1F5F9"
+      200: "#E2E8F0"
+      300: "#CBD5E1"
+      400: "#94A3B8"
+      500: "#64748B"
+      600: "#475569"
+      700: "#334155"
+      800: "#1E293B"
+      900: "#0F172A"
+      950: "#020617"
+
+  usage_rules:
+    - "Arena Slate is the dominant accent on all AISearchArena pages"
+    - "Mastery Blue appears only in parent attribution areas (footer, shared navigation bar)"
+    - "Signal Blue, Clarity Teal, and Action Amber DO NOT appear on AISearchArena pages - reserved for their respective sub-brands"
+    - "Confidence Green, Caution Amber, and Insufficient Red are functional colours used exclusively for score confidence indicators and trend displays - not for decorative purposes"
+    - "Caution Amber shares hex with Action Amber (#D97706) - on AISearchArena appears only in functional confidence/trend contexts, never as brand accent"
+    - "Charts use Arena Slate line/bar colours with functional colours only for confidence/trend"
+
+typography:
+  families:
+    primary:
+      name: "Inter"
+      fallback: "system-ui, sans-serif"
+      note: "No exceptions. Inherited from parent. No additional typefaces permitted."
+
+  scale:
+    h1_page_title:
+      size_px: 36
+      size_rem: "2.25rem"
+      weight: 700
+      weight_name: "Bold"
+      line_height: 1.2
+      letter_spacing: "-0.02em"
+      context: "desktop"
+
+    h2_section_heading:
+      size_px: 28
+      size_rem: "1.75rem"
+      weight: 600
+      weight_name: "SemiBold"
+      line_height: 1.3
+      letter_spacing: "-0.01em"
+      context: "desktop"
+
+    h3_category_heading:
+      size_px: 22
+      size_rem: "1.375rem"
+      weight: 600
+      weight_name: "SemiBold"
+      line_height: 1.4
+      letter_spacing: "0"
+      context: "desktop"
+
+    h4_tool_name:
+      size_px: 18
+      size_rem: "1.125rem"
+      weight: 600
+      weight_name: "SemiBold"
+      line_height: 1.4
+      letter_spacing: "0"
+      context: "desktop"
+
+    body:
+      size_px: 16
+      size_rem: "1rem"
+      weight: 400
+      weight_name: "Regular"
+      line_height: 1.6
+      letter_spacing: "0"
+
+    score_display_large:
+      size_px: 48
+      size_rem: "3rem"
+      weight: 700
+      weight_name: "Bold"
+      line_height: 1.0
+      letter_spacing: "-0.02em"
+      context: "Overall score display, most prominent typographic element"
+
+    score_display_inline:
+      size_px: 16
+      size_rem: "1rem"
+      weight: 600
+      weight_name: "SemiBold"
+      line_height: 1.0
+      letter_spacing: "0"
+      context: "Category scores inline"
+
+    confidence_tag:
+      size_px: 12
+      size_rem: "0.75rem"
+      weight: 500
+      weight_name: "Medium"
+      line_height: 1.0
+      letter_spacing: "0.05em"
+      text_transform: "uppercase"
+      context: "Confidence tag badges"
+
+    table_header:
+      size_px: 14
+      size_rem: "0.875rem"
+      weight: 600
+      weight_name: "SemiBold"
+      line_height: 1.4
+      letter_spacing: "0.02em"
+
+    table_cell:
+      size_px: 14
+      size_rem: "0.875rem"
+      weight: 400
+      weight_name: "Regular"
+      line_height: 1.5
+      letter_spacing: "0"
+
+    footnote:
+      size_px: 13
+      size_rem: "0.8125rem"
+      weight: 400
+      weight_name: "Regular"
+      line_height: 1.5
+      letter_spacing: "0"
+      context: "Methodology references and footnotes"
+
+    disclosure:
+      size_px: 14
+      size_rem: "0.875rem"
+      weight: 400
+      weight_name: "Regular"
+      line_height: 1.6
+      letter_spacing: "0"
+      context: "Set at body-adjacent size to ensure readability. Not fine print."
+
+    sparkline_axis:
+      size_px: 11
+      size_rem: "0.6875rem"
+      weight: 400
+      weight_name: "Regular"
+      color: "#9CA3AF"
+      context: "Sparkline chart axis labels"
+
+    category_badge_text:
+      size_px: 12
+      size_rem: "0.75rem"
+      weight: 500
+      weight_name: "Medium"
+      text_transform: "uppercase"
+      color: "#475569"
+      context: "Category badge labels"
+
+  weights:
+    regular: 400
+    medium: 500
+    semibold: 600
+    bold: 700
+
+  principles:
+    - "Scores are the most prominent typographic element on any benchmark page. 48px bold treatment ensures scores are scannable at a glance."
+    - "Confidence tags use uppercase, letter-spaced small text to differentiate them from score values."
+    - "Methodology references and footnotes are visually subordinate but never hidden. Smaller size does not mean buried."
+    - "Disclosure text is set at body-adjacent size (14px) to ensure readability. It is not fine print."
+
+spacing:
+  base_unit: "4px"
+  scale:
+    0: "0px"
+    px: "1px"
+    0.5: "2px"
+    1: "4px"
+    1.5: "6px"
+    2: "8px"
+    2.5: "10px"
+    3: "12px"
+    3.5: "14px"
+    4: "16px"
+    5: "20px"
+    6: "24px"
+    7: "28px"
+    8: "32px"
+    9: "36px"
+    10: "40px"
+    11: "44px"
+    12: "48px"
+    14: "56px"
+    16: "64px"
+    20: "80px"
+    24: "96px"
+    28: "112px"
+    32: "128px"
+    36: "144px"
+    40: "160px"
+    44: "176px"
+    48: "192px"
+    52: "208px"
+    56: "224px"
+    60: "240px"
+    64: "256px"
+    72: "288px"
+    80: "320px"
+    96: "384px"
+
+  component_specific:
+    confidence_tag_padding_vertical: "4px"
+    confidence_tag_padding_horizontal: "10px"
+    category_badge_padding_vertical: "3px"
+    category_badge_padding_horizontal: "8px"
+    report_max_width: "780px"
+    tool_logo_size: "48px"
+
+components:
+  buttons:
+    primary_cta:
+      background: "#475569"
+      text_color: "#FFFFFF"
+      font: "Inter"
+      font_weight: 600
+      style: "Action-oriented, benefit-clear"
+      examples:
+        - "View Methodology"
+        - "Compare Tools"
+        - "View Full Benchmark Report"
+        - "View Full Report"
+    states:
+      default:
+        background: "#475569"
+        text: "#FFFFFF"
+      hover:
+        note: "Use Tailwind default hover behavior"
+      disabled:
+        note: "Use Neutral Grey #9CA3AF"
+
+  cards:
+    tool_profile_card:
+      layout: "Card-based layout inherited from parent"
+      usage: "Tool profiles and category displays"
+      border: "Arena Slate Pale #CBD5E1"
+    disclosure_block:
+      border_left: "3px solid #475569"
+      inset: "Slightly inset from content margin"
+      note: "Visible but not alarming. Signals transparency as a feature, not a warning."
+
+  inputs:
+    sort_controls:
+      available_on: "All numeric columns in comparison tables"
+      style: "Touch-friendly for mobile"
+
+  badges:
+    confidence_tags:
+      shape: "pill (border-radius: 9999px)"
+      font: "Inter Medium 12px"
+      letter_spacing: "0.05em"
+      text_transform: "uppercase"
+      padding_vertical: "4px"
+      padding_horizontal: "10px"
+      inline_format:
+        - "[HIGH]"
+        - "[MED]"
+        - "[LOW]"
+        - "[INSUF]"
+      levels:
+        high:
+          background: "rgba(5, 150, 105, 0.1)"
+          text_color: "#059669"
+          border: "1px solid rgba(5, 150, 105, 0.3)"
+        medium:
+          background: "rgba(217, 119, 6, 0.1)"
+          text_color: "#92400E"
+          border: "1px solid rgba(217, 119, 6, 0.3)"
+        low:
+          background: "rgba(220, 38, 38, 0.1)"
+          text_color: "#991B1B"
+          border: "1px solid rgba(220, 38, 38, 0.3)"
+        insufficient_data:
+          background: "rgba(156, 163, 175, 0.1)"
+          text_color: "#4B5563"
+          border: "1px solid rgba(156, 163, 175, 0.3)"
+
+    category_badges:
+      shape: "rounded rectangle"
+      border_radius: "6px"
+      background: "#CBD5E1"
+      text_color: "#475569"
+      font: "Inter Medium 12px"
+      text_transform: "uppercase"
+      padding_vertical: "3px"
+      padding_horizontal: "8px"
+      usage: "Tool profiles, comparison tables, benchmark reports to label which category a score applies to"
+      color_rule: "NO colour-coding per category. All categories use the same Arena Slate palette. Colour is reserved for confidence and trend indicators."
+
+    evaluated_badge:
+      type: "Evaluated"
+      availability: "Any tool evaluated in at least one benchmark cycle"
+      border_color: "#475569"
+      text_color: "#475569"
+      background: "#FFFFFF"
+      displays_score: false
+      content:
+        - "AISearchArena"
+        - "EVALUATED"
+        - "[Month] [Year]"
+        - "aisearcharena.com"
+      link: "Tool profile page on aisearcharena.com"
+
+    score_badge:
+      type: "Score"
+      availability: "Any tool with overall score and High or Medium confidence"
+      border_color: "#475569"
+      text_color: "#475569"
+      background: "#FFFFFF"
+      confidence_badge: "Uses standard confidence colour system"
+      displays_score: true
+      content:
+        - "AISearchArena"
+        - "Score: [X.X]  Confidence: [LEVEL]"
+        - "[Month] [Year] Benchmark"
+        - "aisearcharena.com/tools/[slug]"
+      link: "Tool profile page for that evaluation period"
+
+    category_badge_vendor:
+      type: "Category"
+      availability: "Tools scoring top 3 in a category with HIGH confidence only"
+      visual_treatment: "Same as Score Badge"
+      content:
+        - "AISearchArena"
+        - "Top 3: [Category Name]"
+        - "Score: [X.X]  Confidence: HIGH"
+        - "[Month] [Year]"
+        - "aisearcharena.com/tools/[slug]"
+
+    badge_provisioning:
+      formats:
+        - type: "SVG"
+          note: "Scalable, recommended"
+        - type: "PNG"
+          sizes:
+            - "200px wide"
+            - "300px wide"
+            - "400px wide"
+      embed_code: "HTML with proper link attribution provided alongside badge files"
+      auto_update: "Badge files updated automatically when new benchmark data publishes"
+
+    badge_usage_rules:
+      - "Badges must link to the source evaluation"
+      - "Badges must display the evaluation month and year"
+      - "Badges must not be modified (resize proportionally OK, no crop)"
+      - "Confidence level must be displayed on Score and Category badges"
+      - "Outdated badges must be updated or removed within 60 days of new cycle"
+      - "Selective display permitted with limitations"
+      - "Score badges not available for Low confidence or Insufficient Data"
+      - "AI Search Mastery products follow identical badge rules"
+
+  score_display:
+    overall:
+      container_border: "2px solid #475569"
+      score_font_size: "48px"
+      score_font_family: "Inter"
+      score_font_weight: 700
+      confidence_tag_position: "Right of score"
+      confidence_tag_style: "pill-shaped badge"
+    category_scores:
+      layout: "Dot-leader pattern for scanability"
+      inline_confidence: "Abbreviated format [HIGH] [MED] [LOW] [INSUF]"
+    sparkline:
+      line_color: "#475569"
+      fill: "rgba(71, 85, 105, 0.05)"
+      data_point_dots: "4px diameter"
+      data_point_color: "#475569"
+      axis_labels_font: "Inter Regular 11px"
+      axis_labels_color: "#9CA3AF"
+      minimum_data_points: 3
+      fallback_message: "Trend data available after 3 months"
+
+  comparison_table:
+    header_row:
+      background: "#475569"
+      text_color: "#FFFFFF"
+      font: "Inter SemiBold 14px"
+    alternating_rows:
+      odd: "#FFFFFF"
+      even: "#F8FAFC"
+    score_cells:
+      alignment: "right-aligned (numerically aligned)"
+      font: "Inter SemiBold"
+    tool_name_column:
+      alignment: "left-aligned"
+      font: "Inter SemiBold"
+      link: "Links to tool profile"
+    category_column:
+      alignment: "left-aligned"
+      font: "Inter Regular"
+      includes: "Category badge"
+    trend_indicator:
+      type: "Small arrow icon (up/down/neutral)"
+      position: "Next to score"
+      coloured_by: "direction"
+    sort_controls: "Available on all numeric columns"
+    responsive:
+      behavior: "Tables scroll horizontally on mobile"
+      sticky_column: "First column (tool name)"
+
+  trend_indicators:
+    improvement:
+      symbol: "Arrow up (chevron)"
+      color: "#059669"
+      usage: "Score increased from previous month"
+    decline:
+      symbol: "Arrow down (chevron)"
+      color: "#DC2626"
+      usage: "Score decreased from previous month"
+    no_change:
+      symbol: "Horizontal dash"
+      color: "#9CA3AF"
+      usage: "Score unchanged from previous month"
+    new_entry:
+      symbol: "Dot / bullet"
+      color: "#475569"
+      usage: "First month of evaluation"
+    insufficient_data:
+      symbol: "Em dash (--)"
+      color: "#9CA3AF"
+      usage: "Could not score in this period"
+    note: "Reference immediately preceding month only. Longer-term trends displayed through sparkline charts."
+
+  navigation:
+    primary:
+      position: "Persistent across all pages"
+      items:
+        - label: "Benchmark"
+          link: "Most recent report"
+        - label: "Tools"
+          link: "Tool directory"
+        - label: "Categories"
+          link: "Category overview"
+        - label: "Methodology"
+          link: "/methodology"
+          note: "Primary nav, not footer. Intentional trust signal."
+        - label: "Disclosure"
+          link: "/disclosure"
+          note: "Primary nav, not footer. Intentional trust signal."
+      rules:
+        - "No links to other AI Search Mastery product properties in navigation"
+    secondary:
+      position: "Footer"
+      items:
+        - label: "About"
+          link: "/about"
+        - label: "Press"
+          link: "/press"
+        - label: "Trends"
+          link: "/trends"
+        - label: "Contact"
+          link: "/about"
+        - label: "Part of AI Search Mastery"
+          link: "https://aisearchmastery.com"
+          note: "Only navigation element connecting to parent brand"
+
+shadows:
+  sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
+  DEFAULT: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)"
+  md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)"
+  lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)"
+  xl: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)"
+  2xl: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+  inner: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)"
+  none: "0 0 #0000"
+  note: "Tailwind defaults. Source document does not specify custom shadows."
+
+animations:
+  transition_property:
+    none: "none"
+    all: "all"
+    DEFAULT: "color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter"
+    colors: "color, background-color, border-color, text-decoration-color, fill, stroke"
+    opacity: "opacity"
+    shadow: "box-shadow"
+    transform: "transform"
+  transition_timing_function:
+    DEFAULT: "cubic-bezier(0.4, 0, 0.2, 1)"
+    linear: "linear"
+    in: "cubic-bezier(0.4, 0, 1, 1)"
+    out: "cubic-bezier(0, 0, 0.2, 1)"
+    in_out: "cubic-bezier(0.4, 0, 0.2, 1)"
+  transition_duration:
+    75: "75ms"
+    100: "100ms"
+    150: "150ms"
+    200: "200ms"
+    300: "300ms"
+    500: "500ms"
+    700: "700ms"
+    1000: "1000ms"
+  note: "Tailwind defaults. Source document does not specify custom animations. Brand tone (analytical, serious) suggests restrained animation use."
+
+breakpoints:
+  sm: "640px"
+  md: "768px"
+  lg: "1024px"
+  xl: "1280px"
+  2xl: "1536px"
+  note: "Tailwind defaults. Source document specifies mobile-first responsive tables with horizontal scroll and sticky first column."
+
+voice_and_tone:
+  parent_foundation:
+    archetype: "The Guide"
+    principles:
+      - "Clarity Over Cleverness"
+      - "Honesty Over Hype"
+      - "Action Over Analysis"
+      - "Accessibility Is The Mission"
+      - "Build To Evolve"
+
+  arena_characteristics:
+    archetype: "The Evaluator"
+    archetype_description: "Measures, reports, lets data guide decisions"
+    tone: "Measured, precise, data-forward, still practitioner-first"
+    emotional_register: "Here is what we found. Here is the evidence."
+    authority_source: "Methodology and evidence"
+    engagement_mode: "Informative"
+    uncertainty_handling: "Confidence: Medium. This score is based on limited data. See methodology note M-14."
+
+  principles_applied:
+    clarity_over_cleverness:
+      - "Scores presented without editorializing. Number, confidence tag, evidence are the message."
+      - "Methodology written for marketing professional with 3 years experience, not analyst or academic."
+      - "Technical explanations provided inline, not sent to glossary."
+    honesty_over_hype:
+      - "Name the conflict of interest directly. Not 'potential' or 'perceived' conflict."
+      - "When data insufficient, say so. Blank score with 'Insufficient Data' is more honest than a guess."
+      - "Never use superlatives about the benchmark itself ('the best,' 'the most trusted,' 'definitive')."
+    action_over_analysis:
+      - "Every benchmark report must answer: What should a practitioner do with this information?"
+      - "Actionable framing: 'Tool X scored highest in monitoring for businesses with fewer than 50 pages'"
+      - "Not actionable: 'Tool X has a robust monitoring capability'"
+      - "If a metric does not help a practitioner make a decision, question whether it belongs."
+    accessibility_is_the_mission:
+      - "Write for practitioners, not analysts."
+      - "Provide context with every score: scale (1-10), category average (6.8), confidence level (High)."
+      - "Pricing data included where available because practitioners operate within budgets."
+    build_to_evolve:
+      - "Methodology changes are versioned and explained, not quietly introduced."
+      - "Historical data preserved even when methodology evolves."
+      - "Explicitly say the benchmark will improve."
+
+  tone_by_content_type:
+    monthly_benchmark_reports:
+      tone: "Factual, data-forward, structured"
+      rules:
+        - "Lead with findings, not framing"
+        - "Active voice for methodology descriptions: 'We evaluated 27 tools'"
+        - "Passive voice for results: 'Tool X scored 8.2'"
+        - "Every claim has a citation to specific methodology, evidence, or data point"
+        - "No promotional language about any tool"
+      example_good: >
+        In the February 2026 evaluation, SearchOptimizer Pro scored 8.4 overall (confidence: High),
+        maintaining the top position in the Monitoring category for the third consecutive month.
+        GEOTracker rose to second position at 7.9 (confidence: High), driven by improvements in
+        its reporting module. Four tools scored below the category average of 6.8; two declined
+        from January scores.
+      example_bad: >
+        Great news for SearchOptimizer Pro fans -- they have done it again! The powerful tool
+        continues to dominate our rankings with an impressive 8.4 score.
+
+    methodology_documentation:
+      tone: "Precise, procedural, exhaustive"
+      rules:
+        - "Written as reference document, not narrative"
+        - "Structured with numbered sections and subsections"
+        - "Every term defined on first use"
+        - "Every decision explained with rationale"
+        - "Not marketing content. Exists to enable verification, not persuade."
+      example: >
+        4.3.2 Prompt Rotation Strategy: Each evaluation cycle uses a standardized prompt set
+        comprising 70% fixed prompts (consistent across all cycles for longitudinal comparability)
+        and 30% rotated prompts (refreshed each cycle to prevent tool optimization gaming).
+
+    vendor_communications:
+      tone: "Professional, constructive, firm on process"
+      rules:
+        - "Vendors are stakeholders, not adversaries and not customers"
+        - "Respectful but does not negotiate on methodology or timing"
+        - "Responses to vendor objections reference specific methodology sections"
+        - "Never apologize for a low score"
+      example: >
+        Thank you for your disclosure submission. We have reviewed the information provided and
+        updated the factual elements in our evaluation as noted in the attached correction log.
+        The overall score methodology remains unchanged per the published evaluation framework
+        (v1.2, Section 4).
+
+    press_and_media:
+      tone: "Accessible, quotable, data-anchored"
+      rules:
+        - "Lead with most newsworthy finding"
+        - "Provide 2-3 quotable sentences with specific data points"
+        - "Always include conflict of interest disclosure"
+        - "Do not overstate significance"
+      example: >
+        The March 2026 benchmark evaluated 29 AI search optimization tools across 52 metrics.
+        Three tools entered the evaluation for the first time. The Monitoring category saw the
+        largest score dispersion of any category this cycle, with a 4.2-point gap between the
+        highest and lowest scores.
+
+    social_media:
+      tone: "Concise, data-first, methodology-referencing"
+      rules:
+        - "Share data points, methodology updates, publication announcements"
+        - "No promotional language"
+        - "No enthusiasm markers (exclamation marks, 'exciting,' 'incredible')"
+        - "Every post about results links to full report"
+        - "No engagement-bait framing"
+      example_good: >
+        February benchmark published. 27 tools, 7 categories, 50+ metrics. Three tools improved
+        scores by >10% month-over-month. Two declined. Full results and methodology: [link]
+      example_bad: >
+        The results are IN! Check out which AI search tools came out on top this month. You might
+        be surprised! [link]
+
+  vocabulary_standards:
+    referring_to_benchmark:
+      use: ["The benchmark", "the evaluation", "the monthly assessment"]
+      do_not_use: ["Our review", "our opinion", "our recommendation"]
+    referring_to_results:
+      use: ["Scores earned", "tool scored X", "evaluation results"]
+      do_not_use: ["Scores given", "we rated", "our rating"]
+    referring_to_parent:
+      use: ["AI Search Mastery", "the parent brand", "the ecosystem"]
+      do_not_use: ["Our company", "headquarters", "corporate"]
+    referring_to_conflict:
+      use: ["Conflict of interest", "disclosed conflict"]
+      do_not_use: ["Potential conflict", "perceived conflict", "possible bias"]
+    referring_to_asm_products:
+      use: ["AImpactScanner (an AI Search Mastery product)", "LLM.txt Mastery (an AI Search Mastery product)"]
+      do_not_use: ["Our product", "our tool", "our sister product"]
+    describing_benchmark_scope:
+      use: ["Evaluates", "assesses", "measures", "benchmarks"]
+      do_not_use: ["Reviews", "ranks", "judges", "rates"]
+
+editorial_independence:
+  foundational_principle: "Information flows; influence does not."
+
+  visual_signals:
+    - signal: "Arena Slate accent colour"
+      independence_message: "Cool, neutral tone contrasts with warmer product-brand colours. Communicates analytical detachment."
+    - signal: "No product-brand colours"
+      independence_message: "Signal Blue, Clarity Teal, and Action Amber do not appear on the benchmark site. Visually separates benchmark from products."
+    - signal: "Disclosure block styling"
+      independence_message: "Left-border treatment with Arena Slate, slightly inset. Visible but not alarming. Signals transparency as a feature."
+    - signal: "Tool logo display"
+      independence_message: "All tool logos displayed at identical size and treatment. No visual hierarchy based on vendor relationship."
+    - signal: "Equal page treatment"
+      independence_message: "AI Search Mastery product profiles use identical layouts to all other tool profiles."
+    - signal: "Methodology link prominence"
+      independence_message: "Methodology page accessible from primary navigation, not buried in footer."
+
+  verbal_signals:
+    - signal: "Scores earned"
+      independence_message: "Active framing: tools earn scores through methodology. Benchmark does not give or assign scores."
+    - signal: "Direct conflict naming"
+      independence_message: "'Conflict of interest' -- not 'potential' or 'perceived'. Direct naming signals comfort with the tension."
+    - signal: "Methodology references"
+      independence_message: "In-content references to specific sections signal verifiable external framework governs decisions."
+    - signal: "Consistent vocabulary"
+      independence_message: "Same language for all tools regardless of affiliation. No softening for ASM products; no hardening for competitors."
+    - signal: "We believe framing"
+      independence_message: "Acknowledges editorial positions as positions, not facts."
+
+  parent_attribution:
+    format: "Part of AI Search Mastery"
+    font: "Inter Regular"
+    color: "#9CA3AF"
+    placement: "Site footer and wordmark extended form"
+    link: "aisearchmastery.com"
+    rules:
+      - "Visually subordinate to AISearchArena wordmark"
+      - "Does not include taglines, product names, or promotional text"
+      - "Does not change based on page content or context"
+    not_acceptable:
+      - "Powered by AI Search Mastery"
+      - "From AI Search Mastery"
+      - "An AI Search Mastery Publication"
+      - "Brought to you by AI Search Mastery"
+    rationale: "Part of is the correct framing. AISearchArena is part of the ecosystem. The ecosystem does not control the benchmark."
+
+  disclosure_standards:
+    full_disclosure:
+      placement: "Methodology page and every benchmark report"
+      text: >
+        Conflict of Interest Disclosure: AISearchArena is operated by AI Search Mastery,
+        which also operates AImpactScanner (aimpactscanner.com) and LLM.txt Mastery
+        (llmtxtmastery.com). Both products exist in the market this benchmark evaluates.
+        We manage this conflict through: published methodology locked before each evaluation
+        cycle; multi-source evaluation synthesis from 6 independent analyses; evidence artifact
+        requirements for every score; confidence tagging on all evaluations; identical vendor
+        disclosure process for AI Search Mastery products; and a policy of publishing all scores
+        regardless of outcome. The complete methodology is available for independent verification.
+        We believe transparent, structured evaluation with a disclosed conflict produces better
+        practitioner outcomes than no independent benchmark at all.
+    inline_disclosure:
+      placement: "Tool profiles, category pages, social media bios"
+      text: >
+        AISearchArena is part of AI Search Mastery, which operates products in the benchmarked
+        market. Full conflict disclosure and methodology: aisearcharena.com/methodology
+    product_disclosure:
+      placement: "Adjacent to AI Search Mastery product scores in benchmark reports"
+      text: >
+        [Tool name] is operated by AI Search Mastery, the parent organization of AISearchArena.
+        This tool was evaluated using the same methodology, prompt sets, and scoring criteria as
+        all other tools in this benchmark. Evidence artifacts for this evaluation are available at [link].
+
+  cross_property_rules:
+    arena_to_other_properties:
+      permitted:
+        - "Evaluate ASM products using identical methodology with enhanced disclosure"
+        - "Name the conflict. List the products. Link to disclosure."
+        - "Include tool profiles for ASM products with full evaluation data"
+        - "Footer: Part of AI Search Mastery attribution (no product page links)"
+        - "Share benchmark data about ASM products with same treatment as any other tool"
+      not_permitted:
+        - "Favourable editorial commentary, promotional language, softer scoring"
+        - "Try AImpactScanner CTAs, cross-promotional banners"
+        - "Feature ASM products more prominently than other tools"
+        - "Promotional framing of ASM product scores"
+        - "In-content links to product properties"
+    other_properties_to_arena:
+      permitted:
+        - "Link to benchmark reports and methodology"
+        - "Cite benchmark data with attribution"
+        - "Display own AISearchArena scores with full context"
+        - "Reference benchmark as evidence of ecosystem transparency"
+      not_permitted:
+        - "Cherry-pick favourable scores"
+        - "Display scores without confidence tags"
+        - "Frame benchmark as validation of products"
+        - "Use benchmark data in marketing without full context"
+
+  pre_publication_checklist:
+    - "Conflict of interest disclosure present (full or inline)"
+    - "No promotional language for any ASM product"
+    - "No cross-promotional CTAs or links to product properties within benchmark content"
+    - "ASM products receive identical visual treatment to all other tools"
+    - "Vocabulary adheres to What We Say / What We Don't Say standards"
+    - "Methodology references are specific and verifiable"
+    - "Confidence tags present on all scores"
+    - "No selective omission of scores for any tool"
+    - "Footer attribution reads Part of AI Search Mastery"
+    - "Arena Slate is dominant accent colour (no product-brand colours)"
+    - "All tool profiles use identical visual treatment"
+    - "Score displays follow standardized format"
+    - "Comparison tables follow standards"
+    - "No stock photography or decorative imagery"
+    - "Methodology version referenced correctly"
+    - "Disclosure block uses correct styling (left border, inset)"
+    - "Badge generation matches current benchmark data"
+
+  shared_audience_management:
+    email_lists: "Separate from parent brand and product properties. Cross-subscription explicit opt-in only."
+    analytics: "May be aggregated for audience size reporting. Benchmark engagement data NOT used for product marketing targeting."
+    retargeting: "Visitors to benchmark content are NOT retargeted with product ads for ASM products."
+
+visual_identity:
+  logo:
+    wordmark:
+      primary:
+        text: "AISearchArena"
+        font: "Inter Bold"
+        ai_and_arena_color: "#475569"
+        search_color: "#64748B"
+        note: "Two-tone treatment"
+      alternate:
+        text: "AISearchArena"
+        color: "#475569"
+        usage: "Favicons, social avatars, very small sizes where two-tone is not practical"
+      with_attribution:
+        format: "AISearchArena | Part of AI Search Mastery"
+        wordmark_font: "Inter Bold"
+        wordmark_colors: "#475569 / #64748B"
+        separator: "Vertical pipe"
+        attribution_font: "Inter Regular"
+        attribution_color: "#9CA3AF"
+    sizing:
+      minimum_width_digital: "140px"
+      minimum_width_print: "35mm"
+      clear_space: "Equal to the cap height of the A in AI on all sides"
+      attribution_drop_threshold: "Below 100px width, attribution text may be dropped"
+
+  icon_favicon:
+    mark: "ASA"
+    arrangement: "Stacked or composed"
+    font: "Inter Bold"
+    primary_color: "#475569"
+    background: "#FFFFFF or transparent"
+    usage: "Favicon, social media avatar, app icon contexts"
+
+  imagery:
+    permitted:
+      - "Charts and data visualizations"
+      - "Tool logos (vendor-supplied, displayed at consistent sizes, 48x48px in evaluations)"
+      - "Iconography for categories and metrics (simple, line-style, monochrome Arena Slate)"
+      - "Diagrams for methodology explanation (clean, labelled, Inter typography)"
+    prohibited:
+      - "Stock photos of people, offices, or abstract technology imagery"
+      - "Decorative illustrations unrelated to benchmark data"
+      - "Gradient backgrounds or patterned fills that compete with data displays"
+      - "Vendor marketing screenshots used as hero images (may appear within tool profile evaluations as evidence, not decoration)"
+    principle: "AISearchArena does not use stock photography. Benchmark content is data-driven."
+
+  icons:
+    style: "Simple, line-style, monochrome"
+    color: "#475569"
+    usage: "Categories and metrics"
+
+  data_visualization:
+    charts:
+      line_color: "#475569"
+      bar_color: "#475569"
+      functional_colors_only: "Confidence/trend indicators"
+    sparklines:
+      line_color: "#475569"
+      fill: "rgba(71, 85, 105, 0.05)"
+      data_points: "4px diameter, #475569"
+      axis_labels: "Inter Regular 11px, #9CA3AF"
+      minimum_data: 3
+    tables:
+      header_bg: "#475569"
+      header_text: "#FFFFFF"
+      row_odd: "#FFFFFF"
+      row_even: "#F8FAFC"
+
+  social_media_visuals:
+    profile_image: "ASA icon mark in Arena Slate on white"
+    banner: "Text-only banner with wordmark and one-line positioning statement on white or very light grey background. No stock photography."
+    shared_images: "Data cards using benchmark visual system (Arena Slate palette, Inter typography, score displays). No decorative imagery."
+
+page_templates:
+  monthly_benchmark_report:
+    layout: "Single-column, max-width 780px"
+    header_separator: "Arena Slate horizontal rule"
+    sections:
+      - name: "Report Header"
+        content:
+          - "Title: AISearchArena Monthly Benchmark -- [Month] [Year]"
+          - "Subtitle: [N] tools evaluated across [N] categories and [N] metrics"
+          - "Methodology version reference"
+          - "Conflict of interest disclosure (inline, not linked)"
+          - "Publication date and data collection period"
+      - name: "Executive Summary"
+        word_count: "300-500 words"
+        content:
+          - "3-5 bullet point top-level findings"
+          - "Significant changes from previous month"
+          - "New tools entering evaluation"
+          - "Category-level trends"
+      - name: "Methodology Summary"
+        content:
+          - "Link to full methodology page"
+          - "Note methodology changes from previous cycle"
+          - "Prompt rotation disclosure for this cycle"
+      - name: "Overall Rankings"
+        content:
+          - "Full comparison table with all tools"
+          - "Scores, confidence tags, trend indicators"
+          - "Sortable by category, score, or trend"
+      - name: "Category Breakdowns"
+        note: "One section per category"
+        content:
+          - "Category definition and relevance"
+          - "Category comparison table"
+          - "Notable movements and trends"
+          - "Practitioner context (this category matters most if...)"
+      - name: "Tool Spotlight"
+        count: "2-3 tools per report"
+        content:
+          - "Tools that moved significantly (up or down)"
+          - "New entrants with first evaluation"
+          - "Context for the movement"
+      - name: "Trend Analysis"
+        content:
+          - "Market-level trends visible in the data"
+          - "Category convergence or divergence patterns"
+          - "Longitudinal observations (available after 3+ months)"
+      - name: "Conflict of Interest Disclosure (full)"
+        content:
+          - "Standard disclosure statement"
+          - "AI Search Mastery product scores highlighted for transparency"
+          - "Any additional disclosures for this cycle"
+      - name: "Methodology Notes"
+        content:
+          - "Specific methodology decisions relevant to this cycle"
+          - "Known limitations"
+          - "Planned methodology improvements"
+      - name: "Appendices"
+        content:
+          - "Full scoring data (downloadable)"
+          - "Evidence artifact references"
+          - "Vendor disclosure status table"
+          - "Correction log (if applicable)"
+    design_standards:
+      - "Comparison tables are full-width within the content column"
+      - "Score displays use standardized score visual system"
+      - "Charts use Arena Slate line/bar colours with functional colours only for confidence/trend"
+      - "Disclosure block has left border (3px solid Arena Slate), slightly inset from content margin"
+      - "Report header includes Arena Slate horizontal rule separating report from site navigation"
+
+  tool_profile:
+    sections:
+      - name: "Tool Header"
+        content:
+          - "Tool name and vendor"
+          - "Tool logo (vendor-supplied, 48x48px)"
+          - "Category badges for all applicable categories"
+          - "Overall score with confidence tag"
+          - "Trend indicator (vs. previous month)"
+          - "Last evaluated: [date]"
+      - name: "Score Breakdown"
+        content:
+          - "Score per category with confidence tags"
+          - "Sparkline chart showing score trajectory (after 3 months)"
+      - name: "What This Tool Does"
+        word_count: "2-3 sentences"
+        note: "Factual description sourced from vendor documentation and evaluation"
+      - name: "Where It Scores Well"
+        content:
+          - "Top 3 categories by relative performance"
+          - "Specific metrics driving high scores"
+      - name: "Where It Scores Below Average"
+        content:
+          - "Categories below the overall category average"
+          - "Specific metrics driving lower scores"
+      - name: "Practitioner Context"
+        content:
+          - "Best suited for: (derived from score profile, not editorial opinion)"
+          - "Pricing tier (if publicly available)"
+          - "Integration compatibility notes"
+      - name: "Vendor Disclosure Status"
+        content:
+          - "Whether vendor submitted disclosure for this cycle"
+          - "Link to vendor disclosure (if submitted and published)"
+      - name: "Historical Data"
+        content:
+          - "Score history table (all evaluated months)"
+          - "Methodology version notes for each period"
+      - name: "Conflict Disclosure"
+        note: "Only if tool is an AI Search Mastery product. Absent for non-affiliated tools."
+
+  methodology_page:
+    sections:
+      - name: "Page Header"
+        content:
+          - "Title: Methodology"
+          - "Current methodology version"
+          - "Last updated date"
+          - "Conflict of interest disclosure (full, inline)"
+      - name: "Evaluation Philosophy"
+        content:
+          - "Why this benchmark exists"
+          - "What it measures and what it does not"
+          - "Core principles (repeatability, relevance, fairness, transparency)"
+      - name: "Scope"
+        content:
+          - "Tools included (criteria for inclusion)"
+          - "Categories defined"
+          - "Metrics listed with definitions"
+      - name: "Evaluation Process"
+        content:
+          - "Step-by-step description of each evaluation cycle"
+          - "Multi-source synthesis methodology"
+          - "Prompt strategy (70/30 rotation) with rationale"
+          - "Scoring calculation"
+          - "Confidence tagging criteria"
+      - name: "Vendor Engagement"
+        content:
+          - "Pre-publication notification process"
+          - "Vendor disclosure template (downloadable)"
+          - "Right-of-reply process"
+          - "Correction and restatement policy"
+      - name: "Structural Safeguards"
+        content:
+          - "Independence mechanisms"
+          - "Conflict management"
+          - "Evidence artifact requirements"
+      - name: "Methodology Changelog"
+        content:
+          - "Version history with dates and descriptions"
+          - "Impact assessment for each change"
+          - "Guidance for comparing scores across methodology versions"
+      - name: "Contact"
+        content:
+          - "How to submit methodology questions"
+          - "How to request inclusion in the benchmark"
+
+  site_information_architecture:
+    paths:
+      - path: "/benchmark/[year]/[month]/"
+        description: "Monthly benchmark report"
+      - path: "/benchmark/[year]/[month]/[tool-slug]/"
+        description: "Tool-specific results for that month"
+      - path: "/tools/[tool-slug]/"
+        description: "Persistent tool profile page"
+      - path: "/categories/[category-slug]/"
+        description: "Category overview with tool comparison"
+      - path: "/methodology/"
+        description: "Full methodology documentation"
+      - path: "/methodology/changelog/"
+        description: "Methodology version history"
+      - path: "/methodology/prompts/"
+        description: "Published prompt sets (after cycle close)"
+      - path: "/disclosure/"
+        description: "Conflict of interest + vendor disclosure"
+      - path: "/disclosure/vendor-template/"
+        description: "Downloadable vendor disclosure template"
+      - path: "/trends/"
+        description: "Longitudinal analysis (after 3+ months)"
+      - path: "/about/"
+        description: "About the benchmark, team, contact"
+      - path: "/press/"
+        description: "Press materials, data citation guidelines"
+
+  layout_principles:
+    - principle: "Data density over whitespace"
+      implementation: "Benchmark pages prioritize data display. Decorative whitespace minimized."
+    - principle: "Single-column for reports"
+      implementation: "Monthly benchmark reports use single-column layout (max-width: 780px) for linear reading."
+    - principle: "Multi-column for comparison"
+      implementation: "Tool comparison and category pages use wider layouts with sortable tables."
+    - principle: "Mobile-first data tables"
+      implementation: "Tables scroll horizontally with sticky first column. Touch-friendly sort controls."
+    - principle: "Score scanability"
+      implementation: "Overall scores visible without scrolling on tool profile pages."
+    - principle: "Disclosure visibility"
+      implementation: "Disclosure content never below the fold on methodology page or benchmark report pages."
+
+  email_templates:
+    monthly_publication:
+      from: "AISearchArena <benchmark@aisearcharena.com>"
+      subject: "[Month] [Year] Benchmark: [N] Tools Evaluated"
+      design:
+        - "Plain, text-forward design. No hero images."
+        - "Arena Slate (#475569) accent for headers and CTA button"
+        - "Mastery Blue (#1E3A5F) for footer attribution only"
+        - "Conflict disclosure link in every email"
+        - "No cross-promotional content for other ASM properties"
+        - "Separate email list from parent brand"
+      footer: "AISearchArena | Part of AI Search Mastery"
+    vendor_pre_publication:
+      from: "AISearchArena <vendors@aisearcharena.com>"
+      subject: "AISearchArena [Month] [Year] Pre-Publication Notification"
+      includes:
+        - "Vendor disclosure template attachment"
+        - "Deadline for submission (5 business days before publication)"
+        - "Right of reply instructions (up to 500 words)"
+        - "Methodology and disclosure links"
+      footer: "AISearchArena | Part of AI Search Mastery"
+
+  social_media:
+    platforms:
+      - platform: "X (Twitter)"
+        purpose: "Benchmark publication announcements, data highlights, methodology updates"
+        cadence: "3-5 posts per benchmark cycle, plus methodology/disclosure updates"
+      - platform: "LinkedIn"
+        purpose: "Professional audience, vendor engagement, industry commentary"
+        cadence: "2-3 posts per benchmark cycle"
+      - platform: "Newsletter"
+        purpose: "Primary distribution channel for benchmark reports"
+        cadence: "Monthly (tied to benchmark publication)"
+    bio_standard: >
+      Independent monthly benchmark for AI search optimization tools. [N]+ tools, [N]+ metrics,
+      methodology published. Part of AI Search Mastery. Conflict disclosure: [link]
+    bio_requirements:
+      - "'Independent' and 'Part of AI Search Mastery' both appear"
+      - "Conflict disclosure link in bio (not optional)"
+      - "No promotional language. No superlatives."
+      - "Updated when tool count or metric count changes"
+
+accessibility:
+  note: "Source document does not specify explicit WCAG compliance level. The following are derived from the document's design specifications and best practices."
+  wcag_target: "WCAG 2.1 AA (recommended minimum)"
+
+  contrast_ratios:
+    arena_slate_on_white:
+      foreground: "#475569"
+      background: "#FFFFFF"
+      ratio: "5.92:1"
+      passes: "AA normal text, AA large text"
+    arena_slate_light_on_white:
+      foreground: "#64748B"
+      background: "#FFFFFF"
+      ratio: "4.54:1"
+      passes: "AA large text, AA-close for normal text"
+    white_on_arena_slate:
+      foreground: "#FFFFFF"
+      background: "#475569"
+      ratio: "5.92:1"
+      passes: "AA normal text, AA large text"
+      usage: "Comparison table headers"
+    confidence_green_on_white:
+      foreground: "#059669"
+      background: "#FFFFFF"
+      ratio: "4.58:1"
+      passes: "AA large text"
+    dark_amber_on_amber_bg:
+      foreground: "#92400E"
+      background: "rgba(217, 119, 6, 0.1)"
+      note: "Medium confidence badge - dark text ensures readability"
+    dark_red_on_red_bg:
+      foreground: "#991B1B"
+      background: "rgba(220, 38, 38, 0.1)"
+      note: "Low confidence badge - dark text ensures readability"
+    neutral_grey_on_white:
+      foreground: "#9CA3AF"
+      background: "#FFFFFF"
+      ratio: "2.85:1"
+      passes: "Decorative/non-essential text only"
+      usage: "Parent attribution, axis labels"
+    mastery_blue_on_white:
+      foreground: "#1E3A5F"
+      background: "#FFFFFF"
+      ratio: "11.07:1"
+      passes: "AAA normal text"
+
+  design_principles:
+    - "Methodology references and footnotes are visually subordinate but never hidden"
+    - "Disclosure text set at body-adjacent size (14px) for readability - not fine print"
+    - "Confidence tags use uppercase + letter-spacing for differentiation without relying solely on color"
+    - "Trend indicators use both shape (arrow direction) and color for meaning"
+    - "Score context always provided (scale, category average, confidence) - no numbers in isolation"
+    - "Tables have sticky first column for mobile accessibility"
+    - "Touch-friendly sort controls on mobile"
+    - "All tool logos displayed at identical size and treatment regardless of vendor"
+
+  content_accessibility:
+    - "Written for marketing professional with 3 years experience, not analyst or academic"
+    - "Technical explanations provided inline, not sent to glossary"
+    - "Pricing data included where available because practitioners operate within budgets"

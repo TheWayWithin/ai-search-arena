@@ -1,0 +1,2779 @@
+# ============================================================
+# AISearchArena.com - Structured PRD Extraction
+# Source: PRD v1.0 (5 files, ~5073+ lines, ~85K words)
+# Extracted: 2026-02-28
+# Extraction Mode: COMPLETENESS MODE
+# ============================================================
+
+meta:
+  product_name: "AISearchArena.com"
+  version: "1.0"
+  tagline: "Independent AI Search Optimization Benchmarking"
+  type: "web-app"
+  status: "Approved for Handoff"
+  owner: "Jamie Watters / AI Search Mastery"
+  template_version: "PRD v3.1"
+  created: "2026-02-23"
+  last_updated: "2026-02-24"
+  handoff_date: "2026-02-24"
+  target_launch: "March 2026, Week 4"
+
+product_overview:
+  name: "AISearchArena.com"
+  tagline: "Independent AI Search Optimization Benchmarking"
+  product_sentence: "AISearchArena.com is a monthly benchmark publication platform that evaluates 27+ AI search optimization (GEO/AEO) tools against 50+ standardized metrics, giving practitioners independent, transparent comparison data to make confident purchasing decisions."
+  type: "Monthly benchmark publication platform"
+  domain: "aisearcharena.com"
+  target_users:
+    primary:
+      name: "Tool Evaluators"
+      description: "SEO professionals, marketing managers, and agency owners actively deciding which GEO/AEO tool to purchase, recommend, or adopt"
+    secondary:
+      - name: "Content Consumers"
+        description: "Practitioners consuming benchmark data for industry awareness"
+      - name: "Industry Stakeholders"
+        description: "Vendors, analysts, and media referencing benchmark data"
+  audience_segments: 3
+  operator_model: "Solopreneur (Jamie Watters is product owner AND developer)"
+
+problem_statement:
+  core_problem: "The GEO/AEO tool market has 27+ tools across 7 segments with no independent, structured benchmark. Practitioners choose tools based on vendor marketing, peer anecdotes, and limited trials -- leading to wasted budgets, poor fits, and high switching costs."
+  market_size: "27+ tools across 7 market segments"
+  current_alternatives:
+    - "Vendor marketing materials"
+    - "Peer anecdotes"
+    - "Limited free trials"
+  consequences:
+    - "Wasted budgets"
+    - "Poor tool-to-need fits"
+    - "High switching costs"
+
+solution_overview:
+  approach: "Monthly independent benchmark using multi-model AI evaluation methodology"
+  key_differentiators:
+    - "Independent evaluation (not vendor-funded)"
+    - "Multi-model consensus (6 AI models per evaluation)"
+    - "Transparent methodology with published audit packages"
+    - "Proactive conflict-of-interest disclosure"
+    - "Evidence-backed scores with confidence tags"
+  evaluation_method:
+    models_per_evaluation: 6
+    scoring_scale: "0-10"
+    metrics_count: "50+"
+    tools_evaluated: "27+"
+    cadence: "Monthly"
+  brand_essence: "Rigor"
+  editorial_firewall: true
+  conflict_disclosure: "AI Search Mastery ownership disclosed on every page where scores appear"
+
+features:
+  total_count: 25
+  mvp_count: 19
+  effort_estimate_days: "51-73"
+  effort_breakdown:
+    xl_5plus_days:
+      count: 3
+      range: "15-21 days"
+      features: ["F-005", "F-007", "F-011"]
+    l_3to5_days:
+      count: 4
+      range: "12-20 days"
+      features: ["F-002", "F-003", "F-014", "F-015"]
+    m_1to3_days:
+      count: 10
+      range: "20-30 days"
+      features: ["F-001", "F-006", "F-008", "F-010", "F-012", "F-013", "F-016", "F-017", "F-018"]
+    s_less_than_1_day:
+      count: 2
+      range: "2-3 days"
+      features: ["F-009", "F-024", "F-025"]
+
+  p0_must_have:
+    - id: "F-001"
+      name: "Public Homepage & Current Cycle Highlights"
+      type: "CRUD / ANALYTICS"
+      touched_entities: ["BenchmarkCycle", "BenchmarkReport", "CompositeScore", "Badge"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-005", "F-014"]
+      description: "Entry point for visitors; displays current benchmark cycle highlights, latest leaderboard snapshot, publication date countdown, and links to methodology/disclosure pages."
+      user_story: "As a practitioner visiting AISearchArena for the first time, I want to immediately see the latest benchmark results and understand what this site offers so I can decide whether the benchmark is relevant to my tool evaluation needs."
+      acceptance_criteria:
+        - id: "AC-001-01"
+          given: "A benchmark cycle with state = Published exists"
+          when: "A visitor navigates to the homepage"
+          then: "The page displays the cycle name, publication date, number of tools evaluated, and a ranked summary of top 5 tools by composite score"
+        - id: "AC-001-02"
+          given: "No benchmark cycle with state = Published exists"
+          when: "A visitor navigates to the homepage"
+          then: "The page displays a pre-launch state with: site description, methodology overview, expected first publication date, and email signup for launch notification"
+        - id: "AC-001-03"
+          given: "A published cycle exists"
+          when: "The page loads"
+          then: "The page includes links to full leaderboard, methodology page, conflict-of-interest disclosure page, and the latest benchmark report"
+      mvp_rationale: "Entry point for all visitors; establishes brand presence and displays benchmark results"
+
+    - id: "F-002"
+      name: "Track Leaderboard"
+      type: "CRUD / SEARCH"
+      touched_entities: ["BenchmarkTrackDefinition", "CompositeScore", "Tool", "ToolSegmentMapping", "MarketSegment", "Badge", "CycleToolEnrollment"]
+      effort: "L (3-5 days)"
+      dependencies: ["F-005", "F-012"]
+      description: "The primary public-facing benchmark view. Displays tools ranked by composite score within a benchmark track, with filtering by market segment, cycle, and score dimension. Uses dense ranking. Supports sorting by any displayed metric."
+      user_story: "As a practitioner evaluating GEO/AEO tools, I want to see all evaluated tools ranked by their benchmark scores so I can quickly identify top performers and compare them within my market segment."
+      acceptance_criteria:
+        - id: "AC-002-01"
+          given: "A published benchmark cycle exists with 10+ tools enrolled on the GEO Platform track"
+          when: "A visitor navigates to the track leaderboard page"
+          then: "All non-withdrawn tools are displayed in descending composite score order with dense ranking, showing rank, tool name (linked), vendor name, composite score, badge icon if earned, and confidence summary"
+        - id: "AC-002-02"
+          given: "The leaderboard is displayed"
+          when: "A visitor selects a market segment filter"
+          then: "The leaderboard re-renders showing only tools in that segment with recalculated segment-specific rankings"
+        - id: "AC-002-03"
+          given: "Multiple published cycles exist"
+          when: "A visitor selects a previous cycle from the cycle dropdown"
+          then: "The leaderboard displays the historical ranking for the selected cycle"
+        - id: "AC-002-04"
+          given: "Two or more tools have identical composite scores"
+          when: "The leaderboard is rendered"
+          then: "Both tools receive the same rank (dense ranking); the next rank skips appropriately"
+      mvp_rationale: "Core benchmark deliverable; the primary view practitioners use to compare tools by rank"
+
+    - id: "F-003"
+      name: "Tool Detail Page"
+      type: "CRUD / ANALYTICS"
+      touched_entities: ["Tool", "Vendor", "Score", "ScoringDimension", "CompositeScore", "EvidenceArtifact", "Badge", "VendorDisclosure", "BenchmarkCycle"]
+      effort: "L (3-5 days)"
+      dependencies: ["F-002"]
+      description: "Individual tool profile showing the complete evaluation breakdown for a specific tool. Displays dimension-level scores with evidence artifacts, composite score calculation breakdown, vendor disclosure status, badges earned, and historical performance across cycles."
+      user_story: "As a practitioner considering a specific tool, I want to see its complete benchmark evaluation with dimension-level scores and supporting evidence so I can make an informed purchasing decision."
+      acceptance_criteria:
+        - id: "AC-003-01"
+          given: "A tool has published scores for the latest cycle"
+          when: "A visitor navigates to the tool detail page"
+          then: "The page displays: tool name, vendor, composite score with rank, all dimension scores with is_applicable flags, confidence tag per dimension, vendor disclosure status (per BR-V01), and link to evidence artifacts"
+        - id: "AC-003-02"
+          given: "A tool has published scores across multiple cycles"
+          when: "The visitor views the historical section"
+          then: "A score trend is displayed showing composite score changes across cycles"
+        - id: "AC-003-03"
+          given: "A tool has a score with is_applicable = false for a dimension"
+          when: "The page renders"
+          then: "The dimension shows 'N/A' with a tooltip explaining the dimension is not applicable to this tool type, and the composite score calculation note reflects weight renormalization"
+      mvp_rationale: "Essential for practitioner decision-making; provides dimension-level detail behind each score"
+
+    - id: "F-005"
+      name: "Benchmark Cycle Lifecycle Management"
+      type: "WORKFLOW"
+      touched_entities: ["BenchmarkCycle", "CycleToolEnrollment", "MethodologyVersion", "PromptSet", "BenchmarkReport", "CycleAuditPackage"]
+      effort: "XL (5+ days)"
+      dependencies: []
+      description: "Admin workflow for managing the complete lifecycle of a monthly benchmark cycle through its state machine (Draft -> Planning -> Evaluation -> Synthesis -> Review -> VendorReview -> Publication -> Completed). Enforces business rules for state transitions, prevents concurrent active cycles, and locks methodology version at cycle start."
+      user_story: "As the benchmark operator, I want to manage each monthly benchmark cycle through a structured workflow so that every evaluation follows the same rigorous process and no steps are skipped."
+      acceptance_criteria:
+        - id: "AC-005-01"
+          given: "No non-terminal cycle exists"
+          when: "The admin creates a new benchmark cycle"
+          then: "A BenchmarkCycle record is created in Draft state with cycle_identifier, start_date, and methodology_version_id"
+        - id: "AC-005-02"
+          given: "A cycle is in Draft state with a valid methodology version locked"
+          when: "The admin transitions to Planning"
+          then: "The cycle moves to Planning; the methodology version becomes immutable for this cycle"
+        - id: "AC-005-03"
+          given: "A cycle is in Planning state with >= 5 enrolled tools per track (BR-T03)"
+          when: "The admin transitions to Evaluation"
+          then: "The cycle moves to Evaluation; enrolled tools are locked; no new enrollments or withdrawals"
+        - id: "AC-005-04"
+          given: "A non-terminal cycle already exists"
+          when: "The admin attempts to create another cycle"
+          then: "The action is rejected with error: only one active cycle is allowed at a time"
+        - id: "AC-005-05"
+          given: "A cycle is in any state"
+          when: "The admin attempts an invalid state transition (e.g., Draft directly to Evaluation)"
+          then: "The transition is rejected; the cycle remains in its current state"
+      mvp_rationale: "Foundational workflow; every other admin feature depends on the cycle state machine"
+
+    - id: "F-006"
+      name: "Tool Enrollment & Track Assignment"
+      type: "CRUD / WORKFLOW"
+      touched_entities: ["CycleToolEnrollment", "Tool", "ToolTrackMapping", "ToolSegmentMapping", "BenchmarkTrackDefinition", "MarketSegment"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-005", "F-010"]
+      description: "Admin interface to enroll tools in a benchmark cycle and assign them to tracks. Enforces minimum tool count per track (BR-T03: minimum 5), validates that tools have required metadata, and supports tool withdrawal with data preservation."
+      acceptance_criteria:
+        - id: "AC-006-01"
+          given: "A cycle is in Draft or Planning state and a tool exists with valid metadata"
+          when: "The admin enrolls the tool in the cycle"
+          then: "A CycleToolEnrollment record is created linking the tool to the cycle with its assigned track"
+        - id: "AC-006-02"
+          given: "A track has fewer than 5 enrolled tools"
+          when: "The admin attempts to transition the cycle to Evaluation"
+          then: "The transition is blocked with a message listing tracks below minimum enrollment"
+        - id: "AC-006-03"
+          given: "A tool is enrolled with completed evaluations"
+          when: "The admin withdraws the tool"
+          then: "The tool is marked as withdrawn (withdrawn_at, withdrawal_reason required); all evaluation data is preserved; the tool is excluded from rankings and badges"
+      mvp_rationale: "Required to populate each cycle with tools; enforces minimum tool counts"
+
+    - id: "F-007"
+      name: "AI Model Evaluation Execution"
+      type: "WORKFLOW / INTEGRATION"
+      touched_entities: ["ModelEvaluation", "AIModel", "PromptSet", "ScoringDimension", "EvidenceArtifact", "Tool", "BenchmarkCycle"]
+      effort: "XL (5+ days)"
+      dependencies: ["F-005", "F-008", "F-009"]
+      description: "Core evaluation engine that dispatches prompts to 6 AI models for each tool-dimension pair, captures responses, handles retries with exponential backoff, and stores raw evaluation results. Includes configurable retry logic, timeout handling, and graceful degradation when models are unavailable."
+      acceptance_criteria:
+        - id: "AC-007-01"
+          given: "A cycle is in Evaluation state with enrolled tools and active prompt sets"
+          when: "The admin initiates evaluation for a tool"
+          then: "The system dispatches the appropriate prompts to all 6 configured AI models, captures responses with metadata (model, timestamp, prompt version, response time), and stores ModelEvaluation records"
+        - id: "AC-007-02"
+          given: "An AI model API call fails"
+          when: "The system retries according to configured retry policy (exponential backoff)"
+          then: "The retry is logged; if all retries fail, the evaluation for that model is marked as failed; evaluation continues with remaining models"
+        - id: "AC-007-03"
+          given: "Evaluations are complete for a tool"
+          when: "Fewer than 4 of 6 models returned successful responses"
+          then: "The tool's evaluation is flagged as insufficient for synthesis (BR-S07, BR-S11); operator is alerted"
+      mvp_rationale: "Core engine; produces the raw multi-model evaluations that feed synthesis"
+
+    - id: "F-008"
+      name: "Prompt Set Management"
+      type: "CRUD"
+      touched_entities: ["PromptSet", "ScoringDimension", "MethodologyVersion"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-013"]
+      description: "Manages the prompt sets used for AI model evaluations. Each prompt set is linked to specific scoring dimensions and methodology versions. Supports 70/30 prompt rotation across cycles."
+      acceptance_criteria:
+        - id: "AC-008-01"
+          given: "A methodology version exists"
+          when: "The admin creates or imports a prompt set"
+          then: "A PromptSet record is created with prompts linked to scoring dimensions and tagged with a methodology version"
+        - id: "AC-008-02"
+          given: "A prompt set is linked to an active (non-Draft) cycle"
+          when: "The admin attempts to modify the prompt set"
+          then: "The modification is rejected; prompt sets are immutable once their linked methodology version is locked to an active cycle"
+      mvp_rationale: "Required to define what AI models evaluate; linked to methodology version"
+      mvp_simplification: "Load prompts from config/seed files; admin UI deferred to P1"
+
+    - id: "F-009"
+      name: "AI Model Configuration Management"
+      type: "CRUD"
+      touched_entities: ["AIModel", "BenchmarkCycle"]
+      effort: "S (<1 day)"
+      dependencies: []
+      description: "Manages AI model configurations including API keys, model selection, timeout settings, and cost tracking. Supports 6 distinct AI model providers."
+      acceptance_criteria:
+        - id: "AC-009-01"
+          given: "The admin needs to configure a new AI model"
+          when: "Model configuration is added"
+          then: "An AIModel record is created with provider, model identifier, API configuration, timeout settings, and active status"
+        - id: "AC-009-02"
+          given: "An AI model is linked to active evaluations"
+          when: "The admin attempts to deactivate the model"
+          then: "The model cannot be deactivated until all active evaluations using it are completed"
+      mvp_rationale: "Required to register and configure the 6 AI models used in evaluation"
+      mvp_simplification: "Configure via environment/config file; admin UI deferred to P1"
+
+    - id: "F-010"
+      name: "Vendor & Tool Administration"
+      type: "CRUD"
+      touched_entities: ["Vendor", "Tool", "ToolTrackMapping", "ToolSegmentMapping", "MarketSegment"]
+      effort: "M (1-3 days)"
+      dependencies: []
+      description: "Admin interface for managing vendor and tool records. Vendors represent companies; tools represent products. Tools are assigned to tracks and market segments. Supports vendor metadata, tool metadata, and the relationships between them."
+      acceptance_criteria:
+        - id: "AC-010-01"
+          given: "The admin is in the vendor management interface"
+          when: "A new vendor is created"
+          then: "A Vendor record is created with company_name, website_url, and contact information"
+        - id: "AC-010-02"
+          given: "A vendor exists"
+          when: "The admin creates a tool under that vendor"
+          then: "A Tool record is created linked to the vendor, with name, description, and assigned track(s) and market segment(s)"
+        - id: "AC-010-03"
+          given: "A tool has been evaluated in at least one published cycle"
+          when: "The admin attempts to delete the tool"
+          then: "Deletion is blocked; the tool can only be archived (soft delete) to preserve historical data integrity"
+      mvp_rationale: "Foundational data layer; required to register 27+ tools before any evaluation"
+
+    - id: "F-011"
+      name: "Score Synthesis Pipeline"
+      type: "WORKFLOW"
+      touched_entities: ["SynthesisRecord", "ModelEvaluation", "Score", "ScoringDimension", "Tool", "BenchmarkCycle"]
+      effort: "XL (5+ days)"
+      dependencies: ["F-007"]
+      description: "Transforms raw multi-model evaluations into publishable scores with confidence tags. Uses median-based aggregation across 6 model responses. Derives confidence from inter-model agreement. Normalizes scores to 0-10 scale. Must be deterministic. Produces SynthesisRecord and Score entities."
+      acceptance_criteria:
+        - id: "AC-011-01"
+          given: "A tool has >= 4 successful model evaluations for a dimension"
+          when: "Synthesis is executed"
+          then: "A Score record is created with value (0-10, one decimal), confidence_tag (High/Medium/Low/Insufficient Data), and linked SynthesisRecord with model agreement metrics"
+        - id: "AC-011-02"
+          given: "A tool has < 4 successful model evaluations for a dimension"
+          when: "Synthesis is attempted"
+          then: "The dimension score receives confidence_tag = 'Insufficient Data' and is flagged for operator attention"
+        - id: "AC-011-03"
+          given: "Synthesis produces identical input data on two separate runs"
+          when: "Both synthesis results are compared"
+          then: "The outputs are identical (deterministic synthesis requirement)"
+      mvp_rationale: "Transforms raw model evaluations into publishable scores with confidence tags"
+
+    - id: "F-012"
+      name: "Composite Score & Ranking Calculation"
+      type: "WORKFLOW"
+      touched_entities: ["CompositeScore", "Score", "ScoringDimension", "BenchmarkTrackDefinition", "Tool"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-011"]
+      description: "Calculates weighted composite scores from dimension scores and produces rankings within tracks. Handles N/A dimensions via weight renormalization. Uses dense ranking. Supports human review (approve/adjust/flag workflow) with audit trail."
+      acceptance_criteria:
+        - id: "AC-012-01"
+          given: "All dimension scores for a tool are in Reviewed or Published state"
+          when: "Composite score is calculated"
+          then: "A CompositeScore record is created with the weighted average of applicable dimensions, renormalized weights for N/A dimensions, rounded to one decimal place"
+        - id: "AC-012-02"
+          given: "Composite scores exist for all non-withdrawn tools in a track"
+          when: "Rankings are calculated"
+          then: "Tools are ranked by descending composite score using dense ranking; ties receive the same rank"
+        - id: "AC-012-03"
+          given: "An operator reviews a synthesized score"
+          when: "The operator approves, adjusts, or flags the score"
+          then: "The action is recorded in the audit trail with operator ID, timestamp, original value (if adjusted), new value, and reason"
+      mvp_rationale: "Produces leaderboard rankings from dimension scores"
+
+    - id: "F-013"
+      name: "Methodology Version Management"
+      type: "CRUD"
+      touched_entities: ["MethodologyVersion", "ScoringDimension", "BenchmarkTrackDefinition"]
+      effort: "M (1-3 days)"
+      dependencies: []
+      description: "Manages versioned methodology definitions including scoring dimensions, weights, track definitions, and evaluation criteria. Methodology versions are locked to benchmark cycles and become immutable once a cycle transitions from Draft."
+      acceptance_criteria:
+        - id: "AC-013-01"
+          given: "The admin creates a new methodology version"
+          when: "The version is saved"
+          then: "A MethodologyVersion record is created with version number, effective date, and linked scoring dimensions with weights"
+        - id: "AC-013-02"
+          given: "A methodology version is locked to an active cycle"
+          when: "The admin attempts to modify it"
+          then: "Modification is rejected; the methodology is immutable for the cycle duration"
+      mvp_rationale: "Required to define and lock the evaluation framework before any cycle runs"
+
+    - id: "F-014"
+      name: "Report Generation & Publication"
+      type: "WORKFLOW"
+      touched_entities: ["BenchmarkReport", "BenchmarkCycle", "CompositeScore", "Score"]
+      effort: "L (3-5 days)"
+      dependencies: ["F-012"]
+      description: "Generates monthly benchmark reports from approved scores. Reports include narrative sections, data tables, ranking summaries, and methodology references. Publication transitions the cycle to Publication state after vendor review window and audit package sealing."
+      acceptance_criteria:
+        - id: "AC-014-01"
+          given: "A cycle has all scores in Reviewed state and composite scores calculated"
+          when: "The admin generates a benchmark report"
+          then: "A BenchmarkReport is created with structured data (scores, rankings, badges) and narrative sections"
+        - id: "AC-014-02"
+          given: "A benchmark report is generated and the vendor review window has closed and the audit package is sealed"
+          when: "The admin publishes the cycle"
+          then: "The cycle transitions to Publication; scores transition to Published; public pages are updated"
+      mvp_rationale: "Produces the published benchmark report; primary monthly deliverable"
+
+    - id: "F-015"
+      name: "Vendor Review Workflow"
+      type: "WORKFLOW"
+      touched_entities: ["VendorReview", "VendorDisclosure", "BenchmarkCycle", "Vendor", "Tool"]
+      effort: "L (3-5 days)"
+      dependencies: ["F-005", "F-010"]
+      description: "Manages the pre-publication vendor review window. Vendors receive their tool's scores before publication for factual accuracy review. Enforces 5-business-day review window. Vendors can submit factual corrections with evidence. Operator reviews and accepts/rejects corrections."
+      acceptance_criteria:
+        - id: "AC-015-01"
+          given: "A cycle transitions to VendorReview state"
+          when: "The vendor review window opens"
+          then: "Each vendor is notified with access to only their own tool's scores (BR-V04); the review window timer starts (5 business days)"
+        - id: "AC-015-02"
+          given: "A vendor submits a factual correction during the review window"
+          when: "The operator reviews the correction"
+          then: "The operator can accept (triggering score adjustment), reject (with documented reason), or request more information"
+        - id: "AC-015-03"
+          given: "The 5-business-day vendor review window has elapsed"
+          when: "The timer expires"
+          then: "The vendor review window closes; outstanding corrections are marked as expired; the cycle can proceed to publication"
+      mvp_rationale: "Required for fairness commitment; vendors must have opportunity to review before publication"
+
+    - id: "F-016"
+      name: "Audit Package Generation"
+      type: "WORKFLOW"
+      touched_entities: ["CycleAuditPackage", "BenchmarkCycle", "MethodologyVersion"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-014"]
+      description: "Generates sealed audit packages containing complete evaluation data for transparency and reproducibility. Includes methodology documentation, raw evaluation data, synthesis records, score calculations, and a SHA-256 hash for tamper detection. Must be sealed before publication."
+      acceptance_criteria:
+        - id: "AC-016-01"
+          given: "A cycle is ready for audit package generation (all scores reviewed)"
+          when: "The admin generates the audit package"
+          then: "A CycleAuditPackage is created containing all evaluation data, synthesis records, methodology version, and a SHA-256 integrity hash"
+        - id: "AC-016-02"
+          given: "An audit package has been sealed"
+          when: "Any modification is attempted"
+          then: "The modification is rejected (BR-AUD02: sealed packages are immutable)"
+        - id: "AC-016-03"
+          given: "A sealed audit package exists"
+          when: "A visitor downloads the audit package"
+          then: "The downloaded package includes the SHA-256 hash for integrity verification"
+      mvp_rationale: "Required for transparency; sealed audit package prerequisite for publication"
+
+    - id: "F-017"
+      name: "Methodology Public Pages"
+      type: "CRUD / ANALYTICS"
+      touched_entities: ["MethodologyVersion", "ScoringDimension", "BenchmarkTrackDefinition"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-013"]
+      description: "Public-facing methodology documentation including evaluation criteria, scoring rubrics, prompt rotation policy, confidence definitions, and track descriptions. Must be live before first benchmark publication."
+      acceptance_criteria:
+        - id: "AC-017-01"
+          given: "A methodology version exists"
+          when: "A visitor navigates to the methodology page"
+          then: "The page displays: complete list of scoring dimensions with descriptions and weights, confidence tag definitions, composite score calculation explanation, and prompt rotation policy"
+        - id: "AC-017-02"
+          given: "The methodology page is loaded"
+          when: "A visitor views it"
+          then: "The page includes structured data (JSON-LD) for SEO indexing"
+      mvp_rationale: "Must be live before first benchmark; primary trust signal for new visitors"
+
+    - id: "F-018"
+      name: "Evidence Artifact Capture & Storage"
+      type: "CRUD / INTEGRATION"
+      touched_entities: ["EvidenceArtifact", "ModelEvaluation"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-007"]
+      description: "Manages capture, upload, and storage of evidence artifacts that substantiate evaluation scores. Every score with is_applicable = true must be backed by at least one evidence artifact (BR-S06). Supports automated screenshot capture and manual upload."
+      acceptance_criteria:
+        - id: "AC-018-01"
+          given: "A model evaluation has been completed for a tool-dimension pair"
+          when: "The admin uploads or the system captures a screenshot as evidence"
+          then: "An EvidenceArtifact record is created with artifact_type, file_url, description, and captured_at timestamp, linked to evaluation_id"
+        - id: "AC-018-02"
+          given: "A score has is_applicable = true and is transitioning from Draft to Reviewed"
+          when: "The system checks for evidence"
+          then: "Transition blocked if linked evaluations have zero evidence artifacts (BR-S06); error lists dimensions lacking evidence"
+        - id: "AC-018-03"
+          given: "A visitor views a tool detail page for a published score"
+          when: "The visitor looks for evidence"
+          then: "Evidence artifact links are accessible from the dimension detail section"
+      supported_types: ["PNG", "JPG", "PDF", "MP4"]
+      storage: "Cloud storage (S3 or R2)"
+      mvp_rationale: "Required for evidence-based claims; every applicable score must be backed by evidence"
+
+    - id: "F-024"
+      name: "Static Content & About Pages"
+      type: "CRUD"
+      touched_entities: ["ContentBlock"]
+      effort: "S (<1 day)"
+      dependencies: []
+      description: "Static pages including About page, Conflict of Interest disclosure, and other informational content. MDX-based for rich content with embedded components."
+      acceptance_criteria:
+        - id: "AC-024-01"
+          given: "The site is deployed"
+          when: "A visitor navigates to /about"
+          then: "The about page displays site description, operator bio, and mission statement"
+        - id: "AC-024-02"
+          given: "The site is deployed"
+          when: "A visitor navigates to /disclosure"
+          then: "The conflict of interest disclosure page displays the AI Search Mastery relationship, firewall policy, and structural transparency information"
+      mvp_rationale: "Must exist before launch; establishes identity, discloses conflicts"
+
+    - id: "F-025"
+      name: "Admin Authentication"
+      type: "WORKFLOW"
+      touched_entities: []
+      effort: "S (<1 day)"
+      dependencies: []
+      description: "Simple authentication gate for admin panel. Single admin user. Minimal: username/password or magic link with session management. No RBAC, no user management, no registration flow."
+      acceptance_criteria:
+        - id: "AC-025-01"
+          given: "An unauthenticated visitor navigates to any /admin/* route"
+          when: "The page loads"
+          then: "Visitor redirected to login page; no admin content exposed"
+        - id: "AC-025-02"
+          given: "The admin enters valid credentials"
+          when: "The login form is submitted"
+          then: "Admin is authenticated, session created, redirected to admin dashboard"
+        - id: "AC-025-03"
+          given: "An authenticated admin session idle > 24 hours"
+          when: "Admin attempts to access admin page"
+          then: "Session expired; redirected to login page"
+      technical_notes:
+        session_expiry: "24 hours"
+        lockout_threshold: "5 failed attempts"
+        password_hashing: "bcrypt"
+      mvp_rationale: "Security baseline; admin panel must not be publicly accessible"
+
+  p1_should_have:
+    - id: "F-004"
+      name: "Tool Comparison View"
+      type: "CRUD"
+      touched_entities: ["Tool", "Score", "ScoringDimension", "CompositeScore", "BenchmarkTrackDefinition"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-003"]
+      description: "Side-by-side tool comparison on up to 4 tools, filterable by metric category. High-value practitioner feature."
+      acceptance_criteria:
+        - id: "AC-004-01"
+          given: "A visitor is on the leaderboard or tool detail page"
+          when: "The visitor selects 2-4 tools for comparison"
+          then: "A comparison view displays all selected tools side-by-side with dimension scores, composite scores, and visual difference indicators"
+        - id: "AC-004-02"
+          given: "A comparison view is displayed"
+          when: "The visitor filters by a specific scoring category"
+          then: "Only dimensions within that category are shown in the comparison"
+      target_phase: "Phase 1 (April 2026)"
+
+    - id: "F-019"
+      name: "Badge Awarding & Display"
+      type: "WORKFLOW"
+      touched_entities: ["Badge", "CompositeScore", "BenchmarkCycle", "Tool"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-012"]
+      description: "Automated badge generation for top performers per category, embeddable badge assets, badge verification page."
+      acceptance_criteria:
+        - id: "AC-019-01"
+          given: "A cycle has been published with composite scores calculated"
+          when: "Badge awarding is triggered"
+          then: "Badges are awarded to qualifying tools based on predefined criteria (top performer per track, category leaders)"
+        - id: "AC-019-02"
+          given: "A tool has earned a badge"
+          when: "The tool detail page is viewed"
+          then: "The badge is prominently displayed with the cycle and category it was earned in"
+      target_phase: "Phase 1 (April 2026)"
+
+    - id: "F-020"
+      name: "Cycle Archive & Historical Access"
+      type: "CRUD / ANALYTICS"
+      touched_entities: ["BenchmarkCycle", "BenchmarkReport", "CompositeScore"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-014"]
+      description: "Archive of past benchmark cycles with full historical access to reports, leaderboards, and tool scores."
+      target_phase: "Phase 1 (May 2026)"
+
+    - id: "F-021"
+      name: "Vendor Directory & Profile Pages"
+      type: "CRUD"
+      touched_entities: ["Vendor", "Tool", "VendorDisclosure", "Badge"]
+      effort: "S (<1 day)"
+      dependencies: ["F-010"]
+      description: "Public-facing vendor directory and individual vendor profile pages. Lists all vendors with disclosure status prominently displayed (BR-V01)."
+      acceptance_criteria:
+        - id: "AC-021-01"
+          given: "Multiple vendors with published benchmark results exist"
+          when: "A visitor navigates to /vendors"
+          then: "Searchable list with company name, number of tools evaluated, disclosure status indicator (full/partial/none per BR-V01)"
+        - id: "AC-021-02"
+          given: "A visitor navigates to /vendors/:vendorId"
+          when: "The page loads"
+          then: "Displays vendor name, website, disclosure status, list of tools with latest scores and badges, disclosure history"
+      target_phase: "Phase 1 (May 2026)"
+
+  p2_nice_to_have:
+    - id: "F-022"
+      name: "Cross-Cycle Anomaly Detection"
+      type: "ANALYTICS"
+      touched_entities: ["Score", "SynthesisRecord", "BenchmarkCycle"]
+      effort: "M (1-3 days)"
+      dependencies: ["F-011"]
+      description: "Statistical anomaly detection across cycles, automated flagging with configurable sensitivity, anomaly audit reports."
+      mvp_simplification: "Basic threshold checks (score deviation from prior cycle, cross-model disagreement flag); full statistical detection deferred to P1"
+      target_phase: "Phase 1 (May 2026)"
+
+    - id: "F-023"
+      name: "Score Correction Workflow (Post-Publication)"
+      type: "WORKFLOW"
+      touched_entities: ["ScoreCorrection", "Score", "BenchmarkCycle"]
+      effort: "S (<1 day)"
+      dependencies: ["F-014"]
+      description: "Formal correction workflow for published scores. Creates ScoreCorrection record, preserves original value, requires documented reason, transitions Score to Corrected state. Corrections publicly visible."
+      acceptance_criteria:
+        - id: "AC-023-01"
+          given: "A score has state = Published and an error confirmed"
+          when: "Admin applies correction"
+          then: "ScoreCorrection record created with previous_value, new_value, reason, corrected_by, approved_by (must differ per BR-S02); Score.value updated, state -> Corrected"
+        - id: "AC-023-02"
+          given: "A score has been corrected"
+          when: "Visitor views tool detail page"
+          then: "Corrected score displays with 'Corrected' indicator; clickable for correction history"
+      target_phase: "Phase 2 (June 2026)"
+
+tech_stack:
+  frontend:
+    framework: "Next.js"
+    rendering: "SSR/SSG (public pages statically generated where possible)"
+    styling: "Tailwind CSS"
+    state_management: "Zustand"
+    content: "MDX for static pages"
+    structured_data: "JSON-LD"
+    flexibility: "preferred"
+    rationale: "SSR/SSG critical for SEO-heavy benchmark publication pages"
+
+  backend:
+    runtime: "Node.js"
+    framework: "Next.js API Routes"
+    api_style: "REST"
+    flexibility: "flexible"
+    rationale: "Unified Next.js deployment simplifies solo developer operations"
+
+  database:
+    primary: "PostgreSQL"
+    provider: "Neon (serverless PostgreSQL)"
+    orm: "Prisma"
+    cache: "None for v1"
+    entity_count: 23
+    flexibility: "preferred"
+    rationale: "23-entity relational model with complex joins requires PostgreSQL. Prisma for type-safe queries."
+
+  auth:
+    provider: "Custom"
+    methods: ["email-password"]
+    session_expiry: "24 hours"
+    lockout: "5 failed attempts"
+    password_hashing: "bcrypt"
+    flexibility: "flexible"
+    rationale: "Admin-only auth for single operator. No OAuth, no social login."
+
+  ai_models:
+    providers: ["OpenAI", "Anthropic", "Google", "Cohere", "Mistral", "Meta"]
+    target_count: 6
+    minimum_for_synthesis: 4
+    flexibility: "flexible"
+    rationale: "6 distinct AI models for multi-source evaluation synthesis"
+
+  email:
+    provider: "Resend"
+    alternative: "Buttondown for newsletter"
+    volume: "< 100 emails/month"
+    flexibility: "flexible"
+
+  infrastructure:
+    frontend_hosting: "Vercel"
+    backend_hosting: "Vercel"
+    database_hosting: "Neon"
+    file_storage: "S3 or R2 (cloud storage)"
+    ci_cd: "GitHub Actions"
+    environments: ["development", "staging", "production"]
+    preview_deployments: true
+    flexibility: "flexible"
+
+  monitoring:
+    error_tracking: "Sentry"
+    analytics: "Plausible Analytics (preferred over Google Analytics)"
+    logging: "Console (v1)"
+    analytics_rationale: "Privacy-respecting, no cookies, lightweight, matches solopreneur operational simplicity"
+
+  testing:
+    unit: "Vitest"
+    e2e: "Playwright"
+    coverage_target: 85
+    test_case_count: 60
+    rationale: "Vitest for fast unit/integration. Playwright for E2E and security. 85% coverage reflects 60-test-case suite."
+
+  quality:
+    linting:
+      eslint: true
+      prettier: true
+      typescript: "strict"
+    rationale: "Strict TypeScript catches data model mismatches. Essential for 23-entity system."
+
+  seo:
+    structured_data: "JSON-LD"
+    sitemap: "Dynamic (regenerated after each publication cycle)"
+    schemas: ["Product (tool pages)", "Article (benchmark reports)", "ItemList (leaderboard)"]
+
+data_model:
+  entity_count: 23
+  entities:
+    - name: "BenchmarkCycle"
+      description: "A single monthly evaluation cycle with lifecycle states"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "cycle_identifier", type: "String", constraints: "Unique, e.g., '2026-03'" }
+        - { name: "state", type: "Enum", constraints: "Draft|Planning|Evaluation|Synthesis|Review|VendorReview|Publication|Completed|Suspended|Cancelled" }
+        - { name: "start_date", type: "Date", constraints: "Required" }
+        - { name: "end_date", type: "Date", constraints: "Nullable" }
+        - { name: "methodology_version_id", type: "UUID", constraints: "FK -> MethodologyVersion" }
+        - { name: "published_at", type: "DateTime", constraints: "Nullable, set on Publication transition" }
+        - { name: "created_at", type: "DateTime", constraints: "Auto" }
+        - { name: "updated_at", type: "DateTime", constraints: "Auto" }
+      relationships:
+        - "has_many CycleToolEnrollment"
+        - "has_one MethodologyVersion"
+        - "has_one BenchmarkReport"
+        - "has_one CycleAuditPackage"
+
+    - name: "BenchmarkTrackDefinition"
+      description: "Defines an evaluation track (e.g., GEO Platform)"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "name", type: "String", constraints: "Required, Unique" }
+        - { name: "slug", type: "String", constraints: "Required, Unique, URL-safe" }
+        - { name: "description", type: "Text", constraints: "Required" }
+        - { name: "is_active", type: "Boolean", constraints: "Default true" }
+      relationships:
+        - "has_many ToolTrackMapping"
+        - "has_many ScoringDimension (via methodology)"
+
+    - name: "Tool"
+      description: "A software product being evaluated"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "name", type: "String", constraints: "Required" }
+        - { name: "slug", type: "String", constraints: "Required, Unique, URL-safe" }
+        - { name: "description", type: "Text", constraints: "Required" }
+        - { name: "website_url", type: "String", constraints: "Required" }
+        - { name: "logo_url", type: "String", constraints: "Nullable" }
+        - { name: "vendor_id", type: "UUID", constraints: "FK -> Vendor" }
+        - { name: "is_archived", type: "Boolean", constraints: "Default false (soft delete)" }
+        - { name: "created_at", type: "DateTime", constraints: "Auto" }
+        - { name: "updated_at", type: "DateTime", constraints: "Auto" }
+      relationships:
+        - "belongs_to Vendor"
+        - "has_many ToolTrackMapping"
+        - "has_many ToolSegmentMapping"
+        - "has_many CycleToolEnrollment"
+
+    - name: "Vendor"
+      description: "A company that produces one or more evaluated tools"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "company_name", type: "String", constraints: "Required" }
+        - { name: "website_url", type: "String", constraints: "Required" }
+        - { name: "contact_email", type: "String", constraints: "Nullable" }
+        - { name: "contact_name", type: "String", constraints: "Nullable" }
+        - { name: "logo_url", type: "String", constraints: "Nullable" }
+        - { name: "created_at", type: "DateTime", constraints: "Auto" }
+        - { name: "updated_at", type: "DateTime", constraints: "Auto" }
+      relationships:
+        - "has_many Tool"
+        - "has_many VendorDisclosure"
+
+    - name: "CycleToolEnrollment"
+      description: "Links a tool to a specific benchmark cycle"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "cycle_id", type: "UUID", constraints: "FK -> BenchmarkCycle" }
+        - { name: "tool_id", type: "UUID", constraints: "FK -> Tool" }
+        - { name: "track_id", type: "UUID", constraints: "FK -> BenchmarkTrackDefinition" }
+        - { name: "enrolled_at", type: "DateTime", constraints: "Auto" }
+        - { name: "withdrawn_at", type: "DateTime", constraints: "Nullable" }
+        - { name: "withdrawal_reason", type: "Text", constraints: "Required if withdrawn_at set" }
+      relationships:
+        - "belongs_to BenchmarkCycle"
+        - "belongs_to Tool"
+        - "belongs_to BenchmarkTrackDefinition"
+
+    - name: "ToolTrackMapping"
+      description: "Maps a tool to a benchmark track"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "tool_id", type: "UUID", constraints: "FK -> Tool" }
+        - { name: "track_id", type: "UUID", constraints: "FK -> BenchmarkTrackDefinition" }
+      relationships:
+        - "belongs_to Tool"
+        - "belongs_to BenchmarkTrackDefinition"
+
+    - name: "ToolSegmentMapping"
+      description: "Maps a tool to a market segment"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "tool_id", type: "UUID", constraints: "FK -> Tool" }
+        - { name: "segment_id", type: "UUID", constraints: "FK -> MarketSegment" }
+      relationships:
+        - "belongs_to Tool"
+        - "belongs_to MarketSegment"
+
+    - name: "MarketSegment"
+      description: "A market category for grouping tools (e.g., Enterprise SEO)"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "name", type: "String", constraints: "Required, Unique" }
+        - { name: "slug", type: "String", constraints: "Required, Unique" }
+        - { name: "description", type: "Text", constraints: "Nullable" }
+      relationships:
+        - "has_many ToolSegmentMapping"
+
+    - name: "MethodologyVersion"
+      description: "A versioned methodology definition locked to cycles"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "version_number", type: "String", constraints: "Required, Unique, semver" }
+        - { name: "effective_date", type: "Date", constraints: "Required" }
+        - { name: "description", type: "Text", constraints: "Required" }
+        - { name: "is_locked", type: "Boolean", constraints: "Default false; true when cycle transitions from Draft" }
+        - { name: "created_at", type: "DateTime", constraints: "Auto" }
+      relationships:
+        - "has_many ScoringDimension"
+        - "has_many PromptSet"
+        - "has_many BenchmarkCycle"
+
+    - name: "ScoringDimension"
+      description: "An individual evaluation criterion with weight"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "name", type: "String", constraints: "Required" }
+        - { name: "description", type: "Text", constraints: "Required" }
+        - { name: "weight", type: "Decimal", constraints: "Required, 0-1, all weights sum to 1.0 within a track" }
+        - { name: "category", type: "String", constraints: "Required (grouping for display)" }
+        - { name: "methodology_version_id", type: "UUID", constraints: "FK -> MethodologyVersion" }
+        - { name: "track_id", type: "UUID", constraints: "FK -> BenchmarkTrackDefinition" }
+      relationships:
+        - "belongs_to MethodologyVersion"
+        - "belongs_to BenchmarkTrackDefinition"
+        - "has_many Score"
+        - "has_many PromptSet"
+
+    - name: "AIModel"
+      description: "Configuration for an AI model used in evaluations"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "provider", type: "String", constraints: "Required (openai, anthropic, google, cohere, mistral, meta)" }
+        - { name: "model_identifier", type: "String", constraints: "Required" }
+        - { name: "api_config", type: "JSON", constraints: "Required (encrypted)" }
+        - { name: "timeout_ms", type: "Integer", constraints: "Required" }
+        - { name: "is_active", type: "Boolean", constraints: "Default true" }
+        - { name: "created_at", type: "DateTime", constraints: "Auto" }
+      relationships:
+        - "has_many ModelEvaluation"
+
+    - name: "PromptSet"
+      description: "A collection of prompts for evaluating tools against dimensions"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "name", type: "String", constraints: "Required" }
+        - { name: "methodology_version_id", type: "UUID", constraints: "FK -> MethodologyVersion" }
+        - { name: "dimension_id", type: "UUID", constraints: "FK -> ScoringDimension" }
+        - { name: "prompts", type: "JSON", constraints: "Required (array of prompt strings)" }
+        - { name: "is_rotating", type: "Boolean", constraints: "Default false (70% stable, 30% rotating)" }
+        - { name: "created_at", type: "DateTime", constraints: "Auto" }
+      relationships:
+        - "belongs_to MethodologyVersion"
+        - "belongs_to ScoringDimension"
+
+    - name: "ModelEvaluation"
+      description: "A single AI model's evaluation of a tool on a dimension"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "cycle_id", type: "UUID", constraints: "FK -> BenchmarkCycle" }
+        - { name: "tool_id", type: "UUID", constraints: "FK -> Tool" }
+        - { name: "dimension_id", type: "UUID", constraints: "FK -> ScoringDimension" }
+        - { name: "model_id", type: "UUID", constraints: "FK -> AIModel" }
+        - { name: "prompt_set_id", type: "UUID", constraints: "FK -> PromptSet" }
+        - { name: "raw_response", type: "Text", constraints: "Required" }
+        - { name: "parsed_score", type: "Decimal", constraints: "Nullable (0-10)" }
+        - { name: "response_time_ms", type: "Integer", constraints: "Required" }
+        - { name: "status", type: "Enum", constraints: "Success|Failed|Timeout" }
+        - { name: "retry_count", type: "Integer", constraints: "Default 0" }
+        - { name: "evaluated_at", type: "DateTime", constraints: "Required" }
+      relationships:
+        - "belongs_to BenchmarkCycle"
+        - "belongs_to Tool"
+        - "belongs_to ScoringDimension"
+        - "belongs_to AIModel"
+        - "belongs_to PromptSet"
+        - "has_many EvidenceArtifact"
+
+    - name: "SynthesisRecord"
+      description: "Record of the synthesis process aggregating model evaluations into a score"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "score_id", type: "UUID", constraints: "FK -> Score" }
+        - { name: "model_evaluations_used", type: "JSON", constraints: "Required (array of ModelEvaluation IDs)" }
+        - { name: "models_succeeded", type: "Integer", constraints: "Required" }
+        - { name: "models_failed", type: "Integer", constraints: "Required" }
+        - { name: "median_value", type: "Decimal", constraints: "Required" }
+        - { name: "agreement_metric", type: "Decimal", constraints: "Required (inter-model agreement)" }
+        - { name: "confidence_derivation", type: "JSON", constraints: "Required (explains confidence tag assignment)" }
+        - { name: "synthesized_at", type: "DateTime", constraints: "Required" }
+      relationships:
+        - "belongs_to Score"
+
+    - name: "Score"
+      description: "A synthesized score for a tool on a dimension within a cycle"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "cycle_id", type: "UUID", constraints: "FK -> BenchmarkCycle" }
+        - { name: "tool_id", type: "UUID", constraints: "FK -> Tool" }
+        - { name: "dimension_id", type: "UUID", constraints: "FK -> ScoringDimension" }
+        - { name: "value", type: "Decimal", constraints: "Required, 0-10, one decimal place" }
+        - { name: "confidence_tag", type: "Enum", constraints: "High|Medium|Low|Insufficient Data" }
+        - { name: "is_applicable", type: "Boolean", constraints: "Default true" }
+        - { name: "state", type: "Enum", constraints: "Draft|Reviewed|Published|Corrected" }
+        - { name: "reviewed_by", type: "String", constraints: "Nullable" }
+        - { name: "reviewed_at", type: "DateTime", constraints: "Nullable" }
+        - { name: "created_at", type: "DateTime", constraints: "Auto" }
+        - { name: "updated_at", type: "DateTime", constraints: "Auto" }
+      relationships:
+        - "belongs_to BenchmarkCycle"
+        - "belongs_to Tool"
+        - "belongs_to ScoringDimension"
+        - "has_one SynthesisRecord"
+        - "has_many ScoreCorrection"
+
+    - name: "ScoreCorrection"
+      description: "A post-publication correction to a score"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "score_id", type: "UUID", constraints: "FK -> Score" }
+        - { name: "previous_value", type: "Decimal", constraints: "Required" }
+        - { name: "new_value", type: "Decimal", constraints: "Required" }
+        - { name: "reason", type: "Text", constraints: "Required" }
+        - { name: "corrected_by", type: "String", constraints: "Required" }
+        - { name: "approved_by", type: "String", constraints: "Required (must differ from corrected_by per BR-S02)" }
+        - { name: "corrected_at", type: "DateTime", constraints: "Required" }
+      relationships:
+        - "belongs_to Score"
+
+    - name: "CompositeScore"
+      description: "Weighted composite of dimension scores for a tool in a cycle"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "cycle_id", type: "UUID", constraints: "FK -> BenchmarkCycle" }
+        - { name: "tool_id", type: "UUID", constraints: "FK -> Tool" }
+        - { name: "track_id", type: "UUID", constraints: "FK -> BenchmarkTrackDefinition" }
+        - { name: "value", type: "Decimal", constraints: "Required, 0-10, one decimal place" }
+        - { name: "rank", type: "Integer", constraints: "Required, dense ranking" }
+        - { name: "weight_breakdown", type: "JSON", constraints: "Required (dimension weights used, including renormalization)" }
+        - { name: "calculated_at", type: "DateTime", constraints: "Required" }
+      relationships:
+        - "belongs_to BenchmarkCycle"
+        - "belongs_to Tool"
+        - "belongs_to BenchmarkTrackDefinition"
+
+    - name: "Badge"
+      description: "Awards given to top-performing tools"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "cycle_id", type: "UUID", constraints: "FK -> BenchmarkCycle" }
+        - { name: "tool_id", type: "UUID", constraints: "FK -> Tool" }
+        - { name: "badge_type", type: "String", constraints: "Required" }
+        - { name: "category", type: "String", constraints: "Required" }
+        - { name: "awarded_at", type: "DateTime", constraints: "Required" }
+      relationships:
+        - "belongs_to BenchmarkCycle"
+        - "belongs_to Tool"
+
+    - name: "EvidenceArtifact"
+      description: "Evidence backing an evaluation score"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "evaluation_id", type: "UUID", constraints: "FK -> ModelEvaluation" }
+        - { name: "artifact_type", type: "Enum", constraints: "Screenshot|URL|Document|Video" }
+        - { name: "file_url", type: "String", constraints: "Required (cloud storage URL)" }
+        - { name: "description", type: "Text", constraints: "Nullable" }
+        - { name: "captured_at", type: "DateTime", constraints: "Required" }
+      relationships:
+        - "belongs_to ModelEvaluation"
+
+    - name: "BenchmarkReport"
+      description: "Published monthly benchmark report"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "cycle_id", type: "UUID", constraints: "FK -> BenchmarkCycle, Unique" }
+        - { name: "title", type: "String", constraints: "Required" }
+        - { name: "content", type: "JSON/Text", constraints: "Required (narrative + data sections)" }
+        - { name: "published_at", type: "DateTime", constraints: "Nullable" }
+        - { name: "created_at", type: "DateTime", constraints: "Auto" }
+      relationships:
+        - "belongs_to BenchmarkCycle"
+
+    - name: "CycleAuditPackage"
+      description: "Sealed audit package for transparency and reproducibility"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "cycle_id", type: "UUID", constraints: "FK -> BenchmarkCycle, Unique" }
+        - { name: "package_data", type: "JSON", constraints: "Required (all evaluation data)" }
+        - { name: "sha256_hash", type: "String", constraints: "Required, computed on seal" }
+        - { name: "sealed_at", type: "DateTime", constraints: "Required" }
+        - { name: "is_sealed", type: "Boolean", constraints: "Default false; true after sealing" }
+      relationships:
+        - "belongs_to BenchmarkCycle"
+
+    - name: "VendorDisclosure"
+      description: "Vendor-submitted disclosure for transparency"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "vendor_id", type: "UUID", constraints: "FK -> Vendor" }
+        - { name: "cycle_id", type: "UUID", constraints: "FK -> BenchmarkCycle" }
+        - { name: "status", type: "Enum", constraints: "Requested|Submitted|Reviewed|Incorporated|Expired" }
+        - { name: "submitted_at", type: "DateTime", constraints: "Nullable" }
+        - { name: "content", type: "JSON/Text", constraints: "Nullable" }
+        - { name: "created_at", type: "DateTime", constraints: "Auto" }
+      relationships:
+        - "belongs_to Vendor"
+        - "belongs_to BenchmarkCycle"
+
+    - name: "VendorReview"
+      description: "Pre-publication vendor review of their scores"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "cycle_id", type: "UUID", constraints: "FK -> BenchmarkCycle" }
+        - { name: "vendor_id", type: "UUID", constraints: "FK -> Vendor" }
+        - { name: "window_opens_at", type: "DateTime", constraints: "Required" }
+        - { name: "window_closes_at", type: "DateTime", constraints: "Required (5 business days)" }
+        - { name: "status", type: "Enum", constraints: "Pending|InReview|Completed|Expired" }
+        - { name: "corrections_submitted", type: "JSON", constraints: "Nullable" }
+      relationships:
+        - "belongs_to BenchmarkCycle"
+        - "belongs_to Vendor"
+
+    - name: "ContentBlock"
+      description: "Managed content blocks for static pages"
+      attributes:
+        - { name: "id", type: "UUID", constraints: "PK" }
+        - { name: "page_slug", type: "String", constraints: "Required" }
+        - { name: "content", type: "Text/MDX", constraints: "Required" }
+        - { name: "updated_at", type: "DateTime", constraints: "Auto" }
+
+state_machines:
+  benchmark_cycle:
+    entity: "BenchmarkCycle"
+    states:
+      - name: "Draft"
+        description: "Initial state; cycle configuration in progress"
+      - name: "Planning"
+        description: "Methodology locked; tools being enrolled"
+      - name: "Evaluation"
+        description: "AI model evaluations in progress"
+      - name: "Synthesis"
+        description: "Raw evaluations being synthesized into scores"
+      - name: "Review"
+        description: "Operator reviewing synthesized scores"
+      - name: "VendorReview"
+        description: "Pre-publication vendor review window (5 business days)"
+      - name: "Publication"
+        description: "Benchmark being published to public site"
+      - name: "Completed"
+        description: "Terminal state; cycle fully published"
+      - name: "Suspended"
+        description: "Cycle paused (non-terminal)"
+      - name: "Cancelled"
+        description: "Terminal state; cycle abandoned"
+    state_count: 10
+    transition_count: 14
+    transitions:
+      - { from: "Draft", to: "Planning", trigger: "Admin locks methodology and begins enrollment", guard: "Valid methodology version exists" }
+      - { from: "Planning", to: "Evaluation", trigger: "Admin initiates evaluation", guard: ">= 5 enrolled tools per track (BR-T03)" }
+      - { from: "Evaluation", to: "Synthesis", trigger: "All scheduled evaluations complete or timed out", guard: "Sufficient model responses per tool" }
+      - { from: "Synthesis", to: "Review", trigger: "Synthesis pipeline completes", guard: "All dimension scores synthesized" }
+      - { from: "Review", to: "VendorReview", trigger: "Operator approves all scores", guard: "All scores in Reviewed state" }
+      - { from: "VendorReview", to: "Publication", trigger: "Vendor review window closes", guard: "5 business days elapsed; audit package sealed (BR-AUD02)" }
+      - { from: "Publication", to: "Completed", trigger: "Publication confirmed live", guard: "All public pages updated" }
+      - { from: "Draft", to: "Cancelled", trigger: "Admin cancels", guard: "None" }
+      - { from: "Planning", to: "Cancelled", trigger: "Admin cancels", guard: "None" }
+      - { from: "Draft", to: "Suspended", trigger: "Admin suspends", guard: "None" }
+      - { from: "Planning", to: "Suspended", trigger: "Admin suspends", guard: "None" }
+      - { from: "Evaluation", to: "Suspended", trigger: "Admin suspends", guard: "None" }
+      - { from: "Suspended", to: "Draft", trigger: "Admin resumes", guard: "None" }
+      - { from: "Suspended", to: "Cancelled", trigger: "Admin cancels suspended cycle", guard: "None" }
+    invalid_transitions:
+      - "Draft directly to Evaluation (must go through Planning)"
+      - "Completed to any state (terminal)"
+      - "Cancelled to any state (terminal)"
+      - "Publication back to Review (no rollback after vendor review)"
+    side_effects:
+      Draft_to_Planning: "Methodology version becomes immutable for this cycle"
+      Planning_to_Evaluation: "Enrolled tools locked; no new enrollments"
+      VendorReview_to_Publication: "Scores transition to Published state"
+      Publication_to_Completed: "Public pages updated; composite scores finalized"
+
+  score:
+    entity: "Score"
+    states:
+      - name: "Draft"
+        description: "Score synthesized but not yet reviewed"
+      - name: "Reviewed"
+        description: "Operator has reviewed and approved the score"
+      - name: "Published"
+        description: "Score is publicly visible"
+      - name: "Corrected"
+        description: "Published score has been corrected post-publication"
+    state_count: 4
+    transition_count: 5
+    transitions:
+      - { from: "Draft", to: "Reviewed", trigger: "Operator approves score", guard: "Evidence artifacts exist for is_applicable scores (BR-S06)" }
+      - { from: "Draft", to: "Draft", trigger: "Operator requests re-synthesis", guard: "None" }
+      - { from: "Reviewed", to: "Published", trigger: "Cycle transitions to Publication", guard: "Cycle audit package sealed" }
+      - { from: "Published", to: "Corrected", trigger: "Admin applies correction", guard: "ScoreCorrection record with different corrected_by and approved_by (BR-S02)" }
+      - { from: "Corrected", to: "Corrected", trigger: "Additional correction applied", guard: "New ScoreCorrection record" }
+    side_effects:
+      Draft_to_Reviewed: "Audit trail records reviewer, timestamp, any adjustments"
+      Published_to_Corrected: "Composite scores recalculated; rankings updated; public indicator shown"
+
+business_rules:
+  scoring_rules:
+    - id: "BR-S01"
+      category: "Scoring"
+      statement: "All published scores must use a 0-10 scale with one decimal place precision"
+      enforcement: "Database constraint and application validation"
+      exceptions: "None"
+
+    - id: "BR-S02"
+      category: "Scoring"
+      statement: "Score corrections require corrected_by and approved_by to differ (dual approval)"
+      enforcement: "Application validation on ScoreCorrection creation"
+      exceptions: "Solopreneur clause: operator uses two distinct identifiers (e.g., 'operator' and 'editor') to maintain audit trail convention"
+
+    - id: "BR-S03"
+      category: "Scoring"
+      statement: "Scores with is_applicable = false are excluded from composite score calculation"
+      enforcement: "Composite score calculation logic"
+      exceptions: "None"
+
+    - id: "BR-S04"
+      category: "Scoring"
+      statement: "Composite scores use weighted average with renormalized weights when dimensions are N/A"
+      enforcement: "CompositeScore calculation function"
+      exceptions: "None"
+
+    - id: "BR-S05"
+      category: "Scoring"
+      statement: "Composite scores are rounded to one decimal place"
+      enforcement: "Calculation function"
+      exceptions: "None; rounding method: round half up (standard mathematical rounding)"
+
+    - id: "BR-S06"
+      category: "Scoring"
+      statement: "Every score with is_applicable = true must be backed by at least one evidence artifact"
+      enforcement: "Transition guard on Score Draft -> Reviewed"
+      exceptions: "None"
+
+    - id: "BR-S07"
+      category: "Scoring"
+      statement: "Synthesis requires a minimum of 4 successful model evaluations out of 6"
+      enforcement: "Synthesis pipeline validation"
+      exceptions: "If fewer than 4 models succeed, confidence_tag = 'Insufficient Data'"
+
+    - id: "BR-S08"
+      category: "Scoring"
+      statement: "Rankings use dense ranking (tied scores receive the same rank)"
+      enforcement: "Ranking calculation function"
+      exceptions: "None"
+
+    - id: "BR-S09"
+      category: "Scoring"
+      statement: "Score synthesis uses median-based aggregation from model evaluations"
+      enforcement: "Synthesis pipeline"
+      exceptions: "None"
+
+    - id: "BR-S10"
+      category: "Scoring"
+      statement: "Confidence tags are derived from inter-model agreement metrics"
+      enforcement: "Synthesis pipeline"
+      exceptions: "None"
+
+    - id: "BR-S11"
+      category: "Scoring"
+      statement: "Model failures must not block synthesis if >= 4 models succeed"
+      enforcement: "Synthesis pipeline; graceful degradation"
+      exceptions: "None"
+
+    - id: "BR-S12"
+      category: "Scoring"
+      statement: "Synthesis must be deterministic (identical inputs produce identical outputs)"
+      enforcement: "Synthesis function design; regression testing (T-053)"
+      exceptions: "None"
+
+    - id: "BR-S13"
+      category: "Scoring"
+      statement: "AI Search Mastery products scored with identical methodology; never omitted or footnoted differently"
+      enforcement: "Operational policy; audit package verification"
+      exceptions: "None"
+
+    - id: "BR-S14"
+      category: "Scoring"
+      statement: "No automated publishing without operator approval (human review gate)"
+      enforcement: "Score state machine; Review state is mandatory"
+      exceptions: "None"
+
+    - id: "BR-S15"
+      category: "Scoring"
+      statement: "Score correction cascades must trigger automatic composite recalculation and ranking update"
+      enforcement: "Application logic on ScoreCorrection creation"
+      exceptions: "None"
+
+  vendor_rules:
+    - id: "BR-V01"
+      category: "Vendor"
+      statement: "Every vendor's disclosure status must be prominently displayed wherever their tool's scores appear (full/partial/none)"
+      enforcement: "UI rendering; never omit disclosure status"
+      exceptions: "None"
+
+    - id: "BR-V02"
+      category: "Vendor"
+      statement: "Vendor pre-publication review window is exactly 5 business days"
+      enforcement: "Timer on VendorReview state"
+      exceptions: "None"
+
+    - id: "BR-V03"
+      category: "Vendor"
+      statement: "Vendor corrections are limited to factual accuracy claims with supporting evidence"
+      enforcement: "Correction submission form; operator review"
+      exceptions: "None"
+
+    - id: "BR-V04"
+      category: "Vendor"
+      statement: "Vendor-facing outputs contain only that vendor's own tool data (strict data isolation)"
+      enforcement: "API/UI access controls; IDOR prevention"
+      exceptions: "None"
+
+    - id: "BR-V05"
+      category: "Vendor"
+      statement: "Benchmark functions without vendor participation; scores based on independent evaluation"
+      enforcement: "Architecture design; no vendor-supplied data in scoring"
+      exceptions: "None"
+
+  track_rules:
+    - id: "BR-T01"
+      category: "Track"
+      statement: "Only one active (non-terminal) benchmark cycle at a time"
+      enforcement: "Application validation on cycle creation"
+      exceptions: "None"
+
+    - id: "BR-T02"
+      category: "Track"
+      statement: "Withdrawn tools are excluded from composite score rankings and badges"
+      enforcement: "Ranking calculation; badge awarding"
+      exceptions: "Evaluation data is preserved for audit"
+
+    - id: "BR-T03"
+      category: "Track"
+      statement: "Minimum 5 enrolled tools per track to proceed from Planning to Evaluation"
+      enforcement: "State transition guard"
+      exceptions: "Track deferred if below minimum"
+
+  synthesis_rules:
+    - id: "BR-SYN01"
+      category: "Synthesis"
+      statement: "Prompt sets follow 70/30 rotation: 70% stable prompts, 30% rotating each cycle"
+      enforcement: "Prompt management logic"
+      exceptions: "Rotation cadence: replace 30% sequentially each cycle"
+
+    - id: "BR-SYN02"
+      category: "Synthesis"
+      statement: "Methodology version is locked when cycle transitions from Draft to Planning"
+      enforcement: "State transition side effect; immutability constraint"
+      exceptions: "None"
+
+  audit_rules:
+    - id: "BR-AUD01"
+      category: "Audit"
+      statement: "Audit package must be sealed before publication"
+      enforcement: "State transition guard on VendorReview -> Publication"
+      exceptions: "None"
+
+    - id: "BR-AUD02"
+      category: "Audit"
+      statement: "Sealed audit packages cannot be modified (immutable)"
+      enforcement: "Application-level write protection; SHA-256 tamper detection"
+      exceptions: "None"
+
+success_metrics:
+  north_star:
+    metric: "Monthly Benchmark Citation Count"
+    definition: "Number of times AISearchArena benchmark data, scores, or methodology is referenced by external sources in a given month"
+    measurement:
+      - "Google Alerts for 'AISearchArena' and benchmark-specific phrases"
+      - "Backlink monitoring via Google Search Console"
+      - "Social media mention monitoring (LinkedIn, X/Twitter, Reddit)"
+      - "Vendor website monitoring for badge/score references (quarterly)"
+    rationale: "Citations measure trust. A benchmark is trusted when others stake their credibility on referencing it."
+
+  kpis:
+    - id: 1
+      metric: "Monthly unique visitors"
+      baseline: 0
+      target_30_day: 500
+      target_90_day: 2000
+      target_180_day: 5000
+      tool: "Plausible Analytics or Google Analytics"
+
+    - id: 2
+      metric: "Benchmark report page views"
+      baseline: 0
+      target_30_day: 200
+      target_90_day: 800
+      target_180_day: 2000
+      tool: "Plausible Analytics"
+
+    - id: 3
+      metric: "External citations"
+      baseline: 0
+      target_30_day: 1
+      target_90_day: 5
+      target_180_day: 15
+      tool: "Google Alerts + Search Console"
+
+    - id: 4
+      metric: "Backlink count (unique domains)"
+      baseline: 0
+      target_30_day: 5
+      target_90_day: 25
+      target_180_day: 75
+      tool: "Google Search Console"
+
+    - id: 5
+      metric: "Vendor engagement rate"
+      definition: "% of evaluated vendors who submit disclosures or respond to pre-pub notification"
+      baseline: "0%"
+      target_30_day: "15%"
+      target_90_day: "30%"
+      target_180_day: "50%"
+      tool: "Internal tracking (admin dashboard)"
+
+    - id: 6
+      metric: "Methodology page views"
+      baseline: 0
+      target_30_day: 100
+      target_90_day: 400
+      target_180_day: 1000
+      tool: "Plausible Analytics"
+
+    - id: 7
+      metric: "Audit package downloads"
+      baseline: 0
+      target_30_day: 10
+      target_90_day: 30
+      target_180_day: 75
+      tool: "Server-side download counter"
+
+    - id: 8
+      metric: "Email subscribers"
+      baseline: 0
+      target_30_day: 50
+      target_90_day: 250
+      target_180_day: 1000
+      tool: "Email service (Buttondown, ConvertKit, or similar)"
+
+    - id: 9
+      metric: "Return visitor rate"
+      baseline: "0%"
+      target_30_day: "10%"
+      target_90_day: "20%"
+      target_180_day: "30%"
+      tool: "Plausible Analytics"
+
+    - id: 10
+      metric: "Search impressions for benchmark terms"
+      baseline: 0
+      target_30_day: 100
+      target_90_day: 1000
+      target_180_day: 5000
+      tool: "Google Search Console"
+
+  credibility_metrics:
+    - metric: "Vendor participation rate"
+      definition: "% of evaluated vendors who actively engage"
+      target: "30% by month 6; 50% by month 12"
+      measurement: "Admin dashboard tracking per cycle"
+
+    - metric: "Vendor-initiated inclusion requests"
+      definition: "Number of vendors requesting to be added"
+      target: "0 in months 1-3; 3+ by month 6; 5+ by month 12"
+      measurement: "Inbound email/form tracking"
+
+    - metric: "Methodology page depth"
+      definition: "Average time on methodology page"
+      target: ">2 minutes average"
+      measurement: "Plausible Analytics"
+
+    - metric: "Audit package download-to-visitor ratio"
+      definition: "Downloads / unique visitors per cycle"
+      target: ">2% of monthly visitors"
+      measurement: "Server logs + analytics"
+
+    - metric: "Score correction rate"
+      definition: "% of published scores requiring post-publication correction per cycle"
+      target: "<5%"
+      measurement: "Internal tracking per cycle"
+      alert_threshold: "If >5% in any cycle, trigger methodology review"
+
+    - metric: "Confidence tag distribution"
+      definition: "Distribution of High/Medium/Low/Insufficient Data across all scores"
+      target: ">50% High confidence; <10% Insufficient Data"
+      measurement: "Automated from score database"
+
+    - metric: "Disclosure response rate"
+      definition: "% of vendors responding to disclosure template within pre-publication window"
+      target: "20% by month 3; 40% by month 12"
+      measurement: "Admin tracking"
+
+    - metric: "External methodology citations"
+      definition: "External publications referencing methodology specifically"
+      target: "1+ by month 6; 5+ by month 12"
+      measurement: "Google Alerts + manual monitoring"
+
+  content_engagement:
+    benchmark_reports:
+      - { metric: "Page views", target_per_cycle: "500+ by cycle 3", tool: "Plausible" }
+      - { metric: "Average read time", target: ">3 minutes", tool: "Plausible" }
+      - { metric: "Scroll depth", target: ">40% reaching bottom", tool: "Plausible" }
+      - { metric: "Social shares", target: "10+ by cycle 3", tool: "Manual + UTM" }
+    leaderboard:
+      - { metric: "Page views", target_monthly: "300+ by month 3", tool: "Plausible" }
+      - { metric: "Filter usage rate", target: ">20%", tool: "Plausible custom events" }
+      - { metric: "Click-through to tool detail", target: ">30%", tool: "Event tracking" }
+    tool_detail_pages:
+      - { metric: "Page views", target_monthly_aggregate: "400+ by month 3", tool: "Plausible" }
+      - { metric: "Vendor disclosure view rate", target: ">10%", tool: "Event tracking" }
+    methodology_disclosure:
+      - { metric: "Methodology page views", target_monthly: "200+ by month 3" }
+      - { metric: "Disclosure page views", target_monthly: "100+ by month 3" }
+      - { metric: "Combined credibility page views", target: ">10% of total site traffic" }
+    seo:
+      - { metric: "Indexed pages", target: "All public pages indexed within 30 days" }
+      - { metric: "Ranking keywords (top 100)", target: "50+ by month 3; 200+ by month 6" }
+      - { metric: "Top 10 rankings", target: "5+ by month 3; 20+ by month 6" }
+      - { metric: "Click-through rate", target: ">3%" }
+
+  operational_metrics:
+    - { metric: "Cycle completion rate", target: "100% (non-negotiable)", alert: "If <100%, critical incident" }
+    - { metric: "Days from cycle start to publication", target: "<21 days", alert: "If >25 days, conduct retrospective" }
+    - { metric: "Evaluation pipeline success rate", target: ">90%" }
+    - { metric: "API call failure rate", target: "<5% per cycle", alert: "If >10%, review provider reliability" }
+    - { metric: "Average API cost per cycle", target: "Track and trend; no target until 3 cycles" }
+    - { metric: "Human review throughput", target: "Track for capacity planning" }
+    - { metric: "Synthesis-to-approval time", target: "<30 minutes per tool" }
+    - { metric: "Audit package generation success", target: "100%" }
+    - { metric: "Pre-publication notification delivery", target: ">95%" }
+    - { metric: "Publication checklist completion", target: "100%" }
+
+  business_chassis:
+    active_multipliers:
+      - { component: "Prospects", proxy: "Monthly unique visitors", target_6mo: "5000/month" }
+      - { component: "Prospects", proxy: "Email subscriber list size", target_6mo: "1000 subscribers" }
+      - { component: "Prospects", proxy: "Brand mention volume", target_6mo: "20+ mentions/month" }
+    pre_revenue_multipliers:
+      - { component: "Lead Conversion", status: "Not applicable", activation: "Revenue model selected", proxy: "Email open rate >40%" }
+      - { component: "Client Conversion", status: "Not applicable", activation: "Revenue product launched", proxy: "Audit package download rate >2%" }
+      - { component: "Average Spend", status: "Not applicable", activation: "Pricing established", proxy: "3+ pages per session" }
+      - { component: "Transaction Frequency", status: "Not applicable", activation: "Recurring revenue exists", proxy: "Return visitor rate >30%" }
+      - { component: "Margin", status: "Not applicable", activation: "Revenue and costs established", proxy: "API cost per cycle" }
+    revenue_readiness_trigger: "External citations >10/month AND email list >500 AND vendor participation >40%"
+    first_revenue_experiment: "Premium analysis reports (deeper methodology commentary, segment-specific insights)"
+
+critical_user_journeys:
+  - name: "First-Time Practitioner Discovery"
+    steps:
+      - "Practitioner searches for GEO/AEO tool comparison"
+      - "Lands on homepage or leaderboard via organic search"
+      - "Views top-ranked tools on leaderboard"
+      - "Clicks through to tool detail page for preferred tool"
+      - "Reviews dimension-level scores and evidence"
+      - "Checks methodology page for evaluation credibility"
+      - "Checks disclosure page for independence verification"
+      - "Downloads audit package for deep verification (optional)"
+      - "Makes purchasing decision based on benchmark data"
+
+  - name: "Monthly Benchmark Production (Operator)"
+    steps:
+      - "Create new benchmark cycle (Draft)"
+      - "Lock methodology version, transition to Planning"
+      - "Enroll tools (minimum 5 per track), assign to tracks"
+      - "Transition to Evaluation; system dispatches prompts to 6 AI models"
+      - "Monitor evaluation progress; handle API failures"
+      - "Transition to Synthesis; system aggregates responses"
+      - "Review synthesized scores in Review state"
+      - "Approve/adjust scores with audit trail"
+      - "Transition to VendorReview; notify vendors (5 business day window)"
+      - "Process vendor corrections (accept/reject)"
+      - "Seal audit package (SHA-256 hash)"
+      - "Publish benchmark; scores transition to Published"
+      - "Verify public pages updated; cycle -> Completed"
+
+  - name: "Vendor Pre-Publication Review"
+    steps:
+      - "Vendor receives notification with link to review portal"
+      - "Vendor accesses only their own tool's scores (BR-V04)"
+      - "Vendor reviews dimension scores and evidence"
+      - "Vendor submits factual corrections with evidence (optional)"
+      - "Operator reviews corrections within the window"
+      - "Operator accepts, rejects, or requests more information"
+      - "5-business-day window closes; unresolved corrections expire"
+
+  - name: "Score Correction Post-Publication"
+    steps:
+      - "Error discovered in published score"
+      - "Admin initiates correction with reason and new value"
+      - "System validates dual-approval (BR-S02)"
+      - "ScoreCorrection record created preserving original value"
+      - "Score state transitions to Corrected"
+      - "Composite scores automatically recalculated"
+      - "Rankings updated"
+      - "Public 'Corrected' indicator shown on tool detail page"
+      - "Correction history accessible to all visitors"
+
+  - name: "Tool Comparison Decision"
+    steps:
+      - "Practitioner views leaderboard for their market segment"
+      - "Selects 2-4 tools for comparison"
+      - "Reviews side-by-side dimension scores"
+      - "Filters by relevant scoring categories"
+      - "Identifies strongest tool for their specific needs"
+
+edge_cases:
+  scoring:
+    - scenario: "All 6 AI models fail for a tool-dimension pair"
+      expected: "Score receives confidence_tag = 'Insufficient Data'; flagged for operator attention"
+    - scenario: "Exactly 4 of 6 models succeed"
+      expected: "Synthesis proceeds with 4 models; confidence_tag adjusted based on agreement"
+    - scenario: "Two tools have identical composite scores"
+      expected: "Dense ranking; both receive the same rank"
+    - scenario: "All dimensions are N/A for a tool"
+      expected: "No composite score can be calculated; tool flagged for review"
+    - scenario: "Rounding at exact .X5 boundary (e.g., 7.25)"
+      expected: "Round half up (standard mathematical rounding, decided in non-blocking item #1)"
+    - scenario: "Score value exactly 0 or exactly 10"
+      expected: "Valid scores; no special handling"
+    - scenario: "Composite score with only 1 applicable dimension"
+      expected: "Composite equals that single dimension score (weight = 1.0 after renormalization)"
+
+  cycle_management:
+    - scenario: "Admin attempts to create cycle when another non-terminal cycle exists"
+      expected: "Rejected; only one active cycle at a time (BR-T01)"
+    - scenario: "Track has fewer than 5 enrolled tools when transitioning to Evaluation"
+      expected: "Transition blocked; track deferred (BR-T03)"
+    - scenario: "Tool withdrawn during VendorReview"
+      expected: "Vendor review data preserved; tool excluded from rankings"
+    - scenario: "Tool withdrawal drops track below 5 tools"
+      expected: "Track deferred (BR-T03)"
+    - scenario: "Admin attempts to transition Draft directly to Evaluation"
+      expected: "Invalid transition rejected; must go through Planning"
+    - scenario: "Race condition: two simultaneous cycle creation attempts"
+      expected: "Only one succeeds; other rejected (T-050)"
+
+  vendor:
+    - scenario: "Vendor submits correction after 5-business-day window closes"
+      expected: "Correction rejected; window expired"
+    - scenario: "Vendor attempts to access another vendor's scores"
+      expected: "IDOR prevented; 403 Forbidden (BR-V04)"
+    - scenario: "No vendors respond to disclosure requests"
+      expected: "Benchmark proceeds; disclosure status shown as 'None' (BR-V01)"
+    - scenario: "Vendor review window starts on Friday"
+      expected: "5 business days calculated excluding weekends"
+
+  audit:
+    - scenario: "Admin attempts to modify sealed audit package"
+      expected: "Modification rejected (BR-AUD02)"
+    - scenario: "Audit package SHA-256 hash does not match content on download"
+      expected: "Tamper alert displayed to user"
+
+  security:
+    - scenario: "Unauthenticated user navigates to /admin/* route"
+      expected: "Redirected to login; no admin content exposed"
+    - scenario: "Admin session idle >24 hours"
+      expected: "Session expired; redirect to login"
+    - scenario: "5 failed login attempts"
+      expected: "Account locked; brute-force protection"
+    - scenario: "CSRF token missing on state-changing admin request"
+      expected: "HTTP 403 Forbidden; no state change"
+    - scenario: "Reusing expired session CSRF token"
+      expected: "HTTP 403 Forbidden"
+
+integration_tests:
+  total_count: 60
+  test_ids: "T-001 through T-060"
+  risk_tiers:
+    tier_1_credibility_critical:
+      description: "Errors that would destroy benchmark trust and require public retraction"
+      testing_approach: "100% automated, regression suite"
+      examples: ["Score synthesis", "Composite calculation", "State machine transitions", "Audit immutability", "Data isolation"]
+    tier_2_operational:
+      description: "Errors that would block or corrupt the monthly publication workflow"
+      testing_approach: "Automated integration tests"
+      examples: ["API retry logic", "Evaluation pipeline", "Enrollment constraints", "Methodology lock"]
+    tier_3_user_experience:
+      description: "Errors that degrade the practitioner or admin experience"
+      testing_approach: "Hybrid (automated for data, manual for visual)"
+      examples: ["Leaderboard rendering", "Tool detail pages", "Filtering", "Sorting"]
+    tier_4_cosmetic:
+      description: "Visual or presentational issues"
+      testing_approach: "Manual verification before each publication"
+      examples: ["Static pages", "Badge display", "Print layouts", "Mobile responsiveness"]
+
+  test_cases:
+    # State Machine Tests (T-001 to T-010)
+    - id: "T-001"
+      name: "Cycle Happy Path"
+      features: ["F-005"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Full lifecycle Draft -> Planning -> Evaluation -> Synthesis -> Review -> VendorReview -> Publication -> Completed"
+
+    - id: "T-002"
+      name: "Invalid State Transitions Rejected"
+      features: ["F-005"]
+      type: "Unit"
+      priority: "Critical"
+      description: "All 56 invalid state transitions are rejected"
+      test_data: "Matrix of 10 states x 10 targets = 100 combinations; 14 valid, 86 invalid"
+
+    - id: "T-003"
+      name: "Concurrent Cycle Prevention"
+      features: ["F-005"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Cannot create cycle when non-terminal cycle exists"
+
+    - id: "T-004"
+      name: "Methodology Version Locks on Planning Transition"
+      features: ["F-005", "F-013"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Methodology becomes immutable when cycle leaves Draft"
+
+    - id: "T-005"
+      name: "Suspension and Resumption"
+      features: ["F-005"]
+      type: "Integration"
+      priority: "High"
+      description: "Cycle can be suspended from Draft/Planning/Evaluation and resumed"
+
+    - id: "T-006"
+      name: "Cancellation from Any Non-Terminal State"
+      features: ["F-005"]
+      type: "Integration"
+      priority: "High"
+      description: "Cycle can be cancelled from Draft, Planning, or Suspended"
+
+    - id: "T-007"
+      name: "Terminal States Block Further Transitions"
+      features: ["F-005"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Completed and Cancelled states reject all transitions"
+
+    - id: "T-008"
+      name: "Score State Machine Happy Path"
+      features: ["F-011", "F-012"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Score lifecycle Draft -> Reviewed -> Published"
+
+    - id: "T-009"
+      name: "Score Correction State Transition"
+      features: ["F-023"]
+      type: "Integration"
+      priority: "High"
+      description: "Published -> Corrected with dual approval"
+
+    - id: "T-010"
+      name: "Multiple Score Corrections Maintain History"
+      features: ["F-023"]
+      type: "Integration"
+      priority: "High"
+      description: "Corrected -> Corrected preserves full correction chain"
+
+    # Evaluation Pipeline Tests (T-011 to T-018)
+    - id: "T-011"
+      name: "Evaluation Dispatches to All 6 Models"
+      features: ["F-007"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Prompts sent to all 6 configured AI models for each tool-dimension pair"
+
+    - id: "T-012"
+      name: "Model API Failure with Retry"
+      features: ["F-007"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Failed API calls trigger exponential backoff retry"
+
+    - id: "T-013"
+      name: "Graceful Degradation Below 4 Models"
+      features: ["F-007"]
+      type: "Integration"
+      priority: "High"
+      description: "When <4 models succeed, score gets Insufficient Data confidence"
+
+    - id: "T-014"
+      name: "Evidence Artifact Attachment"
+      features: ["F-018"]
+      type: "Integration"
+      priority: "High"
+      description: "Evidence artifacts correctly linked to evaluations"
+
+    - id: "T-015"
+      name: "Evidence Required for Score Review"
+      features: ["F-018", "F-011"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Score Draft->Reviewed blocked without evidence for applicable scores"
+
+    - id: "T-016"
+      name: "Prompt Set Immutability After Cycle Lock"
+      features: ["F-008", "F-005"]
+      type: "Integration"
+      priority: "High"
+      description: "Prompt sets cannot be modified once methodology locked to active cycle"
+
+    - id: "T-017"
+      name: "Model Timeout Handling"
+      features: ["F-007"]
+      type: "Integration"
+      priority: "High"
+      description: "Model evaluation correctly marked as Timeout when exceeding configured timeout"
+
+    - id: "T-018"
+      name: "Evaluation Data Completeness"
+      features: ["F-007"]
+      type: "Integration"
+      priority: "High"
+      description: "All required fields populated on ModelEvaluation after successful API call"
+
+    # Synthesis & Scoring Tests (T-019 to T-030)
+    - id: "T-019"
+      name: "Median-Based Synthesis from 6 Models"
+      features: ["F-011"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Synthesis produces correct median from 6 model evaluations"
+
+    - id: "T-020"
+      name: "Confidence Tag Derivation"
+      features: ["F-011"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Confidence tags correctly derived from inter-model agreement"
+
+    - id: "T-021"
+      name: "Synthesis with 4 Models (Minimum)"
+      features: ["F-011"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Synthesis works correctly with only 4 model responses"
+
+    - id: "T-022"
+      name: "Composite Score Weighted Average"
+      features: ["F-012"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Composite correctly calculates weighted average across dimensions"
+
+    - id: "T-023"
+      name: "Weight Renormalization for N/A Dimensions"
+      features: ["F-012"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Weights renormalized when some dimensions have is_applicable = false"
+
+    - id: "T-024"
+      name: "Dense Ranking with Ties"
+      features: ["F-012"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Tied composite scores produce same rank; next rank is consecutive"
+
+    - id: "T-025"
+      name: "Tool Withdrawal Preserves Data but Excludes from Rankings"
+      features: ["F-006"]
+      type: "Integration"
+      priority: "High"
+      description: "Withdrawn tool data preserved; excluded from rankings and badges"
+
+    - id: "T-026"
+      name: "Vendor Review Window Enforces 5-Business-Day Duration"
+      features: ["F-015"]
+      type: "Integration"
+      priority: "High"
+      description: "Window correctly spans 5 business days excluding weekends"
+
+    - id: "T-027"
+      name: "Score Correction Triggers Composite Recalculation"
+      features: ["F-023", "F-012"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Correcting a published score cascades to composite and ranking update"
+
+    - id: "T-028"
+      name: "Dual Approval Required for Corrections"
+      features: ["F-023"]
+      type: "Unit"
+      priority: "High"
+      description: "corrected_by and approved_by must differ"
+
+    - id: "T-029"
+      name: "Synthesis Record Audit Trail"
+      features: ["F-011"]
+      type: "Integration"
+      priority: "High"
+      description: "SynthesisRecord contains all model evaluations used, agreement metrics"
+
+    - id: "T-030"
+      name: "N/A Score Handling End-to-End"
+      features: ["F-011", "F-012"]
+      type: "Integration"
+      priority: "High"
+      description: "is_applicable = false dimensions correctly excluded from composite"
+
+    # Public Pages Tests (T-031 to T-040)
+    - id: "T-031"
+      name: "Homepage Published State"
+      features: ["F-001"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Homepage displays cycle info when published cycle exists"
+
+    - id: "T-032"
+      name: "Homepage Pre-Launch State"
+      features: ["F-001"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Homepage shows pre-launch content when no published cycle"
+
+    - id: "T-033"
+      name: "Leaderboard Renders Ranked Tools"
+      features: ["F-002"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Leaderboard shows all tools in rank order with correct data"
+
+    - id: "T-034"
+      name: "Segment Filter Re-Renders Leaderboard"
+      features: ["F-002"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Market segment filter recalculates rankings for filtered set"
+
+    - id: "T-035"
+      name: "Tool Detail Page Complete Data"
+      features: ["F-003"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Tool detail shows all dimension scores, evidence, vendor disclosure"
+
+    - id: "T-036"
+      name: "Historical Cycle Selector"
+      features: ["F-002"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Selecting previous cycle shows historical rankings"
+
+    - id: "T-037"
+      name: "Methodology Page Content"
+      features: ["F-017"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Methodology page displays scoring dimensions, weights, confidence definitions"
+
+    - id: "T-038"
+      name: "Disclosure Page Content"
+      features: ["F-024"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Disclosure page displays AI Search Mastery relationship and firewall policy"
+
+    - id: "T-039"
+      name: "Audit Package Download"
+      features: ["F-016"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Audit package downloadable with SHA-256 hash verification"
+
+    - id: "T-040"
+      name: "SEO Structured Data"
+      features: ["F-017"]
+      type: "E2E"
+      priority: "Medium"
+      description: "JSON-LD structured data present on tool, report, and leaderboard pages"
+
+    # Admin Workflow Tests (T-041 to T-046)
+    - id: "T-041"
+      name: "Admin Vendor CRUD"
+      features: ["F-010"]
+      type: "Integration"
+      priority: "Medium"
+      description: "Create, read, update vendor; soft delete protection"
+
+    - id: "T-042"
+      name: "Admin Tool CRUD with Track Assignment"
+      features: ["F-010", "F-006"]
+      type: "Integration"
+      priority: "Medium"
+      description: "Create tool, assign to track and segment"
+
+    - id: "T-043"
+      name: "Admin Enrollment Workflow"
+      features: ["F-006"]
+      type: "Integration"
+      priority: "Medium"
+      description: "Enroll tools, validate minimum count, handle withdrawal"
+
+    - id: "T-044"
+      name: "Admin Score Review Queue"
+      features: ["F-012"]
+      type: "E2E"
+      priority: "Medium"
+      description: "Operator can review, approve, adjust scores with audit trail"
+
+    - id: "T-045"
+      name: "Admin Report Generation"
+      features: ["F-014"]
+      type: "Integration"
+      priority: "Medium"
+      description: "Generate benchmark report from approved scores"
+
+    - id: "T-046"
+      name: "Admin Audit Package Seal"
+      features: ["F-016"]
+      type: "Integration"
+      priority: "High"
+      description: "Seal audit package with SHA-256; verify immutability"
+
+    # Security Tests (T-047 to T-053, expanded to T-060)
+    - id: "T-047"
+      name: "Admin Authentication Required"
+      features: ["F-025"]
+      type: "Security"
+      priority: "High"
+      description: "All /admin/* routes redirect to login without authentication"
+
+    - id: "T-048"
+      name: "Composite Score Rounding Precision"
+      features: ["F-012"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Rounding at .X5 boundaries follows round-half-up consistently"
+
+    - id: "T-049"
+      name: "Session Expiry After 24 Hours"
+      features: ["F-025"]
+      type: "Security"
+      priority: "High"
+      description: "Admin session expires after 24 hours of inactivity"
+
+    - id: "T-050"
+      name: "Concurrent Cycle Creation Race Condition"
+      features: ["F-005"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Two simultaneous cycle creation requests; only one succeeds"
+
+    - id: "T-051"
+      name: "Audit Package Tamper Detection"
+      features: ["F-016"]
+      type: "Security"
+      priority: "Critical"
+      description: "Modified audit package fails SHA-256 hash verification"
+
+    - id: "T-052"
+      name: "Composite Score Boundary Values"
+      features: ["F-012"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Composite correctly handles 0.0, 10.0, and exact .X5 values"
+
+    - id: "T-053"
+      name: "Synthesis Determinism"
+      features: ["F-011"]
+      type: "Unit"
+      priority: "Critical"
+      description: "Identical inputs produce identical synthesis outputs across multiple runs"
+
+    - id: "T-054"
+      name: "Score Correction Cascade"
+      features: ["F-023", "F-012"]
+      type: "Integration"
+      priority: "Critical"
+      description: "Correcting a score triggers composite recalculation and ranking update"
+
+    - id: "T-055"
+      name: "CSRF Protection on Admin Actions"
+      features: ["F-025", "F-005"]
+      type: "Security"
+      priority: "High"
+      description: "All 10 state-changing admin endpoints reject requests without valid CSRF token"
+
+    - id: "T-056"
+      name: "Brute Force Login Protection"
+      features: ["F-025"]
+      type: "Security"
+      priority: "High"
+      description: "Account locked after 5 failed login attempts"
+
+    - id: "T-057"
+      name: "Vendor Data Isolation (IDOR Prevention)"
+      features: ["F-015"]
+      type: "Security"
+      priority: "Critical"
+      description: "Vendor-facing outputs contain only that vendor's tool data; IDOR attempts return 403"
+
+    - id: "T-058"
+      name: "Rate Limiting on Public API Endpoints"
+      features: ["F-001", "F-002", "F-003"]
+      type: "Security"
+      priority: "Medium"
+      description: "Public endpoints enforce rate limiting to prevent abuse"
+
+    - id: "T-059"
+      name: "SQL Injection Prevention"
+      features: ["F-010"]
+      type: "Security"
+      priority: "High"
+      description: "Parameterized queries prevent SQL injection across admin inputs"
+
+    - id: "T-060"
+      name: "XSS Prevention on User-Facing Pages"
+      features: ["F-002", "F-003"]
+      type: "Security"
+      priority: "High"
+      description: "All rendered content is properly escaped; no XSS vectors"
+
+glossary:
+  - term: "BenchmarkCycle"
+    definition: "A single monthly evaluation period with a defined start date, methodology version, and set of enrolled tools. Progresses through a state machine from Draft to Completed."
+
+  - term: "BenchmarkTrackDefinition"
+    definition: "A category of evaluation (e.g., GEO Platform, llms.txt). Each track has its own set of scoring dimensions, weights, and enrolled tools."
+
+  - term: "Tool"
+    definition: "A software product being evaluated in the benchmark. Belongs to a Vendor and is mapped to one or more tracks and market segments."
+
+  - term: "Vendor"
+    definition: "A company that produces one or more tools being evaluated. Has a disclosure relationship with the benchmark."
+
+  - term: "CycleToolEnrollment"
+    definition: "The association between a Tool and a BenchmarkCycle, including the specific track and enrollment/withdrawal status."
+
+  - term: "ToolTrackMapping"
+    definition: "The persistent assignment of a tool to a benchmark track (separate from per-cycle enrollment)."
+
+  - term: "ToolSegmentMapping"
+    definition: "The assignment of a tool to a market segment for filtering purposes."
+
+  - term: "MarketSegment"
+    definition: "A market category for grouping tools (e.g., Enterprise SEO, Content Optimization, Technical SEO)."
+
+  - term: "MethodologyVersion"
+    definition: "A versioned snapshot of the evaluation methodology including scoring dimensions, weights, and criteria. Locked to a cycle once it transitions from Draft."
+
+  - term: "ScoringDimension"
+    definition: "An individual evaluation criterion within a methodology version. Has a weight that contributes to the composite score."
+
+  - term: "AIModel"
+    definition: "A configured AI language model used in the evaluation process. Six models are used per evaluation for multi-source consensus."
+
+  - term: "PromptSet"
+    definition: "A collection of prompts linked to a scoring dimension and methodology version. Follows 70/30 rotation policy (70% stable, 30% rotating each cycle)."
+
+  - term: "ModelEvaluation"
+    definition: "A single AI model's evaluation of a specific tool on a specific dimension using a specific prompt set. The atomic unit of raw evaluation data."
+
+  - term: "SynthesisRecord"
+    definition: "The record of how multiple ModelEvaluations were aggregated into a single Score, including the median calculation, model agreement metrics, and confidence derivation."
+
+  - term: "Score"
+    definition: "A synthesized, 0-10 score for a tool on a dimension within a cycle. Has a state machine (Draft, Reviewed, Published, Corrected) and a confidence tag."
+
+  - term: "ScoreCorrection"
+    definition: "A post-publication correction to a Score, preserving the original value and requiring dual approval (corrected_by != approved_by)."
+
+  - term: "CompositeScore"
+    definition: "A weighted average of dimension scores for a tool within a track and cycle. Uses dense ranking. Handles N/A dimensions via weight renormalization."
+
+  - term: "Badge"
+    definition: "An award given to top-performing tools in a benchmark cycle (e.g., Top Performer, Category Leader). Embeddable and verifiable."
+
+  - term: "EvidenceArtifact"
+    definition: "A supporting artifact (screenshot, URL, document, video) linked to a ModelEvaluation that substantiates the evaluation."
+
+  - term: "BenchmarkReport"
+    definition: "The published monthly benchmark report containing narrative analysis, data tables, and ranking summaries for a cycle."
+
+  - term: "CycleAuditPackage"
+    definition: "A sealed, immutable package containing complete evaluation data for a cycle. Includes SHA-256 hash for tamper detection. Required before publication."
+
+  - term: "VendorDisclosure"
+    definition: "A vendor's submitted disclosure containing factual information about their company and tools. Status tracked as Requested/Submitted/Reviewed/Incorporated/Expired."
+
+  - term: "VendorReview"
+    definition: "The pre-publication window where vendors can review their own tool's scores and submit factual corrections. Duration: 5 business days."
+
+  - term: "Dense Ranking"
+    definition: "A ranking method where tied items receive the same rank and the next rank is consecutive (1, 2, 2, 3 instead of 1, 2, 2, 4)."
+
+  - term: "GEO"
+    definition: "Generative Engine Optimization. The practice of optimizing content and websites for AI-powered search engines."
+
+  - term: "AEO"
+    definition: "Answer Engine Optimization. Overlapping discipline with GEO focused on optimizing for AI answer engines."
+
+  - term: "ContentBlock"
+    definition: "A managed content element for static pages, stored as MDX for rich content with embedded components."
+
+non_functional_requirements:
+  performance:
+    - requirement: "Core Web Vitals compliance on all public pages"
+      target: "LCP < 2.5s, FID < 100ms, CLS < 0.1"
+    - requirement: "Public page load time"
+      target: "< 3 seconds on 3G connection"
+    - requirement: "Statically generated public pages where possible (SSG)"
+    - requirement: "Image optimization for tool logos and evidence artifacts"
+    - requirement: "Caching strategy for published benchmark data"
+
+  security:
+    - requirement: "Admin authentication on all /admin/* routes"
+    - requirement: "CSRF protection on all state-changing endpoints"
+      detail: "10 admin endpoints protected (T-055)"
+    - requirement: "Brute-force protection"
+      detail: "Account lockout after 5 failed attempts"
+    - requirement: "Session expiry after 24 hours"
+    - requirement: "SQL injection prevention via parameterized queries (Prisma ORM)"
+    - requirement: "XSS prevention via output escaping"
+    - requirement: "IDOR prevention on vendor data isolation"
+    - requirement: "API key encryption at rest"
+    - requirement: "HTTPS enforcement"
+    - requirement: "Password hashing with bcrypt"
+
+  accessibility:
+    - requirement: "Leaderboard and tool detail pages must be screen-reader compatible"
+    - requirement: "Color-coded elements must have non-color alternatives"
+    - requirement: "Proper heading hierarchy and semantic HTML"
+
+  scalability:
+    - requirement: "Support 27+ tools per evaluation cycle"
+    - requirement: "Support 6 AI model providers concurrently"
+    - requirement: "Handle monthly publication cycles without performance degradation"
+    - requirement: "Database designed for growth (23 entities with proper indexing)"
+
+  data_integrity:
+    - requirement: "Deterministic synthesis (identical inputs -> identical outputs)"
+    - requirement: "Audit package immutability with SHA-256 tamper detection"
+    - requirement: "All score changes tracked with full audit trail"
+    - requirement: "No data deletion (soft delete only for tools; evidence artifacts never deleted)"
+
+api_design:
+  route_structure:
+    public_routes:
+      count: 28
+      routes:
+        - { path: "/", description: "Homepage with current cycle highlights" }
+        - { path: "/benchmarks/:trackSlug", description: "Track leaderboard" }
+        - { path: "/tools/:toolSlug", description: "Tool detail page" }
+        - { path: "/tools/:toolSlug/compare", description: "Tool comparison (P1)" }
+        - { path: "/vendors", description: "Vendor directory (P1)" }
+        - { path: "/vendors/:vendorId", description: "Vendor profile (P1)" }
+        - { path: "/methodology", description: "Methodology public page" }
+        - { path: "/methodology/:versionId", description: "Specific methodology version" }
+        - { path: "/disclosure", description: "Conflict of interest disclosure" }
+        - { path: "/about", description: "About page" }
+        - { path: "/reports/:cycleId", description: "Published benchmark report" }
+        - { path: "/audit/:cycleId", description: "Audit package download" }
+    admin_routes:
+      count: 18
+      routes:
+        - { path: "/admin/login", description: "Admin login page" }
+        - { path: "/admin/dashboard", description: "Admin dashboard" }
+        - { path: "/admin/cycles", description: "Benchmark cycle management" }
+        - { path: "/admin/cycles/:id", description: "Cycle detail" }
+        - { path: "/admin/tools", description: "Tool management" }
+        - { path: "/admin/vendors", description: "Vendor management" }
+        - { path: "/admin/evaluations", description: "Evaluation management" }
+        - { path: "/admin/scores", description: "Score review queue" }
+        - { path: "/admin/reports", description: "Report generation" }
+        - { path: "/admin/audit-packages", description: "Audit package management" }
+    total_routes: 46
+
+  admin_api_endpoints:
+    - { method: "POST", path: "/api/admin/cycles", description: "Create cycle" }
+    - { method: "PUT", path: "/api/admin/cycles/:id/state", description: "Transition cycle state" }
+    - { method: "POST", path: "/api/admin/cycles/:id/tools", description: "Enroll a tool" }
+    - { method: "POST", path: "/api/admin/evaluations", description: "Submit evaluation scores" }
+    - { method: "POST", path: "/api/admin/synthesis/run", description: "Run synthesis" }
+    - { method: "PUT", path: "/api/admin/scores/:id/correct", description: "Correct a score" }
+    - { method: "POST", path: "/api/admin/reports/generate", description: "Generate report" }
+    - { method: "POST", path: "/api/admin/audit-packages/seal", description: "Seal audit package" }
+    - { method: "DELETE", path: "/api/admin/tools/:id", description: "Remove tool" }
+    - { method: "PUT", path: "/api/admin/vendors/:id", description: "Update vendor" }
+
+  authentication:
+    type: "Session-based (server-side session or JWT)"
+    session_duration: "24 hours"
+    scope: "All /admin/* and /api/admin/* routes"
+
+  rate_limiting:
+    public: "Rate limiting on public API endpoints to prevent abuse"
+    admin: "Protected by authentication; no additional rate limiting beyond brute-force protection"
+
+  external_apis:
+    - name: "OpenAI API"
+      purpose: "AI model evaluation (GPT-4o or similar)"
+      auth: "API Key"
+      rate_limits: "Tier-dependent"
+      failure_handling: "Exponential backoff retry; degrade to remaining models"
+    - name: "Anthropic API"
+      purpose: "AI model evaluation (Claude)"
+      auth: "API Key"
+      rate_limits: "Tier-dependent"
+      failure_handling: "Exponential backoff retry; degrade to remaining models"
+    - name: "Google AI API"
+      purpose: "AI model evaluation (Gemini)"
+      auth: "API Key"
+      rate_limits: "Tier-dependent"
+      failure_handling: "Exponential backoff retry; degrade to remaining models"
+    - name: "Cohere API"
+      purpose: "AI model evaluation (Command)"
+      auth: "API Key"
+      rate_limits: "Tier-dependent"
+      failure_handling: "Exponential backoff retry; degrade to remaining models"
+    - name: "Mistral API"
+      purpose: "AI model evaluation (Mistral)"
+      auth: "API Key"
+      rate_limits: "Tier-dependent"
+      failure_handling: "Exponential backoff retry; degrade to remaining models"
+    - name: "Meta API"
+      purpose: "AI model evaluation (Llama)"
+      auth: "API Key"
+      rate_limits: "Tier-dependent"
+      failure_handling: "Exponential backoff retry; degrade to remaining models"
+    - name: "Email Service (Resend)"
+      purpose: "Vendor notifications, publication alerts"
+      auth: "API Key"
+      rate_limits: "Generous"
+      failure_handling: "Graceful degradation; site functions without email"
+    - name: "Analytics (Plausible)"
+      purpose: "Usage tracking, engagement metrics"
+      auth: "API Key"
+      rate_limits: "Generous"
+      failure_handling: "Graceful degradation; site functions without analytics"
+
+deployment_strategy:
+  ci_cd: "GitHub Actions"
+  environments:
+    - name: "development"
+      description: "Local development"
+    - name: "staging"
+      description: "Pre-production validation; E2E testing"
+    - name: "production"
+      description: "Live site"
+  preview_deployments: true
+  hosting:
+    frontend: "Vercel (Next.js optimized)"
+    backend: "Vercel (serverless functions)"
+    database: "Neon (serverless PostgreSQL with branching)"
+  database_management:
+    migrations: "Prisma Migrate"
+    branching: "Neon branching for staging environments"
+
+risks_and_mitigations:
+  - id: "R1"
+    name: "Solo Developer Capacity Bottleneck"
+    probability: "High (80%)"
+    impact: "High"
+    composite: "Critical"
+    category: "Operational"
+    description: "Single developer managing build, operations, evaluation, vendor communication, and content creates single point of failure"
+    mitigations:
+      - "Automate evaluation pipeline aggressively"
+      - "Build 2-week buffer into each monthly cycle"
+      - "Define minimum viable publication for emergency months"
+      - "Document all operational procedures for potential handoff"
+
+  - id: "R2"
+    name: "AI Model API Reliability and Cost"
+    probability: "High (70%)"
+    impact: "Medium-High"
+    composite: "High"
+    category: "Technical"
+    description: "Dependency on 6 external AI model APIs for evaluation; outages, rate limiting, pricing changes possible"
+    mitigations:
+      - "Configurable retry logic with exponential backoff"
+      - "Graceful degradation (synthesize from remaining models)"
+      - "Track per-cycle API costs from Sprint 2"
+      - "Maintain accounts with 2+ providers per model tier"
+      - "Monthly API cost ceiling; reduce prompts before coverage"
+
+  - id: "R3"
+    name: "Credibility Damage from Perceived Bias"
+    probability: "Medium (50%)"
+    impact: "Critical"
+    composite: "Critical"
+    category: "Market/Reputation"
+    description: "AI Search Mastery ownership of evaluated products creates structural conflict of interest"
+    mitigations:
+      - "Proactive disclosure on every page where scores appear"
+      - "Publish AI Search Mastery product scores with identical methodology"
+      - "Audit package includes raw data for AI Search Mastery products"
+      - "If AI Search Mastery products score highly, increase methodology documentation"
+      - "Invite external practitioner review of first 3 cycles"
+
+  - id: "R4"
+    name: "Insufficient Vendor Engagement"
+    probability: "Medium (50%)"
+    impact: "Medium"
+    composite: "Medium"
+    category: "Market"
+    description: "Vendors may ignore or resist the benchmark"
+    mitigations:
+      - "Design benchmark to function without vendor participation"
+      - "Publish vendor engagement status transparently"
+      - "Make vendor engagement frictionless"
+      - "Badge program creates positive incentive (Phase 2)"
+      - "Accept low engagement in early cycles as expected"
+
+  - id: "R5"
+    name: "First Publication Quality Below Credibility Threshold"
+    probability: "Medium (40%)"
+    impact: "High"
+    composite: "High"
+    category: "Product"
+    description: "First benchmark sets credibility bar; incomplete methodology or arbitrary-seeming scores could be unrecoverable"
+    mitigations:
+      - "External practitioner review before public announcement (M6)"
+      - "Reduce scope rather than quality (15 tools rigorously > 27 superficially)"
+      - "Methodology and disclosure pages non-negotiable for first publication"
+      - "Soft publication (live, no announcement) then hard launch after quality confirmation"
+
+  - id: "R6"
+    name: "Compressed Timeline Causes Technical Debt"
+    probability: "High (75%)"
+    impact: "Medium"
+    composite: "High"
+    category: "Technical"
+    description: "5-sprint compressed build will produce shortcuts and architectural compromises"
+    mitigations:
+      - "Accept as known trade-off; first cycle matters more than code elegance"
+      - "Allocate Sprint 6 entirely to technical debt reduction"
+      - "Document shortcuts with 'DEBT:' prefix in code comments"
+      - "60 test cases provide safety net for refactoring"
+      - "Architecture decisions in Sprint 0 prioritize correctness"
+
+  - id: "R7"
+    name: "Market Timing -- GEO/AEO Tool Market Consolidation"
+    probability: "Low (20%)"
+    impact: "High"
+    composite: "Medium"
+    category: "Market"
+    description: "Market could consolidate faster than expected, reducing tools below benchmark value threshold"
+    mitigations:
+      - "Monitor tool market quarterly; expand scope if <15 active tools"
+      - "Methodology is category-agnostic by design"
+      - "Phase 4 includes category expansion"
+      - "First-mover data advantage compounds regardless of market size"
+
+  - id: "R8"
+    name: "Data Integrity Compromise"
+    probability: "Low (15%)"
+    impact: "Critical"
+    composite: "High"
+    category: "Technical/Reputation"
+    description: "Bug in evaluation/synthesis/publication produces incorrect published scores"
+    mitigations:
+      - "Human review (F-012) mandatory for every score"
+      - "Anomaly detection (F-022) flags statistical outliers"
+      - "Pre-publication checklist: spot-check 5 random tool scores"
+      - "Audit package reviewed before publication"
+      - "Published correction process defined in advance"
+
+timeline_and_phases:
+  developer_capacity: "60-70% (other projects in parallel)"
+  sprint_cadence: "2 weeks"
+  effective_days_per_sprint: "6-7"
+  total_sprints_mvp: 5
+  total_build_days: "33-50 (compressed from 51-73)"
+  work_start_date: "2026-02-24"
+
+  sprints:
+    - id: "Sprint 0"
+      name: "Foundation"
+      weeks: "1-2 (Feb 24 - Mar 9)"
+      capacity: "~7 days"
+      load: "6-9 days"
+      features:
+        - { id: "F-021_infra", name: "Database schema, deployment pipeline, hosting", days: "3-4" }
+        - { id: "F-017", name: "SEO foundation: meta templates, sitemap, structured data", days: "2-3" }
+        - { id: "F-025", name: "Admin authentication and layout shell", days: "1-2" }
+      deliverable: "Deployed application skeleton with database, admin auth, and SEO infrastructure"
+      risk_note: "If infrastructure takes longer, defer F-017 SEO polish to Sprint 2"
+
+    - id: "Sprint 1"
+      name: "Data Model & Vendor Foundation"
+      weeks: "3-4 (Mar 10 - Mar 23)"
+      capacity: "~7 days"
+      load: "7-10 days"
+      features:
+        - { id: "F-010", name: "Vendor management: CRUD, categories, metadata, logo handling", days: "3-4" }
+        - { id: "F-015", name: "Vendor disclosure workflow: templates, submission tracking", days: "2-3" }
+        - { id: "F-005", name: "Benchmark cycle management: create, configure, state transitions", days: "2-3" }
+      deliverable: "Admin can create vendors, manage disclosures, and initiate a benchmark cycle"
+      risk_note: "F-005 includes BenchmarkCycle state machine. Keep transitions simple for v1."
+
+    - id: "Sprint 2"
+      name: "Evaluation Engine"
+      weeks: "5-6 (Mar 24 - Apr 6)"
+      capacity: "~7 days"
+      load: "6-8 days"
+      features:
+        - { id: "F-007", name: "Core evaluation execution: API orchestration, prompt dispatch, retry logic", days: "4-5" }
+        - { id: "F-008", name: "Prompt set management (simplified): load from config, version tracking", days: "1-2" }
+        - { id: "F-009", name: "AI model configuration (simplified): API keys, model selection, timeouts", days: "1" }
+      deliverable: "Evaluation engine dispatches prompts to 6 AI models, captures responses, handles retries"
+      dependencies: ["F-005 (cycle exists)", "F-010 (vendors exist)"]
+
+    - id: "Sprint 3"
+      name: "Synthesis & Quality"
+      weeks: "7-8 (Apr 7 - Apr 20)"
+      capacity: "~7 days"
+      load: "6-9 days"
+      features:
+        - { id: "F-011", name: "Score synthesis pipeline: multi-source aggregation, confidence, normalization", days: "3-4" }
+        - { id: "F-012", name: "Human review interface: review queue, approve/adjust/flag, audit trail", days: "2-3" }
+        - { id: "F-022", name: "Anomaly detection (simplified): basic threshold checks, cross-model disagreement", days: "1-2" }
+      deliverable: "Raw evaluations synthesized into scored results with confidence tags. Operator can review and approve."
+      dependencies: ["F-007 (raw evaluation data)"]
+
+    - id: "Sprint 4"
+      name: "Publication & Public Experience"
+      weeks: "9-10 (Apr 21 - May 4)"
+      capacity: "~7 days"
+      load: "7-11 days"
+      features:
+        - { id: "F-014", name: "Report generation: benchmark report from approved scores", days: "2-3" }
+        - { id: "F-016", name: "Audit package generation: methodology docs, raw data, reproducibility", days: "1-2" }
+        - { id: "F-001", name: "Leaderboard: ranked tools with scores, confidence, filtering", days: "2-3" }
+        - { id: "F-002", name: "Tool detail pages: scores, historical placeholder, vendor disclosure", days: "2-3" }
+      deliverable: "Complete publication pipeline from approved scores to public benchmark report, leaderboard, tool detail pages"
+      risk_note: "Densest sprint. If behind, F-016 audit can be manual for cycle 1."
+
+    - id: "Sprint 5"
+      name: "Content, Polish & First Cycle"
+      weeks: "11-12 (May 5 - May 18)"
+      capacity: "~7 days"
+      load: "8-13 days"
+      features:
+        - { id: "F-003", name: "Methodology page: scoring criteria, rubrics, rotation policy, confidence", days: "2-3" }
+        - { id: "F-004_disclosure", name: "Conflict of interest disclosure page", days: "1" }
+        - { id: "F-013", name: "Content management: static page editing", days: "1-2" }
+        - { id: "F-018_perf", name: "Performance optimization: caching, image optimization, CWV", days: "1-2" }
+        - { id: "F-020_email", name: "Email notification: cycle alerts, vendor notices", days: "1-2" }
+        - { id: "testing", name: "End-to-end testing, bug fixes, first cycle dry run", days: "2-3" }
+      deliverable: "All public pages complete. Methodology and disclosure published. Email operational. Platform ready."
+      risk_note: "Overflow risk. Prioritize F-003 and disclosure as non-negotiable credibility infrastructure. F-020 and F-018 can slip."
+
+  first_benchmark_cycle:
+    name: "First Benchmark Cycle Execution"
+    weeks: "13-16 (May 19 - Jun 15)"
+    type: "Operational (not development sprint)"
+    activities:
+      - { name: "Vendor data seeding and disclosure outreach", duration: "Week 13" }
+      - { name: "Evaluation execution (27+ tools x 6 AI models)", duration: "Weeks 13-14" }
+      - { name: "Score synthesis and operator review", duration: "Weeks 14-15" }
+      - { name: "Report assembly and quality review", duration: "Week 15" }
+      - { name: "Pre-publication vendor notification", duration: "Week 15 (3-day window)" }
+      - { name: "Publication", duration: "Week 16" }
+    deliverable: "First AISearchArena benchmark report published. Leaderboard live. Tool detail pages populated. Audit package available."
+
+  realistic_first_publication: "Late May to mid-June 2026"
+  hard_constraint: "First benchmark cycle IS the launch. No soft launch, no beta."
+
+  milestones:
+    - id: "M1"
+      name: "Platform Foundation Operational"
+      target: "End of Sprint 0 (Week 2)"
+      deliverable: "Application deployed with database schema, admin auth, CI/CD"
+      success_criterion: "Admin can log in to production; database matches 23-entity model"
+      pass_fail: "Admin login works on production URL -- YES/NO"
+
+    - id: "M2"
+      name: "Evaluation Pipeline End-to-End"
+      target: "End of Sprint 2 (Week 6)"
+      deliverable: "Single tool evaluated through complete pipeline"
+      success_criterion: "Operator initiates evaluation, system dispatches to 2+ AI models, responses stored with metadata"
+      pass_fail: "Raw evaluation data exists in database for one tool -- YES/NO"
+
+    - id: "M3"
+      name: "Score Synthesis Produces Reviewable Results"
+      target: "End of Sprint 3 (Week 8)"
+      deliverable: "Raw evaluations synthesized into scored results with operator review"
+      success_criterion: "0-10 score with confidence tag from multi-model responses; operator can approve/adjust with audit trail"
+      pass_fail: "Operator-approved score with confidence tag and audit entry exists -- YES/NO"
+
+    - id: "M4"
+      name: "Publication Pipeline Complete"
+      target: "End of Sprint 4 (Week 10)"
+      deliverable: "Benchmark report generated and published with leaderboard and tool detail pages"
+      success_criterion: "Public leaderboard displays ranked tools with scores; tool detail page renders; report accessible"
+      pass_fail: "Unauthenticated visitor can view leaderboard with scored tools on production -- YES/NO"
+
+    - id: "M5"
+      name: "Credibility Infrastructure Published"
+      target: "End of Sprint 5 (Week 12)"
+      deliverable: "Methodology page, disclosure page, audit package download all live"
+      success_criterion: "All three accessible; methodology describes scoring criteria, confidence, rotation; disclosure states AI Search Mastery relationship; audit package downloads"
+      pass_fail: "Visitor can understand scoring process AND verify editorial independence -- YES/NO (operator judgment)"
+
+    - id: "M6"
+      name: "First Benchmark Published"
+      target: "End of Week 16"
+      deliverable: "First complete benchmark cycle published"
+      success_criteria:
+        - "20+ tools have published scores with confidence tags"
+        - "Benchmark report is publicly accessible"
+        - "Methodology page reflects actual methodology used"
+        - "Conflict of interest disclosure is published"
+        - "At least one vendor received pre-publication notification"
+        - "Audit package is downloadable"
+      pass_fail: "Publication meets credibility standard validated by 3 external practitioners -- YES/NO"
+
+  post_mvp_phases:
+    - id: "Phase 2"
+      name: "Vendor Engagement & Self-Service"
+      timeline: "Months 2-4 post-launch"
+      trigger: "2+ benchmark cycles published AND 3+ vendors engaged with disclosure process"
+      capabilities:
+        - "Vendor self-service portal (login, profile, disclosure submission, score preview)"
+        - "Badge awarding system (F-019)"
+        - "Full prompt set management UI (F-008 expanded)"
+        - "Full AI model configuration UI (F-009 expanded)"
+        - "Comparison view (F-004)"
+      effort: "20-30 dev days"
+      exit_criterion: "Vendor portal handles 50%+ of vendor interactions without email mediation"
+
+    - id: "Phase 3"
+      name: "Advanced Analytics & Data Access"
+      timeline: "Months 5-8 post-launch"
+      trigger: "6+ monthly cycles published AND organic traffic >2,000 monthly unique visitors"
+      capabilities:
+        - "Trend analysis (historical score trajectories, improvement/decline alerts)"
+        - "Full anomaly detection (F-022 expanded)"
+        - "Public read-only API (rate-limited, versioned)"
+        - "Advanced filtering and search"
+        - "Email digest and subscriptions"
+      effort: "30-45 dev days"
+      exit_criterion: "Trend data cited in 3+ external publications; API has 10+ active consumers"
+
+    - id: "Phase 4"
+      name: "Community & Ecosystem"
+      timeline: "Months 9-18 post-launch"
+      trigger: "Revenue model selected AND 12+ cycles published AND demonstrated external demand"
+      capabilities:
+        - "Practitioner reviews (structured submission, moderation)"
+        - "Post-publication corrections (F-023 formal workflow)"
+        - "Data partnerships (syndicated feeds)"
+        - "Premium reports (freemium model)"
+        - "Category expansion (AI content detection, AI writing assistants)"
+      effort: "50-80 dev days (partial; may require additional resources)"
+      exit_criterion: "Authority Phase indicators: vendor marketing references, market recognition, sustainable revenue"
+
+  post_mvp_feature_roadmap:
+    phase_1_first_enhancement:
+      timeline: "April-May 2026"
+      features:
+        - { id: "F-004", name: "Tool Comparison View", target: "April 2026" }
+        - { id: "F-019", name: "Badge Awarding & Display", target: "April 2026" }
+        - { id: "F-020", name: "Cycle Archive & Historical Access", target: "May 2026" }
+        - { id: "F-021", name: "Vendor Directory & Profile Pages", target: "May 2026" }
+        - { id: "F-022", name: "Cross-Cycle Anomaly Detection", target: "May 2026" }
+    phase_2_quality_scale:
+      timeline: "June-August 2026"
+      features:
+        - { id: "F-023", name: "Score Correction Workflow", target: "June 2026" }
+        - { name: "Leaderboard CSV/PDF Export", target: "July 2026" }
+        - { name: "Downloadable Comparison Reports", target: "July 2026" }
+        - { name: "Cycle Cloning/Templates", target: "August 2026" }
+    phase_3_growth:
+      timeline: "September 2026+"
+      features:
+        - { name: "Newsletter/Email Subscription", target: "September 2026" }
+        - { name: "llms.txt Track Launch", target: "October 2026" }
+        - { name: "Public API (Read-Only)", target: "November 2026" }
+        - { name: "Vendor Self-Service Portal", target: "December 2026" }
+    phase_4_authority:
+      timeline: "2027+"
+      features:
+        - { name: "Premium Report Tier", target: "Q1 2027" }
+        - { name: "Trend Analysis Dashboard", target: "Q1 2027" }
+        - { name: "Audit Package Cryptographic Signing", target: "Q2 2027" }
+        - { name: "External Audit Integration", target: "Q3 2027" }
+
+compliance:
+  data_classification:
+    - classification: "Public"
+      description: "Published benchmark data intended for public consumption"
+      examples: ["Published scores", "Composite rankings", "Methodology documentation", "Audit packages", "Badges", "Benchmark reports"]
+      handling: "No access restriction; cached aggressively; SEO-indexed"
+
+    - classification: "Internal"
+      description: "Operational data used during evaluation, not published raw"
+      examples: ["Draft scores", "ModelEvaluation raw outputs", "SynthesisRecord details", "Model agreement metrics", "Editor rationale", "AI model configurations", "Prompt sets"]
+      handling: "Admin-only access; not exposed via public API; included in sealed audit packages"
+
+    - classification: "Vendor Confidential"
+      description: "Data shared with or about specific vendors under access controls"
+      examples: ["Vendor contact information", "Pre-publication dimension scores (during VendorReview)", "Vendor correction claims", "Vendor financial disclosures"]
+      handling: "Vendor sees only own data (BR-V04); admin access; encrypted at rest; access logged"
+
+    - classification: "Restricted"
+      description: "Highly sensitive data with strict access controls"
+      examples: ["API keys for AI services", "Admin credentials", "Internal editorial deliberation notes", "Vendor PII beyond business contacts"]
+      handling: "Encrypted at rest and in transit; minimal access; never included in audit packages; rotated regularly"
+
+  privacy:
+    - requirement: "Data minimization"
+      standard: "GDPR Art. 5(1)(c)"
+      implementation: "Collect only data necessary for benchmark evaluation; vendor PII limited to business contact"
+
+    - requirement: "Purpose limitation"
+      standard: "GDPR Art. 5(1)(b)"
+      implementation: "Data collected for benchmark evaluation used only for that purpose; no secondary marketing use"
+
+    - requirement: "Storage limitation"
+      standard: "GDPR Art. 5(1)(e)"
+      implementation: "Vendor contact information retained only while vendor has tools in active or archived cycles"
+
+    - requirement: "Data subject rights"
+      standard: "GDPR Art. 15-20"
+      implementation: "Vendor can request access to/deletion of their contact data; published benchmark data (public) is not subject to erasure"
+
+  data_retention:
+    - data_type: "Published benchmark data"
+      retention: "Indefinite (core product)"
+    - data_type: "Evaluation raw data"
+      retention: "Indefinite (audit trail requirement)"
+    - data_type: "Vendor contact information"
+      retention: "While vendor has tools in benchmark"
+    - data_type: "Admin session data"
+      retention: "24 hours (auto-expiry)"
+    - data_type: "API keys"
+      retention: "Until rotated; encrypted at rest"
+
+  third_party_dpas:
+    - service: "OpenAI"
+      data_shared: "Tool names, evaluation prompts"
+      dpa_required: true
+    - service: "Anthropic"
+      data_shared: "Tool names, evaluation prompts"
+      dpa_required: true
+    - service: "Google"
+      data_shared: "Tool names, evaluation prompts"
+      dpa_required: true
+    - service: "Cohere"
+      data_shared: "Tool names, evaluation prompts"
+      dpa_required: true
+    - service: "Mistral"
+      data_shared: "Tool names, evaluation prompts"
+      dpa_required: true
+    - service: "Meta"
+      data_shared: "Tool names, evaluation prompts"
+      dpa_required: true
+    - service: "Neon (PostgreSQL)"
+      data_shared: "All application data"
+      dpa_required: true
+    - service: "Vercel"
+      data_shared: "Application code, request logs"
+      dpa_required: true
+    - service: "Resend (email)"
+      data_shared: "Vendor email addresses, subscriber emails"
+      dpa_required: true
+
+mvp_scope:
+  in_scope:
+    - "Evaluation engine (27+ tools scored by 6 AI models with median-based synthesis)"
+    - "Public leaderboard with dimension scores, composite rankings, and confidence tags"
+    - "Methodology transparency pages (scoring criteria, prompt rotation policy, confidence definitions)"
+    - "Audit packages (sealed, SHA-256 hashed, downloadable) for every benchmark cycle"
+    - "Admin dashboard for cycle management, score review, and publication workflow"
+  out_of_scope:
+    - "User accounts or public registration"
+    - "Billing, payments, or subscription management"
+    - "Vendor self-service portal (Phase 2)"
+    - "Real-time evaluation or live scoring"
+    - "Community features (reviews, comments, forums)"
+    - "Tool comparison view (P1)"
+    - "Badge awarding (P1)"
+    - "Email notifications (P1/Sprint 5 stretch)"
+    - "API access (Phase 3)"
+    - "FAQ page"
+    - "Career page or team profiles"
+
+non_blocking_items:
+  - id: 1
+    item: "Scoring scale edge case: rounding at exact .X5 boundaries"
+    context: "BR-S05 specifies one-decimal composites. T-052 tests boundaries. PRD does not prescribe rounding method."
+    recommendation: "Use round half up (standard mathematical rounding). Document in methodology."
+    owner: "Developer"
+
+  - id: 2
+    item: "Vendor disclosure template format"
+    context: "F-015 specifies disclosure workflow but exact template fields not enumerated."
+    recommendation: "Design minimal template (company name, tool name, factual corrections, supporting evidence URL) during Sprint 1."
+    owner: "Developer"
+
+  - id: 3
+    item: "Prompt rotation schedule"
+    context: "Business rule states 70/30 rotating prompts but cadence not specified."
+    recommendation: "Rotate 30% each cycle (sequential replacement). Track retirements. Full UI deferred to Phase 2."
+    owner: "Developer"
+
+  - id: 4
+    item: "Email notification content and frequency"
+    context: "F-020 specifies email notifications but templates and triggers not detailed."
+    recommendation: "Design minimal set: (1) vendor pre-publication notification, (2) cycle publication announcement. Simple templates for v1."
+    owner: "Developer"
+
+handoff:
+  date: "2026-02-24"
+  prd_version: "1.0"
+  product_owner: "Jamie Watters (solopreneur -- also the developer)"
+  response_time_sla: "Immediate (same person)"
+  content_completeness: "23/23 items checked"
+  quality_gates: "5/5 passed"
+  blocking_questions_resolved: 5
+  non_blocking_items: 4
+  verdict: "READY FOR HANDOFF TO AGENT-11"
+
+  priority_guidance:
+    - "Start with Sprint 0: F-021 (infrastructure), F-025 (admin auth), F-017 (SEO foundation)"
+    - "System Skeleton (Section 2) directly informs database schema -- 23 entities ready for migration"
+    - "Business Rules (Section 2.4) are critical correctness requirements -- implement first, test thoroughly"
+    - "State Machines (Section 2.4) for BenchmarkCycle and Score are operational backbone"
+    - "GWT acceptance criteria (Section 3) map directly to test implementations"
+    - "Preference Profile (Appendix A) guides technology selection but is not binding"
+
+  known_complexities:
+    - name: "Composite score calculation"
+      detail: "Weighted average with renormalized weights for N/A. Rounding to one decimal. See BR-S05, T-048, T-052."
+    - name: "Synthesis pipeline"
+      detail: "Median-based aggregation from 6 models with confidence derivation (BR-S09). Must be deterministic (T-053). >= 4 models required (BR-S07, BR-S11)."
+    - name: "Audit package immutability"
+      detail: "CycleAuditPackage sealed before publication, immutable after (BR-AUD02). SHA-256 hash. See T-014, T-051."
+    - name: "Concurrent cycle prevention"
+      detail: "Only one active cycle at a time. Race condition testing required (T-050)."
+    - name: "Vendor data isolation"
+      detail: "Vendor portal enforces strict data boundary -- own tool data only (BR-V04, T-057). IDOR testing essential."
+    - name: "Score correction cascade"
+      detail: "Correcting published score triggers automatic composite recalculation and ranking update (T-054). Dual approval required (BR-S02)."
+
+measurement_infrastructure:
+  tools:
+    - { tool: "Plausible Analytics", purpose: "Page views, visitors, engagement, custom events", cost: "~$9/month", priority: "Sprint 0" }
+    - { tool: "Google Search Console", purpose: "Search performance, indexed pages, backlinks", cost: "Free", priority: "Sprint 0" }
+    - { tool: "Google Alerts", purpose: "Brand mention monitoring", cost: "Free", priority: "Pre-launch" }
+    - { tool: "Email service (Buttondown/ConvertKit)", purpose: "Subscriber management, open rates", cost: "Free tier", priority: "Sprint 5" }
+    - { tool: "Server-side counters", purpose: "Audit/report download tracking", cost: "Built-in", priority: "Sprint 4" }
+    - { tool: "Admin dashboard", purpose: "Cycle metrics, vendor engagement, pipeline health", cost: "Built-in", priority: "Sprints 1-3" }
+    - { tool: "Google Sheets", purpose: "Monthly metrics roll-up, trend tracking, citation audit", cost: "Free", priority: "Pre-launch" }
+  review_cadence: "Monthly on the 1st (coinciding with new benchmark cycle start); <1 hour"
+
+reference_documents:
+  - { name: "Vision & Mission", location: "documents/foundation/vision-mission.md", purpose: "Core purpose, brand essence, BHAG, firewall policy" }
+  - { name: "Positioning Statement", location: "documents/foundation/positioning-statement.md", purpose: "Market category creation, differentiators, key messages" }
+  - { name: "Audience Blueprint", location: "documents/foundation/audience-blueprint.md", purpose: "3 audience segments, communication strategy" }
+  - { name: "Brand Extension Guide", location: "documents/foundation/brand-extension-guide.md", purpose: "Visual identity (Arena Slate #475569), voice/tone, templates" }
+  - { name: "Content & Launch Strategy", location: "documents/foundation/content-launch-strategy.md", purpose: "Pre-launch strategy, 12-month content calendar, SEO strategy" }
+  - { name: "Benchmark Framework v2.0", location: "documents/ideation/AI_Search_Benchmark_Framework_v2.docx", purpose: "Original methodology design, evaluation criteria, scoring rubrics" }
+
+change_log:
+  - { version: "0.1", date: "2026-02-23", author: "BOS-AI / Jamie Watters", changes: "Section 0 (At-a-Glance) initial draft" }
+  - { version: "0.2", date: "2026-02-23", author: "BOS-AI / Jamie Watters", changes: "Section 1 (Product Foundation) added" }
+  - { version: "0.3", date: "2026-02-23", author: "BOS-AI / Jamie Watters", changes: "Section 2 (System Skeleton) initial draft -- 18 entities, 20 business rules" }
+  - { version: "0.4", date: "2026-02-24", author: "BOS-AI / Jamie Watters", changes: "Section 2 revised: expert review 13 issues. 5 new entities (23 total), 6 new business rules (26+ total), 2 state machines refined" }
+  - { version: "0.5", date: "2026-02-24", author: "BOS-AI / Jamie Watters", changes: "Section 3 (Features & Requirements) added: 25 features, 19 P0" }
+  - { version: "0.6", date: "2026-02-24", author: "BOS-AI / Jamie Watters", changes: "Section 4 (Testing & Validation) initial draft: 45 test cases" }
+  - { version: "0.7", date: "2026-02-24", author: "BOS-AI / Jamie Watters", changes: "Section 4 revised: expert review 15 issues. 60 test cases total. Security coverage 2 -> 7 tests." }
+  - { version: "0.8", date: "2026-02-24", author: "BOS-AI / Jamie Watters", changes: "Sections 5-6 (Roadmap & Milestones, Metrics & Success) added" }
+  - { version: "0.9", date: "2026-02-24", author: "BOS-AI / Jamie Watters", changes: "Section 7 (Handoff Readiness) and Appendices A-C added" }
+  - { version: "1.0", date: "2026-02-24", author: "BOS-AI / Jamie Watters", changes: "Handoff readiness checklist passed. PRD approved for handoff." }
