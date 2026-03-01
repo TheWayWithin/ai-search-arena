@@ -118,6 +118,27 @@ extraction:
     - "foundation-brand.schema.yaml"
     - "foundation-marketing.schema.yaml"
 
+generated_plans:
+  project_plan:
+    path: "project-plan.md"
+    generated: "2026-03-01"
+    from_extracts:
+      - prd.yaml
+      - vision.yaml
+    project_type: web-app
+    mode: engaged
+    total_function_points: 817
+    phases: 4
+    mvp_features: 18
+    changes_from_prd:
+      - "F-025 Admin Auth deferred from P0 to P1"
+      - "6 direct AI providers replaced with OpenRouter gateway"
+      - "Day estimates replaced with function point sizing"
+      - "Next.js version pinned to 15"
+  phase_1_context:
+    path: ".context/phase-1-context.yaml"
+    generated: "2026-03-01"
+
 notes:
   - "PRD extracted from 5 source files (85,775 words total) using multi-agent parallel extraction"
   - "All YAML files validated with Python yaml.safe_load - no parse errors"
@@ -126,3 +147,4 @@ notes:
   - "ICP document matched as audience-blueprint.md"
   - "Brand document matched as brand-extension-guide.md"
   - "Marketing document matched as content-launch-strategy.md"
+  - "Project plan generated via /bootstrap engaged mode on 2026-03-01"

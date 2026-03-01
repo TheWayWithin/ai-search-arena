@@ -1,0 +1,559 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ENUMS
+// ═══════════════════════════════════════════════════════════════
+
+enum CycleState {
+  Draft
+  Planning
+  Evaluation
+  Synthesis
+  Review
+  VendorReview
+  Publication
+  Completed
+  Suspended
+  Cancelled
+}
+
+enum ScoreState {
+  Draft
+  Reviewed
+  Published
+  Corrected
+}
+
+enum ConfidenceTag {
+  High
+  Medium
+  Low
+  InsufficientData
+}
+
+enum EvaluationStatus {
+  Success
+  Failed
+  Timeout
+}
+
+enum ArtifactType {
+  Screenshot
+  URL
+  Document
+  Video
+}
+
+enum DisclosureStatus {
+  Requested
+  Submitted
+  Reviewed
+  Incorporated
+  Expired
+}
+
+enum ReviewStatus {
+  Pending
+  InReview
+  Completed
+  Expired
+}
+
+enum BadgeTier {
+  Gold
+  Silver
+  Bronze
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BENCHMARK DOMAIN
+// ═══════════════════════════════════════════════════════════════
+
+model BenchmarkCycle {
+  id                   String     @id @default(uuid())
+  cycleIdentifier      String     @unique @map("cycle_identifier") // e.g. "2026-03"
+  displayName          String     @map("display_name")
+  state                CycleState @default(Draft)
+  startDate            DateTime   @map("start_date")
+  endDate              DateTime?  @map("end_date")
+  methodologyVersionId String     @map("methodology_version_id")
+  publishedAt          DateTime?  @map("published_at")
+  suspendedAt          DateTime?  @map("suspended_at")
+  suspensionReason     String?    @map("suspension_reason")
+  notes                String?
+  createdAt            DateTime   @default(now()) @map("created_at")
+  updatedAt            DateTime   @updatedAt @map("updated_at")
+
+  methodologyVersion MethodologyVersion  @relation(fields: [methodologyVersionId], references: [id])
+  enrollments        CycleToolEnrollment[]
+  report             BenchmarkReport?
+  auditPackage       CycleAuditPackage?
+  scores             Score[]
+  compositeScores    CompositeScore[]
+  badges             Badge[]
+  vendorDisclosures  VendorDisclosure[]
+  vendorReviews      VendorReview[]
+  evaluations        ModelEvaluation[]
+
+  @@map("benchmark_cycles")
+}
+
+model BenchmarkTrackDefinition {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g. "GEO Platform Track"
+  slug        String   @unique // e.g. "geo-platform"
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  toolMappings       ToolTrackMapping[]
+  scoringDimensions  ScoringDimension[]
+
+  @@map("benchmark_track_definitions")
+}
+
+model CycleToolEnrollment {
+  id               String    @id @default(uuid())
+  cycleId          String    @map("cycle_id")
+  toolId           String    @map("tool_id")
+  enrolledAt       DateTime  @default(now()) @map("enrolled_at")
+  withdrawnAt      DateTime? @map("withdrawn_at")
+  withdrawalReason String?   @map("withdrawal_reason")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  cycle BenchmarkCycle @relation(fields: [cycleId], references: [id])
+  tool  Tool           @relation(fields: [toolId], references: [id])
+
+  @@unique([cycleId, toolId])
+  @@map("cycle_tool_enrollments")
+}
+
+model BenchmarkReport {
+  id               String    @id @default(uuid())
+  cycleId          String    @unique @map("cycle_id")
+  slug             String    @unique
+  title            String
+  executiveSummary String?   @map("executive_summary")
+  content          Json?     // Structured report content
+  publishedAt      DateTime? @map("published_at")
+  seoTitle         String?   @map("seo_title")
+  seoDescription   String?   @map("seo_description")
+  structuredData   Json?     @map("structured_data") // JSON-LD
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  cycle BenchmarkCycle @relation(fields: [cycleId], references: [id])
+
+  @@map("benchmark_reports")
+}
+
+model CycleAuditPackage {
+  id            String    @id @default(uuid())
+  cycleId       String    @unique @map("cycle_id")
+  integrityHash String    @map("integrity_hash") // SHA-256
+  isSealed      Boolean   @default(false) @map("is_sealed")
+  sealedAt      DateTime? @map("sealed_at")
+  fileUrl       String?   @map("file_url") // R2 path to audit archive
+  fileSizeBytes Int?      @map("file_size_bytes")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  cycle BenchmarkCycle @relation(fields: [cycleId], references: [id])
+
+  @@map("cycle_audit_packages")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOOL DOMAIN
+// ═══════════════════════════════════════════════════════════════
+
+model Vendor {
+  id           String   @id @default(uuid())
+  companyName  String   @map("company_name")
+  slug         String   @unique
+  websiteUrl   String?  @map("website_url")
+  logoUrl      String?  @map("logo_url")
+  contactName  String?  @map("contact_name")
+  contactEmail String?  @map("contact_email")
+  description  String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tools       Tool[]
+  disclosures VendorDisclosure[]
+  reviews     VendorReview[]
+
+  @@map("vendors")
+}
+
+model Tool {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String
+  websiteUrl  String   @map("website_url")
+  logoUrl     String?  @map("logo_url")
+  vendorId    String   @map("vendor_id")
+  isArchived  Boolean  @default(false) @map("is_archived")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  vendor          Vendor               @relation(fields: [vendorId], references: [id])
+  trackMappings   ToolTrackMapping[]
+  segmentMappings ToolSegmentMapping[]
+  enrollments     CycleToolEnrollment[]
+  scores          Score[]
+  compositeScores CompositeScore[]
+  badges          Badge[]
+  evaluations     ModelEvaluation[]
+  disclosures     VendorDisclosure[]
+
+  @@map("tools")
+}
+
+model ToolTrackMapping {
+  id         String   @id @default(uuid())
+  toolId     String   @map("tool_id")
+  trackId    String   @map("track_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  tool  Tool                     @relation(fields: [toolId], references: [id])
+  track BenchmarkTrackDefinition @relation(fields: [trackId], references: [id])
+
+  @@unique([toolId, trackId])
+  @@map("tool_track_mappings")
+}
+
+model ToolSegmentMapping {
+  id        String   @id @default(uuid())
+  toolId    String   @map("tool_id")
+  segmentId String   @map("segment_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tool    Tool          @relation(fields: [toolId], references: [id])
+  segment MarketSegment @relation(fields: [segmentId], references: [id])
+
+  @@unique([toolId, segmentId])
+  @@map("tool_segment_mappings")
+}
+
+model MarketSegment {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g. "Enterprise SEO"
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  toolMappings    ToolSegmentMapping[]
+  compositeScores CompositeScore[]
+
+  @@map("market_segments")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// METHODOLOGY DOMAIN
+// ═══════════════════════════════════════════════════════════════
+
+model MethodologyVersion {
+  id            String    @id @default(uuid())
+  versionNumber String    @unique @map("version_number") // semver: "1.0.0"
+  effectiveDate DateTime  @map("effective_date")
+  description   String?
+  isLocked      Boolean   @default(false) @map("is_locked")
+  lockedAt      DateTime? @map("locked_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  cycles            BenchmarkCycle[]
+  scoringDimensions ScoringDimension[]
+  promptSets        PromptSet[]
+
+  @@map("methodology_versions")
+}
+
+model ScoringDimension {
+  id                     String   @id @default(uuid())
+  methodologyVersionId   String   @map("methodology_version_id")
+  trackId                String   @map("track_id")
+  name                   String   // e.g. "Citation Accuracy"
+  slug                   String
+  description            String?
+  weight                 Decimal  @db.Decimal(5, 4) // 0.0000 - 1.0000 (sum to 1.0 per track)
+  category               String?  // Grouping category
+  displayOrder           Int      @default(0) @map("display_order")
+  isActive               Boolean  @default(true) @map("is_active")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  methodologyVersion MethodologyVersion       @relation(fields: [methodologyVersionId], references: [id])
+  track              BenchmarkTrackDefinition @relation(fields: [trackId], references: [id])
+  scores             Score[]
+  syntheses          SynthesisRecord[]
+  promptSets         PromptSet[]
+  evaluations        ModelEvaluation[]
+
+  @@unique([methodologyVersionId, slug])
+  @@map("scoring_dimensions")
+}
+
+model PromptSet {
+  id                     String    @id @default(uuid())
+  methodologyVersionId   String    @map("methodology_version_id")
+  dimensionId            String    @map("dimension_id")
+  name                   String
+  prompts                Json      // Array of prompt strings
+  isRotating             Boolean   @default(false) @map("is_rotating") // 70/30 rotation flag
+  version                String    @default("1.0")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @updatedAt @map("updated_at")
+
+  methodologyVersion MethodologyVersion @relation(fields: [methodologyVersionId], references: [id])
+  dimension          ScoringDimension   @relation(fields: [dimensionId], references: [id])
+  evaluations        ModelEvaluation[]
+
+  @@unique([methodologyVersionId, dimensionId, version])
+  @@map("prompt_sets")
+}
+
+model AIModel {
+  id               String    @id @default(uuid())
+  provider         String    // "OpenAI", "Anthropic", "Google", "Cohere", "Mistral", "Meta"
+  modelIdentifier  String    @unique @map("model_identifier") // OpenRouter model ID
+  displayName      String    @map("display_name")
+  isActive         Boolean   @default(true) @map("is_active")
+  timeoutMs        Int       @default(30000) @map("timeout_ms")
+  apiConfig        Json?     @map("api_config") // Provider-specific config
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  evaluations ModelEvaluation[]
+
+  @@map("ai_models")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EVALUATION DOMAIN
+// ═══════════════════════════════════════════════════════════════
+
+model ModelEvaluation {
+  id             String           @id @default(uuid())
+  cycleId        String           @map("cycle_id")
+  toolId         String           @map("tool_id")
+  dimensionId    String           @map("dimension_id")
+  modelId        String           @map("model_id")
+  promptSetId    String           @map("prompt_set_id")
+  rawResponse    String           @map("raw_response")
+  parsedScore    Decimal?         @map("parsed_score") @db.Decimal(3, 1)
+  responseTimeMs Int              @map("response_time_ms")
+  status         EvaluationStatus
+  retryCount     Int              @default(0) @map("retry_count")
+  evaluatedAt    DateTime         @map("evaluated_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  cycle     BenchmarkCycle   @relation(fields: [cycleId], references: [id])
+  tool      Tool             @relation(fields: [toolId], references: [id])
+  dimension ScoringDimension @relation(fields: [dimensionId], references: [id])
+  model     AIModel          @relation(fields: [modelId], references: [id])
+  promptSet PromptSet        @relation(fields: [promptSetId], references: [id])
+  evidence  EvidenceArtifact[]
+
+  @@map("model_evaluations")
+}
+
+model EvidenceArtifact {
+  id                String       @id @default(uuid())
+  modelEvaluationId String       @map("model_evaluation_id")
+  artifactType      ArtifactType @map("artifact_type")
+  fileUrl           String       @map("file_url") // R2 storage URL
+  description       String?
+  capturedAt        DateTime     @default(now()) @map("captured_at")
+  createdAt         DateTime     @default(now()) @map("created_at")
+
+  modelEvaluation ModelEvaluation @relation(fields: [modelEvaluationId], references: [id])
+
+  @@map("evidence_artifacts")
+}
+
+model SynthesisRecord {
+  id              String        @id @default(uuid())
+  scoreId         String        @unique @map("score_id")
+  dimensionId     String        @map("dimension_id")
+  modelsSucceeded Int           @map("models_succeeded")
+  modelsFailed    Int           @map("models_failed")
+  medianValue     Decimal       @map("median_value") @db.Decimal(3, 1)
+  agreementMetric Decimal       @map("agreement_metric") @db.Decimal(5, 4)
+  confidenceTag   ConfidenceTag @map("confidence_tag")
+  sourceModelIds  Json          @map("source_model_ids") // Array of ModelEvaluation IDs
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  score     Score            @relation(fields: [scoreId], references: [id])
+  dimension ScoringDimension @relation(fields: [dimensionId], references: [id])
+
+  @@map("synthesis_records")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCORING DOMAIN
+// ═══════════════════════════════════════════════════════════════
+
+model Score {
+  id            String        @id @default(uuid())
+  cycleId       String        @map("cycle_id")
+  toolId        String        @map("tool_id")
+  dimensionId   String        @map("dimension_id")
+  value         Decimal       @db.Decimal(3, 1) // 0.0 - 10.0
+  confidenceTag ConfidenceTag @map("confidence_tag")
+  isApplicable  Boolean       @default(true) @map("is_applicable")
+  state         ScoreState    @default(Draft)
+  reviewedBy    String?       @map("reviewed_by")
+  reviewedAt    DateTime?     @map("reviewed_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  cycle       BenchmarkCycle   @relation(fields: [cycleId], references: [id])
+  tool        Tool             @relation(fields: [toolId], references: [id])
+  dimension   ScoringDimension @relation(fields: [dimensionId], references: [id])
+  synthesis   SynthesisRecord?
+  corrections ScoreCorrection[]
+
+  @@unique([cycleId, toolId, dimensionId])
+  @@map("scores")
+}
+
+model ScoreCorrection {
+  id             String   @id @default(uuid())
+  scoreId        String   @map("score_id")
+  previousValue  Decimal  @map("previous_value") @db.Decimal(3, 1)
+  correctedValue Decimal  @map("corrected_value") @db.Decimal(3, 1)
+  reason         String
+  correctedBy    String   @map("corrected_by")
+  approvedBy     String?  @map("approved_by") // BR-S02: dual approval (different from correctedBy)
+  approvedAt     DateTime? @map("approved_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  score Score @relation(fields: [scoreId], references: [id])
+
+  @@map("score_corrections")
+}
+
+model CompositeScore {
+  id            String        @id @default(uuid())
+  cycleId       String        @map("cycle_id")
+  toolId        String        @map("tool_id")
+  segmentId     String?       @map("segment_id") // null = overall, set = segment-specific
+  value         Decimal       @db.Decimal(3, 1) // Weighted average, 0.0-10.0
+  rank          Int           // Dense ranking (BR-S08)
+  confidenceTag ConfidenceTag @map("confidence_tag")
+  state         ScoreState    @default(Draft)
+  reviewedBy    String?       @map("reviewed_by")
+  reviewedAt    DateTime?     @map("reviewed_at")
+  adjustedBy    String?       @map("adjusted_by")
+  adjustedAt    DateTime?     @map("adjusted_at")
+  adjustReason  String?       @map("adjust_reason")
+  originalValue Decimal?      @map("original_value") @db.Decimal(3, 1) // Before adjustment
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  cycle   BenchmarkCycle @relation(fields: [cycleId], references: [id])
+  tool    Tool           @relation(fields: [toolId], references: [id])
+  segment MarketSegment? @relation(fields: [segmentId], references: [id])
+  badges  Badge[]
+
+  @@unique([cycleId, toolId, segmentId])
+  @@map("composite_scores")
+}
+
+model Badge {
+  id               String    @id @default(uuid())
+  cycleId          String    @map("cycle_id")
+  toolId           String    @map("tool_id")
+  compositeScoreId String?   @map("composite_score_id")
+  tier             BadgeTier
+  badgeType        String    @map("badge_type") // e.g. "Overall Leader", "Track Leader"
+  label            String
+  description      String?
+  awardedAt        DateTime  @default(now()) @map("awarded_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  cycle          BenchmarkCycle  @relation(fields: [cycleId], references: [id])
+  tool           Tool            @relation(fields: [toolId], references: [id])
+  compositeScore CompositeScore? @relation(fields: [compositeScoreId], references: [id])
+
+  @@unique([cycleId, toolId, badgeType])
+  @@map("badges")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// VENDOR ENGAGEMENT DOMAIN
+// ═══════════════════════════════════════════════════════════════
+
+model VendorDisclosure {
+  id               String           @id @default(uuid())
+  cycleId          String           @map("cycle_id")
+  vendorId         String           @map("vendor_id")
+  toolId           String?          @map("tool_id")
+  status           DisclosureStatus @default(Requested)
+  disclosureType   String           @map("disclosure_type")
+  requestedAt      DateTime         @default(now()) @map("requested_at")
+  submittedAt      DateTime?        @map("submitted_at")
+  reviewedAt       DateTime?        @map("reviewed_at")
+  content          String?
+  reviewNotes      String?          @map("review_notes")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  cycle  BenchmarkCycle @relation(fields: [cycleId], references: [id])
+  vendor Vendor         @relation(fields: [vendorId], references: [id])
+  tool   Tool?          @relation(fields: [toolId], references: [id])
+
+  @@map("vendor_disclosures")
+}
+
+model VendorReview {
+  id                  String       @id @default(uuid())
+  cycleId             String       @map("cycle_id")
+  vendorId            String       @map("vendor_id")
+  status              ReviewStatus @default(Pending)
+  windowOpensAt       DateTime     @map("window_opens_at")
+  windowClosesAt      DateTime     @map("window_closes_at") // 5 business days after opens
+  accessToken         String?      @unique @map("access_token") // Secure access for vendor
+  corrections         Json?        // Array of {dimensionId, claimedValue, evidence, status}
+  operatorNotes       String?      @map("operator_notes")
+  completedAt         DateTime?    @map("completed_at")
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+
+  cycle  BenchmarkCycle @relation(fields: [cycleId], references: [id])
+  vendor Vendor         @relation(fields: [vendorId], references: [id])
+
+  @@unique([cycleId, vendorId])
+  @@map("vendor_reviews")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CONTENT DOMAIN
+// ═══════════════════════════════════════════════════════════════
+
+model ContentBlock {
+  id           String    @id @default(uuid())
+  slug         String    @unique
+  blockType    String    @map("block_type") // e.g. "about", "disclosure", "methodology"
+  title        String?
+  content      Json      // Structured content
+  displayOrder Int       @default(0) @map("display_order")
+  isPublished  Boolean   @default(false) @map("is_published")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  @@map("content_blocks")
+}

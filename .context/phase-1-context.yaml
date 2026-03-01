@@ -1,0 +1,179 @@
+# Phase 1 Execution Context - AISearchArena.com
+# Generated: 2026-03-01
+# Source: project-plan.md (Phase 1)
+
+phase_id: phase-1
+phase_name: "Foundation & Data Model"
+status: not_started
+
+context:
+  summary: |
+    Scaffold the Next.js 15 project, deploy the full 23-entity Prisma schema to Neon,
+    and build the independent admin features (AI model config, prompt sets, vendor/tool
+    CRUD, methodology versioning, static pages). After this phase, the database is
+    populated with seed data and ready for evaluation pipeline work in Phase 2.
+
+  key_decisions:
+    - decision: "OpenRouter as unified AI gateway"
+      rationale: "Single API key, single billing, unified format instead of 6 separate provider adapters"
+      alternatives_considered: "Direct provider APIs (more control, more operational overhead)"
+
+    - decision: "Next.js 15 (not 16)"
+      rationale: "Battle-tested, full shadcn/ui compatibility, widest ecosystem support for March launch"
+      alternatives_considered: "Next.js 16 (latest, Turbopack stable, but newer ecosystem)"
+
+    - decision: "Neon serverless PostgreSQL (not Supabase)"
+      rationale: "$0 free tier vs $10/mo Supabase addon; Prisma for type-safe 23-entity model"
+      alternatives_considered: "Supabase (managed Postgres + auth + realtime, but higher cost)"
+
+    - decision: "Admin UI via seed/config for F-008, F-009 in MVP"
+      rationale: "PRD mvp_simplification notes: admin UI deferred to P1 for prompt sets and AI model config"
+      alternatives_considered: "Full admin CRUD UI (more effort, not needed for single operator)"
+
+    - decision: "F-025 Admin Auth deferred to P1"
+      rationale: "Architecture marked as deferred; basic auth / env var gate sufficient for solo operator"
+      alternatives_considered: "Custom auth system (overkill for single admin user at launch)"
+
+  technical_context:
+    stack:
+      framework: "Next.js 15 (App Router)"
+      styling: "Tailwind CSS + shadcn/ui"
+      content: "MDX"
+      orm: "Prisma"
+      database: "Neon serverless PostgreSQL"
+      ai_gateway: "OpenRouter"
+      storage: "Cloudflare R2"
+      hosting: "Vercel"
+
+    patterns:
+      - "App Router with (public)/ and admin/ route groups"
+      - "SSG/ISR for public pages, server components default"
+      - "Prisma for all database access (no raw SQL)"
+      - "Environment variables for all secrets (never in client bundle)"
+      - "Seed scripts for initial data population"
+
+    constraints:
+      - "23 entities must match PRD entity definitions exactly"
+      - "Brand accent color: #475569 (Benchmark Slate)"
+      - "All weights within a track must sum to 1.0"
+      - "OpenRouter model identifiers must map to 6 specific providers"
+
+  dependencies:
+    external:
+      - service: "Neon"
+        purpose: "PostgreSQL database"
+        required_for: "Task 1.2+"
+        setup: "Create project, get connection string"
+
+      - service: "Vercel"
+        purpose: "Hosting and deployment"
+        required_for: "Task 1.1"
+        setup: "Link GitHub repo, configure environment variables"
+
+      - service: "OpenRouter"
+        purpose: "AI model API gateway"
+        required_for: "Task 1.3 (config), Phase 2 (execution)"
+        setup: "Create account, get API key"
+
+      - service: "Cloudflare R2"
+        purpose: "Evidence artifact storage"
+        required_for: "Phase 2 (Task 2.4)"
+        setup: "Create bucket, get access credentials"
+
+    internal: []
+
+current_focus:
+  active_task: null
+  blocked_tasks: []
+  completed_tasks: []
+
+task_sequence:
+  - id: "1.1"
+    name: "Project Scaffolding & Infrastructure"
+    can_start: true
+    blocks: ["1.2", "1.7"]
+
+  - id: "1.2"
+    name: "Database Schema (23 Entities)"
+    can_start: false
+    depends_on: ["1.1"]
+    blocks: ["1.3", "1.4", "1.5", "1.6"]
+
+  - id: "1.3"
+    name: "AI Model Configuration Management (F-009)"
+    can_start: false
+    depends_on: ["1.2"]
+
+  - id: "1.4"
+    name: "Prompt Set Management (F-008)"
+    can_start: false
+    depends_on: ["1.2", "1.6"]
+
+  - id: "1.5"
+    name: "Vendor & Tool Administration (F-010)"
+    can_start: false
+    depends_on: ["1.2"]
+
+  - id: "1.6"
+    name: "Methodology Version Management (F-013)"
+    can_start: false
+    depends_on: ["1.2"]
+
+  - id: "1.7"
+    name: "Static Content & About Pages (F-024)"
+    can_start: false
+    depends_on: ["1.1"]
+
+  parallelizable_after_1_2:
+    - ["1.3", "1.5", "1.6", "1.7"]
+    - "1.4 depends on 1.6, so starts after 1.6"
+
+handoff_notes:
+  from_previous_phase: null
+  for_next_phase:
+    - "Phase 2 requires: completed Prisma schema, seeded AI model configs, seeded prompt sets, seeded tools/vendors"
+    - "OpenRouter API key must be configured in environment before Phase 2 evaluation execution"
+    - "R2 bucket must be created before Phase 2 evidence capture"
+
+quality_requirements:
+  gates:
+    - gate: build
+      required: true
+      command: "npm run build"
+    - gate: lint
+      required: true
+      command: "npm run lint"
+    - gate: test
+      required: true
+      command: "npm test"
+  acceptance_bar: "All 23 entities queryable via Prisma client; seed data populated; static pages rendering"
+
+seed_data_requirements:
+  - entity: "MarketSegment"
+    count: 7
+    source: "PRD market segment definitions"
+
+  - entity: "BenchmarkTrackDefinition"
+    count: 2
+    values: ["GEO Platform Track", "llms.txt Tooling Track"]
+
+  - entity: "AIModel"
+    count: 6
+    providers: ["OpenAI", "Anthropic", "Google", "Cohere", "Mistral", "Meta"]
+    note: "All accessed via OpenRouter; model_identifier uses OpenRouter format"
+
+  - entity: "Vendor + Tool"
+    count: "27+ tools across vendors"
+    source: "PRD tool landscape data"
+
+  - entity: "MethodologyVersion"
+    count: 1
+    value: "v1.0 with 50+ scoring dimensions"
+
+  - entity: "ScoringDimension"
+    count: "50+"
+    source: "PRD evaluation criteria"
+
+  - entity: "PromptSet"
+    count: "1 per dimension minimum"
+    note: "70% stable, 30% rotating flagged"

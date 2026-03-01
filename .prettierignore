@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+build
+coverage
+package-lock.json
+prisma/migrations
+missions
+templates
+schemas
+field-manual
+gates
+stack-profiles
+mcp
+docs
+.context
