@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { NewsletterSignup } from "@/components/newsletter-signup";
 
 export const dynamic = "force-dynamic";
 
@@ -179,6 +180,8 @@ export default async function HomePage() {
           <p className="mt-2 text-sm text-neutral-grey">
             First benchmark cycle: March 2026
           </p>
+
+          <NewsletterSignup variant="hero" />
 
           <div className="mx-auto mt-12 grid max-w-3xl gap-4 sm:grid-cols-3">
             <Card>
