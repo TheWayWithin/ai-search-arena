@@ -44,11 +44,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
+        {process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL && (
           <script
-            defer
-            data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
-            src="https://plausible.io/js/script.js"
+            async
+            src={process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL}
           />
         )}
       </head>
