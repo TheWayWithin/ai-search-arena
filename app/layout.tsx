@@ -45,10 +45,17 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL && (
-          <script
-            async
-            src={process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL}
-          />
+          <>
+            <script
+              async
+              src={process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()`,
+              }}
+            />
+          </>
         )}
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
