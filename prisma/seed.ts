@@ -47,12 +47,13 @@ async function main() {
   // ── AI Models (6 via OpenRouter) ─────────────────────────────
   const models = await Promise.all(
     [
-      { provider: "OpenAI", modelIdentifier: "openai/gpt-4o", displayName: "GPT-4o", timeoutMs: 30000 },
-      { provider: "Anthropic", modelIdentifier: "anthropic/claude-sonnet-4-6", displayName: "Claude Sonnet 4.6", timeoutMs: 30000 },
-      { provider: "Google", modelIdentifier: "google/gemini-2.0-flash-001", displayName: "Gemini 2.0 Flash", timeoutMs: 30000 },
-      { provider: "Cohere", modelIdentifier: "cohere/command-r-plus", displayName: "Command R+", timeoutMs: 45000 },
-      { provider: "Mistral", modelIdentifier: "mistralai/mistral-large-latest", displayName: "Mistral Large", timeoutMs: 30000 },
-      { provider: "Meta", modelIdentifier: "meta-llama/llama-3.1-405b-instruct", displayName: "Llama 3.1 405B", timeoutMs: 60000 },
+      // v1.3 model panel — determined via cross-analysis of 7 independent LLM evaluations
+      { provider: "OpenAI", modelIdentifier: "openai/gpt-5.2", displayName: "GPT-5.2", timeoutMs: 30000 },
+      { provider: "Anthropic", modelIdentifier: "anthropic/claude-opus-4.6", displayName: "Claude Opus 4.6", timeoutMs: 30000 },
+      { provider: "Google", modelIdentifier: "google/gemini-3-pro", displayName: "Gemini 3 Pro", timeoutMs: 30000 },
+      { provider: "xAI", modelIdentifier: "x-ai/grok-4", displayName: "Grok 4", timeoutMs: 45000 },
+      { provider: "DeepSeek", modelIdentifier: "deepseek/deepseek-v3.2", displayName: "DeepSeek V3.2", timeoutMs: 30000 },
+      { provider: "Mistral", modelIdentifier: "mistralai/mistral-large-2512", displayName: "Mistral Large 3", timeoutMs: 60000 },
     ].map((m) =>
       prisma.aIModel.upsert({
         where: { modelIdentifier: m.modelIdentifier },
