@@ -320,6 +320,16 @@ async function main() {
       vendor: { companyName: "Rio SEO", slug: "rio-seo", websiteUrl: "https://www.rioseo.com", description: "Local search and reputation management for enterprises" },
       tools: [{ name: "Rio SEO", slug: "rio-seo", description: "Enterprise local marketing platform for search visibility, reputation, and reporting", websiteUrl: "https://www.rioseo.com", tracks: ["geo-platform"], segments: ["local-multi-location", "enterprise-seo"] }],
     },
+    // 29. AI Search Mastery (suite + individual products)
+    {
+      vendor: { companyName: "AI Search Mastery", slug: "ai-search-mastery", websiteUrl: "https://aisearchmastery.com", description: "Comprehensive AI search optimization suite with specialized tools for visibility, auditing, benchmarking, and citation tracking" },
+      tools: [
+        { name: "AI Search Mastery", slug: "ai-search-mastery", description: "Comprehensive AI search optimization suite combining auditing, benchmarking, and monitoring tools to maximize visibility in AI-powered search engines", websiteUrl: "https://aisearchmastery.com", tracks: ["geo-platform"], segments: ["smb-marketing", "enterprise-seo", "agency-consulting", "content-marketing"] },
+        { name: "AImpact Scanner", slug: "aimpact-scanner", description: "AI search readiness analyzer that evaluates websites across 27 factors and provides actionable recommendations to improve visibility in ChatGPT, Perplexity, and Google AI Overviews", websiteUrl: "https://aimpactscanner.com", tracks: ["geo-platform"], segments: ["smb-marketing", "enterprise-seo", "agency-consulting", "e-commerce", "technical-seo"] },
+        { name: "llms.txt Mastery", slug: "llms-txt-mastery", description: "Specialized platform for creating, managing, and optimizing llms.txt files to make websites AI-readable and improve LLM discoverability", websiteUrl: "https://llmtxtmastery.com", tracks: ["llms-txt-tooling"], segments: ["smb-marketing", "enterprise-seo", "technical-seo"] },
+        { name: "AImpact Monitor", slug: "aimpact-monitor", description: "Brand-level AI citation tracking and monitoring platform that tracks how and where brands are mentioned across AI-powered search engines", websiteUrl: "https://aimpactmonitor.com", tracks: ["geo-platform"], segments: ["enterprise-seo", "agency-consulting", "smb-marketing"] },
+      ],
+    },
   ];
 
   let vendorCount = 0;
