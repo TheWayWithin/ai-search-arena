@@ -1,11 +1,20 @@
 # Handoff Notes - AISearchArena.com
 
-**Last Updated**: 2026-03-01 01:21
+**Last Updated**: 2026-03-02 14:00
 
 ## Current State
 
-- **Phase**: ALL PHASES COMPLETE (4/4)
-- **Status**: MVP build complete, ready for deployment
+- **Phase**: Sprint 1 — GEO Benchmark Framework (COMPLETE)
+- **Status**: Live at https://aisearcharena.com (MVP deployed)
+- **Framework Repo**: https://github.com/TheWayWithin/geo-benchmark-framework (public)
+- **Sprint Plan**: `/sprints/Sprint-1-GEO-Benchmark-Framework.md`
+
+### Sprint 1 Deliverables
+- **geo-benchmark-framework** repo: 7 files (dimensions.yaml, models.yaml, geo-platform.yaml, overview.md, README.md, CHANGELOG.md, LICENSE)
+- **Framework loader**: `prisma/load-framework.ts` — loads YAML from GitHub or local, upserts to DB
+- **npm scripts**: `framework:load`, `framework:load:local`, `framework:dry-run`
+- **Validation**: Dry-run passes, live load produces 51 dims + 51 prompt sets + 6 models, weights 1.0000
+- **Dependency**: Added `yaml` npm package for reliable YAML parsing
 
 ## What Was Built
 
@@ -35,13 +44,48 @@
 - Methodology page (data-driven from DB)
 - Header/footer navigation
 - robots.txt, sitemap.xml, OG/Twitter meta, JSON-LD on all pages
-- Plausible analytics + Sentry error tracking (env var driven)
+- Plausible analytics + Sentry error tracking
+
+## Production Services (ALL LIVE)
+
+| Service | Status | Details |
+|---------|--------|---------|
+| **Neon** | Live | `ai-search-arena` project, AWS US East 1, Postgres 17, migrated + seeded |
+| **Vercel** | Live | `aisearchareana` project, auto-deploy from GitHub, custom domain |
+| **Domain** | Live | aisearcharena.com → Vercel (A record + CNAME www) |
+| **OpenRouter** | Configured | API key in Vercel env vars |
+| **Cloudflare R2** | Configured | Bucket: `aisearcharena-evidence`, API token scoped to bucket |
+| **Resend** | Configured | API key set, domain DNS records added (DKIM, SPF, DMARC) |
+| **Plausible** | Verified | Custom script URL with init(), tracking active |
+| **Sentry** | Configured | DSN set in Vercel env vars |
+
+## Environment Variables (Vercel)
+
+| Variable | Environments | Sensitive |
+|----------|-------------|-----------|
+| DATABASE_URL | Production, Preview | Yes |
+| OPENROUTER_API_KEY | Production, Preview | Yes |
+| R2_ACCOUNT_ID | Production, Preview | Yes |
+| R2_ACCESS_KEY_ID | Production, Preview | Yes |
+| R2_SECRET_ACCESS_KEY | Production, Preview | Yes |
+| R2_BUCKET_NAME | Production, Preview | Yes |
+| RESEND_API_KEY | Production, Preview | Yes |
+| NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL | All | No |
+| NEXT_PUBLIC_SENTRY_DSN | All | No |
+
+## Git History
+
+| Commit | Description |
+|--------|-------------|
+| `fc6b2ac` | feat: complete AISearchArena.com MVP (all 4 phases) — 67 files, 24,280 lines |
+| `9609888` | fix: update Plausible analytics to use custom script URL |
+| `ff2f77e` | fix: add Plausible init script for verification |
 
 ## Files Created (Key Modules)
 
 | Category | Files |
 |----------|-------|
-| Schema | `prisma/schema.prisma`, `prisma/seed.ts` |
+| Schema | `prisma/schema.prisma`, `prisma/seed.ts`, `prisma/migrations/` |
 | State Machine | `lib/state-machine/cycle.ts` |
 | Database Layer | `lib/db/index.ts`, `cycles.ts`, `enrollments.ts`, `ai-models.ts`, `methodology.ts`, `vendors.ts`, `prompt-sets.ts`, `vendor-reviews.ts`, `reports.ts`, `audit-packages.ts`, `leaderboard.ts` |
 | Evaluation | `lib/evaluation/openrouter.ts`, `pipeline.ts`, `evidence.ts` |
@@ -56,15 +100,22 @@
 - Typecheck: PASSES (zero errors)
 - Tests: 43/43 passing
 - Build: 9 routes (4 static + 5 dynamic)
-- No database required for build/typecheck/tests
+- Production: Live at aisearcharena.com
 
-## To Deploy (User Actions Required)
+## What's Next
 
-1. **Vercel**: `vercel link` → connect to project
-2. **Database**: Set `DATABASE_URL` with Neon connection string
-3. **Migration**: `npx prisma migrate dev` → create tables
-4. **Seed**: `npm run db:seed` → populate initial data
-5. **API Keys**: Set `OPENROUTER_API_KEY`, R2 credentials, `RESEND_API_KEY`
-6. **Analytics**: Set `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`, `NEXT_PUBLIC_SENTRY_DSN`
-7. **Deploy**: `vercel deploy --prod`
-8. **DNS**: Point aisearcharena.com to Vercel
+### Immediate (ready to execute)
+- Run first benchmark cycle: create cycle, enroll tools, execute evaluations
+- Requires: visiting admin routes or running via scripts/API
+
+### P1 Backlog (post-launch)
+- F-025: Admin Authentication
+- F-004: Tool Comparison View
+- F-019: Badge Awarding & Display
+- F-020: Cycle Archive & Historical Access
+- F-021: Vendor Directory & Profile Pages
+
+### Deferred UI Features
+- Market segment filter on leaderboard (data layer ready)
+- Cycle selector for historical rankings (data layer ready)
+- Historical score trend on tool detail (requires multiple cycles)

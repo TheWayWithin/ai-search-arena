@@ -417,20 +417,50 @@ Task 4.4: Methodology Public Pages (F-017):
 - SEO: robots.txt, sitemap.xml, OG meta, Twitter cards
 - Analytics: Plausible script (conditional), Sentry DSN ready
 
-**Remaining (user action required):**
-- `vercel link` + DNS configuration for aisearcharena.com deployment
-- Neon DATABASE_URL for Prisma migration + seed
-- OPENROUTER_API_KEY for evaluation pipeline
-- R2 credentials for evidence storage
-- Plausible domain verification
-- Sentry DSN configuration
-- Lighthouse audit after deployment
+---
+
+## Production Deployment
+
+### 2026-03-01 16:30 - Neon Database Setup
+- Created Neon project `ai-search-arena` (AWS US East 1, Postgres 17)
+- Set DATABASE_URL in local .env
+- Ran `npx prisma migrate dev --name init` — all 24 tables created
+- Ran `npm run db:seed` — 7 segments, 2 tracks, 6 models, 51 dimensions, 28 vendors/tools
+
+### 2026-03-01 16:45 - Vercel Deployment
+- Installed Vercel CLI, logged in
+- `vercel link` — created project `aisearchareana` under Jamie Watters' projects
+- Connected GitHub repo (TheWayWithin/ai-search-arena) for auto-deploy
+- Added DATABASE_URL as sensitive env var (Production + Preview)
+- `vercel deploy --prod` — successful, live at aisearchareana.vercel.app
+
+### 2026-03-01 17:00 - Custom Domain
+- Added aisearcharena.com via `vercel domains add`
+- Configured Namecheap DNS: A record (@→76.76.21.21), CNAME (www→cname.vercel-dns.com)
+- SSL auto-provisioned by Vercel
+- Site live at https://aisearcharena.com
+
+### 2026-03-01 17:15 - API Keys & Services
+- **OpenRouter**: API key added to .env and Vercel (OPENROUTER_API_KEY)
+- **Cloudflare R2**: Created bucket `aisearcharena-evidence`, API token with Object Read & Write
+  - R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME added to .env and Vercel
+- **Resend**: API key added (RESEND_API_KEY), domain DNS records added to Namecheap (DKIM, SPF MX, SPF TXT, DMARC)
+- **Plausible**: Site added, script URL configured (NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL)
+  - Updated app/layout.tsx to use new Plausible script format with init() call
+  - Verification passed
+- **Sentry**: Project created, DSN added (NEXT_PUBLIC_SENTRY_DSN)
+
+### 2026-03-01 17:15 - Code Changes for Deployment
+- Committed all MVP code: `fc6b2ac` (67 files, 24,280 lines)
+- Committed Plausible script update: `9609888` (migration files + layout fix)
+- Committed Plausible init() fix: `ff2f77e` (verification fix)
+- All pushed to origin/main, auto-deployed via Vercel
 
 ---
 
 ## Mission Complete
 
-### 2026-03-01 01:21 - MVP Build Complete (All 4 Phases)
+### 2026-03-01 17:30 - MVP Build + Deployment Complete
 
 **Summary:**
 - 21/21 tasks complete across 4 phases
@@ -450,11 +480,80 @@ Task 4.4: Methodology Public Pages (F-017):
 - TypeScript strict mode, zero errors
 - Production build passing (9 routes)
 
-**To launch, user needs:**
-1. `vercel link` — connect to Vercel project
-2. Set DATABASE_URL — Neon PostgreSQL connection string
-3. `npx prisma migrate dev` — run migration
-4. `npm run db:seed` — seed initial data
-5. Set OPENROUTER_API_KEY — for AI evaluations
-6. Set R2 credentials — for evidence storage
-7. Deploy to Vercel — `vercel deploy --prod`
+**Production Services (ALL LIVE):**
+- Neon PostgreSQL — migrated and seeded
+- Vercel — live at aisearcharena.com with auto-deploy
+- OpenRouter — configured for 6-model evaluations
+- Cloudflare R2 — bucket created for evidence artifacts
+- Resend — configured, domain DNS pending verification
+- Plausible — verified and tracking
+- Sentry — configured for error tracking
+
+---
+
+## Sprint 1: GEO Benchmark Framework
+
+### 2026-03-02 14:00 - Sprint 1 Complete
+
+**Phase 1: Framework Repository**
+
+Created public repository: https://github.com/TheWayWithin/geo-benchmark-framework
+
+Files created:
+- `methodology/v1.0/dimensions.yaml` — 51 dimensions with 128 evaluation prompts, grouped by 6 categories, weights summing to 1.0000
+- `methodology/v1.0/models.yaml` — 6 AI model configurations (GPT-4o, Claude Sonnet 4.6, Gemini 2.0 Flash, Command R+, Mistral Large, Llama 3.1 405B)
+- `methodology/v1.0/overview.md` — Methodology documentation: principles, process, scoring scale, fairness safeguards, limitations
+- `tracks/geo-platform.yaml` — GEO Platform Track definition with all 51 dimension slugs
+- `README.md` — Repository overview with category table, scoring explanation, vendor guidance, versioning strategy
+- `CHANGELOG.md` — Initial v1.0.0 entry
+- `LICENSE` — CC BY 4.0
+
+Data extracted from: `prisma/seed.ts` (dimensions, models) and `prisma/seed-prompts.ts` (evaluation prompts)
+
+**Phase 2: Framework Loader**
+
+Created `prisma/load-framework.ts`:
+- Loads YAML from GitHub raw URLs or local clone (`--local` flag)
+- Uses `yaml` npm package for reliable YAML parsing (folded multiline strings, nested arrays)
+- Validates: 51 dimensions, weights sum, required fields, 2+ prompts per dimension
+- Upserts: MethodologyVersion, ScoringDimensions, PromptSets, AIModels
+- Pins git SHA for version traceability
+- `--dry-run` flag for parse-and-validate without DB writes
+- `--version` flag for future methodology versions
+
+npm scripts added:
+- `framework:load` — Load from GitHub
+- `framework:load:local` — Load from local `../geo-benchmark-framework`
+- `framework:dry-run` — Dry run against local clone
+
+Dependency added: `yaml@^2.8.2`
+
+**Phase 3: Validation**
+
+Dry run output:
+- 51 dimensions parsed, all valid
+- 6 models parsed, all valid
+- Weights sum: 1.0000
+- 6 categories with correct counts and weights
+
+Live load against Neon database:
+- Methodology v1.0.0 matched existing record
+- 51 dimensions updated (matched seed data)
+- 51 prompt sets created (new — framework prompts replace seed-prompts)
+- 6 AI models updated (matched seed data)
+- Git SHA pinned: 10a92d6
+
+**Issue Encountered: Custom YAML Parser**
+
+Initial implementation used a custom minimal YAML parser to avoid adding a dependency. The parser failed on nested arrays containing folded multiline strings (`- >` syntax used for prompts). All 51 dimensions showed 0 prompts parsed.
+
+Root cause: The multiline continuation regex `/^\s{4,}/` matched both multiline text AND nested array item prefixes (`    - >`), causing the parser to treat new prompt starts as multiline text continuation.
+
+Fix: Replaced custom parser with `yaml` npm package (`yaml@^2.8.2`). The 5KB dependency increase is worth eliminating all YAML parsing edge cases.
+
+**Sprint 1 Summary:**
+- 3/3 phases complete
+- Framework repo public and auditable by vendors
+- Loader tested with dry-run and live DB
+- If a weight changes in dimensions.yaml, re-running `framework:load` updates the DB — no code changes needed
+- `prisma/seed-prompts.ts` retained but `load-framework.ts` is now the source of truth

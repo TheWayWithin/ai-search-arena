@@ -18,7 +18,12 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "cycle:seed-prompts": "tsx prisma/seed-prompts.ts",
+    "cycle:run": "tsx scripts/run-cycle.ts",
+    "framework:load": "tsx prisma/load-framework.ts",
+    "framework:load:local": "tsx prisma/load-framework.ts --local ../geo-benchmark-framework",
+    "framework:dry-run": "tsx prisma/load-framework.ts --dry-run --local ../geo-benchmark-framework"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
@@ -32,7 +37,8 @@
     "radix-ui": "^1.4.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

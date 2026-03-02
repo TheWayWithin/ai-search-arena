@@ -104,7 +104,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] MDX configured for content pages
   - [x] ESLint + Prettier configured
   - [x] GitHub repository created with CI (lint + type-check on PR)
-  - [ ] Vercel project linked with preview deploys enabled (requires manual `vercel link`)
+  - [x] Vercel project linked with preview deploys enabled - 2026-03-01
   - [x] Environment variable structure defined (.env.example)
 
 #### Task 1.2: Database Schema (24 Entities)
@@ -117,7 +117,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 - **Acceptance Criteria**:
   - [x] All 24 entities defined in Prisma schema with correct types, constraints, and relationships
   - [x] State machine enums defined (CycleState, ScoreState) + 6 additional enums
-  - [ ] Migration runs clean against Neon (requires DATABASE_URL)
+  - [x] Migration runs clean against Neon - 2026-03-01
   - [x] Seed script creates: 7 market segments, 2 benchmark tracks, 6 AI model configs, 28 vendors/tools, 51 scoring dimensions
 
 #### Task 1.3: AI Model Configuration Management (F-009)
@@ -524,14 +524,14 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - EIF: Vercel deployment (5), GitHub Actions CI (5), Sentry (3), Plausible (3)
   - Processing: Environment config, DNS (2)
 - **Acceptance Criteria**:
-  - [ ] Production deployment on Vercel with custom domain (requires `vercel link` + DNS)
-  - [ ] SSL configured via Vercel (requires deployment)
-  - [x] Sentry error tracking: NEXT_PUBLIC_SENTRY_DSN env var ready
-  - [x] Plausible analytics: conditional script in root layout (NEXT_PUBLIC_PLAUSIBLE_DOMAIN)
+  - [x] Production deployment on Vercel with custom domain - aisearcharena.com live 2026-03-01
+  - [x] SSL configured via Vercel - auto-provisioned 2026-03-01
+  - [x] Sentry error tracking: NEXT_PUBLIC_SENTRY_DSN configured 2026-03-01
+  - [x] Plausible analytics: custom script URL with init() verified 2026-03-01
   - [x] GitHub Actions: CI pipeline configured (.github/workflows/ci.yml)
   - [ ] Admin routes protected (F-025 deferred per PRD)
   - [x] Environment variables secured: API keys in .env.example, not in client bundle
-  - [ ] Lighthouse audit (requires deployed site)
+  - [ ] Lighthouse audit (TODO - site is live, can run now)
   - [x] Robots.txt: app/robots.ts with sitemap reference
   - [x] Sitemap.xml: app/sitemap.ts with static + dynamic tool pages
   - [x] Open Graph + Twitter meta tags on root layout
