@@ -31,7 +31,7 @@ import { ConfidenceTag, CycleState, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL
-    ? `${process.env.DATABASE_URL}&connection_limit=10&pool_timeout=30`
+    ? `${process.env.DATABASE_URL}&connection_limit=5&pool_timeout=60`
     : undefined,
 });
 
@@ -608,7 +608,21 @@ Provide your score and rationale.`;
         }
 
         if (evalData.length > 0) {
-          await prisma.modelEvaluation.createMany({ data: evalData });
+          // Retry DB write with backoff to handle pool exhaustion on long runs
+          for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+              await prisma.modelEvaluation.createMany({ data: evalData });
+              break;
+            } catch (e: unknown) {
+              const msg = e instanceof Error ? e.message : String(e);
+              if (attempt < 2 && msg.includes("connection pool")) {
+                log("EVAL", `  Pool timeout, retrying in ${(attempt + 1) * 5}s...`);
+                await new Promise((r) => setTimeout(r, (attempt + 1) * 5000));
+              } else {
+                throw e;
+              }
+            }
+          }
         }
 
         totalCalls += results.length;
@@ -1004,7 +1018,11 @@ Provide your score and rationale.`;
 
     log("STATE", "Transitioning Publication → Completed...");
     cycle = await transitionCycle(cycleId, CycleState.Completed);
-    log("STATE", "✓ Completed");
+    await prisma.benchmarkCycle.update({
+      where: { id: cycleId },
+      data: { publishedAt: new Date() },
+    });
+    log("STATE", "✓ Completed (publishedAt set)");
   }
 
   // ── Final summary ─────────────────────────────────────────────
