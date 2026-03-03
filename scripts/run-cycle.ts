@@ -27,7 +27,7 @@
  *  14. Transition → Completed
  */
 
-import { ConfidenceTag, CycleState, PrismaClient } from "@prisma/client";
+import { ConfidenceTag, CycleState, Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL
@@ -578,7 +578,7 @@ Provide your score and rationale.`;
 
         // Save ModelEvaluation records (batched to avoid pool exhaustion)
         const promptSetId = promptSet?.id ?? "";
-        const evalData: Parameters<typeof prisma.modelEvaluation.create>[0]["data"][] = [];
+        const evalData: Prisma.ModelEvaluationCreateManyInput[] = [];
         for (const result of results) {
           const model = models.find(
             (m) => m.modelIdentifier === result.modelIdentifier
