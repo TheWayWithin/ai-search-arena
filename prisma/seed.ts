@@ -49,8 +49,8 @@ async function main() {
     [
       // v1.3 model panel — determined via cross-analysis of 7 independent LLM evaluations
       { provider: "OpenAI", modelIdentifier: "openai/gpt-5.2", displayName: "GPT-5.2", timeoutMs: 30000 },
-      { provider: "Anthropic", modelIdentifier: "anthropic/claude-opus-4.6", displayName: "Claude Opus 4.6", timeoutMs: 30000 },
-      { provider: "Google", modelIdentifier: "google/gemini-3-pro-preview", displayName: "Gemini 3 Pro Preview", timeoutMs: 30000 },
+      { provider: "Anthropic", modelIdentifier: "anthropic/claude-sonnet-4.6", displayName: "Claude Sonnet 4.6", timeoutMs: 30000 },
+      { provider: "Google", modelIdentifier: "google/gemini-3-flash-preview", displayName: "Gemini 3 Flash", timeoutMs: 30000 },
       { provider: "xAI", modelIdentifier: "x-ai/grok-4.1-fast", displayName: "Grok 4.1 Fast", timeoutMs: 45000 },
       { provider: "DeepSeek", modelIdentifier: "deepseek/deepseek-v3.2", displayName: "DeepSeek V3.2", timeoutMs: 30000 },
       { provider: "Mistral", modelIdentifier: "mistralai/mistral-large-2512", displayName: "Mistral Large 3", timeoutMs: 60000 },

@@ -29,7 +29,11 @@
 
 import { ConfidenceTag, CycleState, PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.DATABASE_URL
+    ? `${process.env.DATABASE_URL}&connection_limit=10&pool_timeout=30`
+    : undefined,
+});
 
 // Loose type for the cycle variable — we only need id, state, and methodologyVersionId
 type CycleRef = {
@@ -572,8 +576,9 @@ Provide your score and rationale.`;
           )
         );
 
-        // Save ModelEvaluation records
+        // Save ModelEvaluation records (batched to avoid pool exhaustion)
         const promptSetId = promptSet?.id ?? "";
+        const evalData: Parameters<typeof prisma.modelEvaluation.create>[0]["data"][] = [];
         for (const result of results) {
           const model = models.find(
             (m) => m.modelIdentifier === result.modelIdentifier
@@ -586,22 +591,24 @@ Provide your score and rationale.`;
               ? "Timeout"
               : "Failed";
 
-          await prisma.modelEvaluation.create({
-            data: {
-              cycleId,
-              toolId: tool.id,
-              dimensionId: dimension.id,
-              modelId: model.id,
-              promptSetId: promptSetId,
-              status: status as "Success" | "Failed" | "Timeout",
-              parsedScore: result.parsedScore,
-              rawResponse: result.rawResponse,
-              responseTimeMs: result.responseTimeMs,
-              evaluatedAt: new Date(),
-            },
+          evalData.push({
+            cycleId,
+            toolId: tool.id,
+            dimensionId: dimension.id,
+            modelId: model.id,
+            promptSetId: promptSetId,
+            status: status as "Success" | "Failed" | "Timeout",
+            parsedScore: result.parsedScore,
+            rawResponse: result.rawResponse,
+            responseTimeMs: result.responseTimeMs,
+            evaluatedAt: new Date(),
           });
 
           totalTokens += result.tokensUsed;
+        }
+
+        if (evalData.length > 0) {
+          await prisma.modelEvaluation.createMany({ data: evalData });
         }
 
         totalCalls += results.length;
@@ -802,20 +809,20 @@ Provide your score and rationale.`;
       }
       const confidenceTag = priority[lowestIdx];
 
-      await prisma.compositeScore.upsert({
-        where: {
-          cycleId_toolId_segmentId: { cycleId, toolId, segmentId: "overall" },
-        },
-        update: { value: compositeScore, confidenceTag },
-        create: {
-          cycleId,
-          toolId,
-          segmentId: "overall",
-          value: compositeScore,
-          rank: 0,
-          confidenceTag,
-        },
+      // Nullable segmentId can't use compound unique in upsert, so find-then-create/update
+      const existing = await prisma.compositeScore.findFirst({
+        where: { cycleId, toolId, segmentId: null },
       });
+      if (existing) {
+        await prisma.compositeScore.update({
+          where: { id: existing.id },
+          data: { value: compositeScore, confidenceTag },
+        });
+      } else {
+        await prisma.compositeScore.create({
+          data: { cycleId, toolId, segmentId: null, value: compositeScore, rank: 0, confidenceTag },
+        });
+      }
 
       compositeResults.push({ toolId, compositeScore, confidenceTag });
     }
@@ -828,16 +835,15 @@ Provide your score and rationale.`;
       if (prevScore !== null && item.compositeScore < prevScore) currentRank++;
       prevScore = item.compositeScore;
 
-      await prisma.compositeScore.update({
-        where: {
-          cycleId_toolId_segmentId: {
-            cycleId,
-            toolId: item.toolId,
-            segmentId: "overall",
-          },
-        },
-        data: { rank: currentRank },
+      const scoreRecord = await prisma.compositeScore.findFirst({
+        where: { cycleId, toolId: item.toolId, segmentId: null },
       });
+      if (scoreRecord) {
+        await prisma.compositeScore.update({
+          where: { id: scoreRecord.id },
+          data: { rank: currentRank },
+        });
+      }
     }
 
     log("SCORE", `✓ ${compositeResults.length} tools ranked`);
@@ -948,7 +954,7 @@ Provide your score and rationale.`;
     log("REPORT", "Generating benchmark report...");
 
     const compositeScores = await prisma.compositeScore.findMany({
-      where: { cycleId, segmentId: "overall" },
+      where: { cycleId, segmentId: null },
       include: { tool: { include: { vendor: true } } },
       orderBy: { rank: "asc" },
     });
@@ -1013,7 +1019,7 @@ Provide your score and rationale.`;
 
   // Print final rankings
   const finalRankings = await prisma.compositeScore.findMany({
-    where: { cycleId, segmentId: "overall" },
+    where: { cycleId, segmentId: null },
     include: { tool: true },
     orderBy: { rank: "asc" },
     take: 10,
