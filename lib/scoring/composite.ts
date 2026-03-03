@@ -135,28 +135,20 @@ export async function calculateCycleCompositeScores(cycleId: string) {
       .map((s) => s.confidenceTag);
     const confidenceTag = deriveCompositeConfidence(applicableTags);
 
-    // Upsert composite score (overall, no segment filter)
-    await prisma.compositeScore.upsert({
-      where: {
-        cycleId_toolId_segmentId: {
-          cycleId,
-          toolId,
-          segmentId: "overall",
-        },
-      },
-      update: {
-        value: compositeScore,
-        confidenceTag,
-      },
-      create: {
-        cycleId,
-        toolId,
-        segmentId: "overall",
-        value: compositeScore,
-        rank: 0, // Placeholder, updated below after ranking
-        confidenceTag,
-      },
+    // Nullable segmentId can't use compound unique in upsert, so find-then-create/update
+    const existing = await prisma.compositeScore.findFirst({
+      where: { cycleId, toolId, segmentId: null },
     });
+    if (existing) {
+      await prisma.compositeScore.update({
+        where: { id: existing.id },
+        data: { value: compositeScore, confidenceTag },
+      });
+    } else {
+      await prisma.compositeScore.create({
+        data: { cycleId, toolId, segmentId: null, value: compositeScore, rank: 0, confidenceTag },
+      });
+    }
 
     compositeResults.push({ toolId, compositeScore });
   }
@@ -166,16 +158,15 @@ export async function calculateCycleCompositeScores(cycleId: string) {
 
   // Update ranks
   for (const item of ranked) {
-    await prisma.compositeScore.update({
-      where: {
-        cycleId_toolId_segmentId: {
-          cycleId,
-          toolId: item.toolId,
-          segmentId: "overall",
-        },
-      },
-      data: { rank: item.rank },
+    const scoreRecord = await prisma.compositeScore.findFirst({
+      where: { cycleId, toolId: item.toolId, segmentId: null },
     });
+    if (scoreRecord) {
+      await prisma.compositeScore.update({
+        where: { id: scoreRecord.id },
+        data: { rank: item.rank },
+      });
+    }
   }
 
   return ranked;

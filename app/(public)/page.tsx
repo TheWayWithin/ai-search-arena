@@ -35,14 +35,14 @@ export default async function HomePage() {
   // Published state: show cycle highlights + top 5
   if (latestCycle) {
     const topTools = await prisma.compositeScore.findMany({
-      where: { cycleId: latestCycle.id, segmentId: "overall" },
+      where: { cycleId: latestCycle.id, segmentId: null },
       include: { tool: { include: { vendor: true } } },
       orderBy: { rank: "asc" },
       take: 5,
     });
 
     const totalTools = await prisma.compositeScore.count({
-      where: { cycleId: latestCycle.id, segmentId: "overall" },
+      where: { cycleId: latestCycle.id, segmentId: null },
     });
 
     return (

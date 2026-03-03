@@ -93,7 +93,7 @@ export default async function ToolDetailPage({ params }: Props) {
         where: {
           toolId: tool.id,
           cycleId: latestCycle.id,
-          segmentId: "overall",
+          segmentId: null,
         },
       })
     : null;

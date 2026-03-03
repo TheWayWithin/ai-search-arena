@@ -12,7 +12,7 @@ export async function generateReport(data: {
 }) {
   // Get composite scores with rankings
   const compositeScores = await prisma.compositeScore.findMany({
-    where: { cycleId: data.cycleId, segmentId: "overall" },
+    where: { cycleId: data.cycleId, segmentId: null },
     include: {
       tool: { include: { vendor: true } },
     },

@@ -4,10 +4,10 @@ import { prisma } from "@/lib/db";
  * Get leaderboard data for a cycle.
  * Returns ranked tools with composite scores.
  */
-export async function getLeaderboardData(cycleId: string, segmentId?: string) {
+export async function getLeaderboardData(cycleId: string, segmentId: string | null = null) {
   const where: { cycleId: string; segmentId: string | null } = {
     cycleId,
-    segmentId: segmentId ?? "overall",
+    segmentId,
   };
 
   return prisma.compositeScore.findMany({
@@ -116,7 +116,7 @@ export async function getToolDetail(toolSlug: string, cycleId?: string) {
     where: {
       toolId: tool.id,
       cycleId: targetCycleId,
-      segmentId: "overall",
+      segmentId: null,
     },
   });
 

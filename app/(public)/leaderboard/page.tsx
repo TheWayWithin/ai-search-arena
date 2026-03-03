@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -10,6 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  getLatestPublishedCycle,
+  getLeaderboardData,
+  getMarketSegments,
+} from "@/lib/db/leaderboard";
 
 export const dynamic = "force-dynamic";
 
@@ -38,13 +42,14 @@ function confidenceLabel(tag: string) {
   return tag === "InsufficientData" ? "Insufficient" : tag;
 }
 
-export default async function LeaderboardPage() {
-  // Get the latest published cycle
-  const latestCycle = await prisma.benchmarkCycle.findFirst({
-    where: { publishedAt: { not: null } },
-    include: { methodologyVersion: true },
-    orderBy: { publishedAt: "desc" },
-  });
+type Props = {
+  searchParams: Promise<{ segment?: string }>;
+};
+
+export default async function LeaderboardPage({ searchParams }: Props) {
+  const { segment } = await searchParams;
+
+  const latestCycle = await getLatestPublishedCycle();
 
   // Pre-launch state: no published cycle yet
   if (!latestCycle) {
@@ -72,21 +77,14 @@ export default async function LeaderboardPage() {
     );
   }
 
-  // Get composite scores for the leaderboard
-  const compositeScores = await prisma.compositeScore.findMany({
-    where: {
-      cycleId: latestCycle.id,
-      segmentId: "overall",
-    },
-    include: {
-      tool: {
-        include: {
-          vendor: true,
-        },
-      },
-    },
-    orderBy: { rank: "asc" },
-  });
+  // Fetch segments and resolve the active segment ID
+  const segments = await getMarketSegments();
+  const activeSegment = segment
+    ? segments.find((s) => s.slug === segment) ?? null
+    : null;
+  const segmentId = activeSegment?.id ?? null;
+
+  const compositeScores = await getLeaderboardData(latestCycle.id, segmentId);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -120,6 +118,35 @@ export default async function LeaderboardPage() {
             </p>
           </div>
         </div>
+
+        {/* Segment filter pills */}
+        {segments.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href="/leaderboard"
+              className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
+                !activeSegment
+                  ? "border-arena-slate bg-arena-slate text-white"
+                  : "border-border text-arena-slate-light hover:bg-pale-grey hover:text-arena-slate"
+              }`}
+            >
+              All
+            </Link>
+            {segments.map((seg) => (
+              <Link
+                key={seg.id}
+                href={`/leaderboard?segment=${seg.slug}`}
+                className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
+                  activeSegment?.id === seg.id
+                    ? "border-arena-slate bg-arena-slate text-white"
+                    : "border-border text-arena-slate-light hover:bg-pale-grey hover:text-arena-slate"
+                }`}
+              >
+                {seg.name}
+              </Link>
+            ))}
+          </div>
+        )}
 
         <div className="mt-6 overflow-hidden rounded-lg border border-border">
           <Table>
@@ -171,7 +198,7 @@ export default async function LeaderboardPage() {
                     colSpan={5}
                     className="py-8 text-center text-arena-slate-light"
                   >
-                    No scores available for this cycle.
+                    No scores available{activeSegment ? ` for ${activeSegment.name}` : ""} in this cycle.
                   </TableCell>
                 </TableRow>
               )}
