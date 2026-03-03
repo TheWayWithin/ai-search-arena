@@ -796,6 +796,13 @@ Provide your score and rationale.`;
     }[] = [];
 
     const toolScoreEntries = Array.from(toolScoreMap.entries());
+    const priority: ConfidenceTag[] = [
+      ConfidenceTag.InsufficientData,
+      ConfidenceTag.Low,
+      ConfidenceTag.Medium,
+      ConfidenceTag.High,
+    ];
+
     for (const [toolId, tScores] of toolScoreEntries) {
       const applicable = tScores.filter((s) => s.isApplicable);
       if (applicable.length === 0) continue;
@@ -810,12 +817,6 @@ Provide your score and rationale.`;
       const compositeScore = Math.round(weighted * 10) / 10;
 
       // Most conservative confidence
-      const priority: ConfidenceTag[] = [
-        ConfidenceTag.InsufficientData,
-        ConfidenceTag.Low,
-        ConfidenceTag.Medium,
-        ConfidenceTag.High,
-      ];
       let lowestIdx = priority.length - 1;
       for (const s of applicable) {
         const idx = priority.indexOf(s.confidenceTag);
@@ -870,6 +871,89 @@ Provide your score and rationale.`;
         "SCORE",
         `  #${currentRank <= 5 ? compositeResults.indexOf(item) + 1 : "?"} ${tool?.name ?? item.toolId}: ${item.compositeScore} (${item.confidenceTag})`
       );
+    }
+
+    // ── Stage 8b: Per-segment composite scores + rankings ─────────
+
+    const segments = await prisma.marketSegment.findMany({
+      include: { toolMappings: { select: { toolId: true } } },
+    });
+
+    if (segments.length > 0) {
+      log("SCORE", `Calculating per-segment scores for ${segments.length} segments...`);
+
+      for (const segment of segments) {
+        const segmentToolIds = new Set(segment.toolMappings.map((m) => m.toolId));
+        if (segmentToolIds.size === 0) continue;
+
+        const segmentResults: {
+          toolId: string;
+          compositeScore: number;
+          confidenceTag: ConfidenceTag;
+        }[] = [];
+
+        for (const [toolId, tScores] of toolScoreEntries) {
+          if (!segmentToolIds.has(toolId)) continue;
+
+          const applicable = tScores.filter((s) => s.isApplicable);
+          if (applicable.length === 0) continue;
+
+          const totalWeight = applicable.reduce((sum, s) => sum + s.weight, 0);
+          if (totalWeight === 0) continue;
+
+          const weighted = applicable.reduce(
+            (sum, s) => sum + s.value * (s.weight / totalWeight),
+            0
+          );
+          const compositeScore = Math.round(weighted * 10) / 10;
+
+          // Most conservative confidence
+          let lowestIdx = priority.length - 1;
+          for (const s of applicable) {
+            const idx = priority.indexOf(s.confidenceTag);
+            if (idx < lowestIdx) lowestIdx = idx;
+          }
+          const confidenceTag = priority[lowestIdx];
+
+          // Upsert composite score for this segment
+          const existing = await prisma.compositeScore.findFirst({
+            where: { cycleId, toolId, segmentId: segment.id },
+          });
+          if (existing) {
+            await prisma.compositeScore.update({
+              where: { id: existing.id },
+              data: { value: compositeScore, confidenceTag },
+            });
+          } else {
+            await prisma.compositeScore.create({
+              data: { cycleId, toolId, segmentId: segment.id, value: compositeScore, rank: 0, confidenceTag },
+            });
+          }
+
+          segmentResults.push({ toolId, compositeScore, confidenceTag });
+        }
+
+        // Dense ranking within segment
+        segmentResults.sort((a, b) => b.compositeScore - a.compositeScore);
+        let segRank = 1;
+        let segPrev: number | null = null;
+        for (const item of segmentResults) {
+          if (segPrev !== null && item.compositeScore < segPrev) segRank++;
+          segPrev = item.compositeScore;
+
+          const scoreRecord = await prisma.compositeScore.findFirst({
+            where: { cycleId, toolId: item.toolId, segmentId: segment.id },
+          });
+          if (scoreRecord) {
+            await prisma.compositeScore.update({
+              where: { id: scoreRecord.id },
+              data: { rank: segRank },
+            });
+          }
+        }
+
+        log("SCORE", `  ${segment.name}: ${segmentResults.length} tools ranked`);
+      }
     }
 
     // ── Stage 9: Synthesis → Review ───────────────────────────────
