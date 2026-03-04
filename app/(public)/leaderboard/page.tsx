@@ -1,19 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   getLatestPublishedCycle,
   getLeaderboardData,
   getMarketSegments,
 } from "@/lib/db/leaderboard";
+import { LeaderboardTable } from "@/components/leaderboard-table";
 
 export const dynamic = "force-dynamic";
 
@@ -22,25 +14,6 @@ export const metadata: Metadata = {
   description:
     "Ranked AI search optimization tools by composite score. Independent monthly benchmarks using 6-model AI consensus methodology.",
 };
-
-function confidenceColor(tag: string) {
-  switch (tag) {
-    case "High":
-      return "bg-confidence-green/10 text-confidence-green border-confidence-green/20";
-    case "Medium":
-      return "bg-caution-amber/10 text-caution-amber border-caution-amber/20";
-    case "Low":
-      return "bg-insufficient-red/10 text-insufficient-red border-insufficient-red/20";
-    case "InsufficientData":
-      return "bg-neutral-grey/10 text-neutral-grey border-neutral-grey/20";
-    default:
-      return "";
-  }
-}
-
-function confidenceLabel(tag: string) {
-  return tag === "InsufficientData" ? "Insufficient" : tag;
-}
 
 type Props = {
   searchParams: Promise<{ segment?: string }>;
@@ -85,6 +58,21 @@ export default async function LeaderboardPage({ searchParams }: Props) {
   const segmentId = activeSegment?.id ?? null;
 
   const compositeScores = await getLeaderboardData(latestCycle.id, segmentId);
+
+  // Serialize for client component (Decimal -> string)
+  const serializedScores = compositeScores.map((cs) => ({
+    id: cs.id,
+    rank: cs.rank,
+    value: cs.value.toString(),
+    confidenceTag: cs.confidenceTag,
+    tool: {
+      slug: cs.tool.slug,
+      name: cs.tool.name,
+      vendor: cs.tool.vendor
+        ? { companyName: cs.tool.vendor.companyName }
+        : null,
+    },
+  }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -148,62 +136,11 @@ export default async function LeaderboardPage({ searchParams }: Props) {
           </div>
         )}
 
-        <div className="mt-6 overflow-hidden rounded-lg border border-border">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-pale-grey">
-                <TableHead className="w-16 text-center">Rank</TableHead>
-                <TableHead>Tool</TableHead>
-                <TableHead>Vendor</TableHead>
-                <TableHead className="w-28 text-center">Score</TableHead>
-                <TableHead className="w-28 text-center">Confidence</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {compositeScores.map((cs) => (
-                <TableRow key={cs.id}>
-                  <TableCell className="text-center font-semibold text-arena-slate">
-                    {cs.rank}
-                  </TableCell>
-                  <TableCell>
-                    <Link
-                      href={`/tools/${cs.tool.slug}`}
-                      className="font-medium text-arena-slate hover:text-mastery-blue hover:underline"
-                    >
-                      {cs.tool.name}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="text-arena-slate-light">
-                    {cs.tool.vendor?.companyName}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <span className="text-lg font-bold text-arena-slate">
-                      {Number(cs.value).toFixed(1)}
-                    </span>
-                    <span className="text-sm text-arena-slate-light">/10</span>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      variant="outline"
-                      className={confidenceColor(cs.confidenceTag)}
-                    >
-                      {confidenceLabel(cs.confidenceTag)}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {compositeScores.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="py-8 text-center text-arena-slate-light"
-                  >
-                    No scores available{activeSegment ? ` for ${activeSegment.name}` : ""} in this cycle.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+        <div className="mt-6">
+          <LeaderboardTable
+            compositeScores={serializedScores}
+            emptyMessage={`No scores available${activeSegment ? ` for ${activeSegment.name}` : ""} in this cycle.`}
+          />
         </div>
       </div>
     </>

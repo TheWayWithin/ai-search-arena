@@ -162,6 +162,12 @@ export default async function ToolDetailPage({ params }: Props) {
             <p className="mt-2 max-w-2xl text-sm text-arena-slate-light">
               {tool.description}
             </p>
+            <Link
+              href={`/compare?tools=${tool.slug}`}
+              className="mt-2 inline-block text-sm text-mastery-blue hover:underline"
+            >
+              Compare with other tools &rarr;
+            </Link>
           </div>
           {compositeScore && (
             <Card className="min-w-[140px] text-center">

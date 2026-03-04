@@ -137,6 +137,75 @@ export async function getAllToolSlugs() {
 /**
  * Get methodology data for the methodology page.
  */
+/**
+ * Batch-fetch all data needed for the tool comparison view.
+ */
+export async function getComparisonData(toolSlugs: string[], cycleId?: string) {
+  // Resolve cycle
+  let targetCycleId = cycleId;
+  if (!targetCycleId) {
+    const latestCycle = await getLatestPublishedCycle();
+    if (!latestCycle) return { cycle: null, tools: [], scores: [], compositeScores: [] };
+    targetCycleId = latestCycle.id;
+  }
+
+  const cycle = await prisma.benchmarkCycle.findUnique({
+    where: { id: targetCycleId },
+    include: { methodologyVersion: true },
+  });
+
+  // Fetch tools by slug array
+  const tools = await prisma.tool.findMany({
+    where: { slug: { in: toolSlugs }, isArchived: false },
+    include: { vendor: true },
+  });
+
+  const toolIds = tools.map((t) => t.id);
+
+  // Fetch all dimension scores for all tools in one query
+  const scores = await prisma.score.findMany({
+    where: {
+      cycleId: targetCycleId,
+      toolId: { in: toolIds },
+    },
+    include: {
+      dimension: true,
+      synthesis: true,
+    },
+    orderBy: [
+      { dimension: { category: "asc" } },
+      { dimension: { displayOrder: "asc" } },
+    ],
+  });
+
+  // Fetch composite scores (overall, not segment-specific)
+  const compositeScores = await prisma.compositeScore.findMany({
+    where: {
+      cycleId: targetCycleId,
+      toolId: { in: toolIds },
+      segmentId: null,
+    },
+  });
+
+  return { cycle, tools, scores, compositeScores };
+}
+
+/**
+ * Get all tools for the comparison selector dropdown.
+ */
+export async function getAllToolsForSelector() {
+  const tools = await prisma.tool.findMany({
+    where: { isArchived: false },
+    include: { vendor: true },
+    orderBy: { name: "asc" },
+  });
+  return tools.map((t) => ({
+    slug: t.slug,
+    name: t.name,
+    vendorName: t.vendor?.companyName ?? "",
+  }));
+}
+
 export async function getMethodologyData() {
   const methodology = await prisma.methodologyVersion.findFirst({
     where: { isLocked: true },
