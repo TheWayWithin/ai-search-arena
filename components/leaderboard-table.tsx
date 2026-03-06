@@ -83,14 +83,14 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
         <Table>
           <TableHeader>
             <TableRow className="bg-pale-grey">
-              <TableHead className="w-12 text-center">
+              <TableHead className="hidden w-12 text-center sm:table-cell">
                 <span className="sr-only">Select</span>
               </TableHead>
-              <TableHead className="w-16 text-center">Rank</TableHead>
+              <TableHead className="w-10 text-center sm:w-16">Rank</TableHead>
               <TableHead>Tool</TableHead>
-              <TableHead>Vendor</TableHead>
-              <TableHead className="w-28 text-center">Score</TableHead>
-              <TableHead className="w-28 text-center">Confidence</TableHead>
+              <TableHead className="hidden md:table-cell">Vendor</TableHead>
+              <TableHead className="w-20 text-center sm:w-28">Score</TableHead>
+              <TableHead className="hidden w-28 text-center sm:table-cell">Confidence</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -99,7 +99,7 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
                 key={cs.id}
                 className={selected.has(cs.tool.slug) ? "bg-mastery-blue/5" : ""}
               >
-                <TableCell className="text-center">
+                <TableCell className="hidden text-center sm:table-cell">
                   <input
                     type="checkbox"
                     checked={selected.has(cs.tool.slug)}
@@ -112,7 +112,7 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
                   {cs.rank}
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <Link
                       href={`/tools/${cs.tool.slug}`}
                       className="font-medium text-arena-slate hover:text-mastery-blue hover:underline"
@@ -123,8 +123,13 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
                       <TierBadge key={b.label} tier={b.tier} label={b.label} />
                     ))}
                   </div>
+                  {cs.tool.vendor && (
+                    <div className="mt-0.5 text-xs text-arena-slate-light md:hidden">
+                      {cs.tool.vendor.companyName}
+                    </div>
+                  )}
                 </TableCell>
-                <TableCell className="text-arena-slate-light">
+                <TableCell className="hidden text-arena-slate-light md:table-cell">
                   {cs.tool.vendor ? (
                     <Link
                       href={`/vendors/${cs.tool.vendor.slug}`}
@@ -140,7 +145,7 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
                   </span>
                   <span className="text-sm text-arena-slate-light">/10</span>
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="hidden text-center sm:table-cell">
                   <Badge
                     variant="outline"
                     className={confidenceColor(cs.confidenceTag)}

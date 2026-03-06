@@ -114,7 +114,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <div className="flex items-baseline justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
               Leaderboard

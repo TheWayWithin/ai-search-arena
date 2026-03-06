@@ -119,77 +119,79 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
       />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <Link
-              href="/leaderboard"
-              className="text-sm text-arena-slate-light hover:text-arena-slate"
-            >
-              &larr; Back to Leaderboard
-            </Link>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-arena-slate">
-              {tool.name}
-            </h1>
-            <p className="mt-1 text-sm text-arena-slate-light">
-              by{" "}
-              {tool.vendor ? (
-                <Link
-                  href={`/vendors/${tool.vendor.slug}`}
-                  className="text-mastery-blue hover:underline"
-                >
-                  {tool.vendor.companyName}
-                </Link>
-              ) : (
-                "Unknown"
-              )}
-              {tool.websiteUrl && (
-                <>
-                  {" "}
-                  &middot;{" "}
-                  <a
-                    href={tool.websiteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+        <div>
+          <Link
+            href="/leaderboard"
+            className="text-sm text-arena-slate-light hover:text-arena-slate"
+          >
+            &larr; Back to Leaderboard
+          </Link>
+          <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
+                {tool.name}
+              </h1>
+              <p className="mt-1 text-sm text-arena-slate-light">
+                by{" "}
+                {tool.vendor ? (
+                  <Link
+                    href={`/vendors/${tool.vendor.slug}`}
                     className="text-mastery-blue hover:underline"
                   >
-                    Website
-                  </a>
-                </>
-              )}
-            </p>
-            <p className="mt-2 max-w-2xl text-sm text-arena-slate-light">
-              {tool.description}
-            </p>
-            <Link
-              href={`/compare?tools=${tool.slug}`}
-              className="mt-2 inline-block text-sm text-mastery-blue hover:underline"
-            >
-              Compare with other tools &rarr;
-            </Link>
+                    {tool.vendor.companyName}
+                  </Link>
+                ) : (
+                  "Unknown"
+                )}
+                {tool.websiteUrl && (
+                  <>
+                    {" "}
+                    &middot;{" "}
+                    <a
+                      href={tool.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-mastery-blue hover:underline"
+                    >
+                      Website
+                    </a>
+                  </>
+                )}
+              </p>
+              <p className="mt-2 max-w-2xl text-sm text-arena-slate-light">
+                {tool.description}
+              </p>
+              <Link
+                href={`/compare?tools=${tool.slug}`}
+                className="mt-2 inline-block text-sm text-mastery-blue hover:underline"
+              >
+                Compare with other tools &rarr;
+              </Link>
+            </div>
+            {compositeScore && (
+              <Card className="min-w-[140px] text-center">
+                <CardHeader className="pb-1 pt-4">
+                  <CardTitle className="text-sm font-normal text-arena-slate-light">
+                    Composite Score
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pb-4">
+                  <div className="text-3xl font-bold text-arena-slate">
+                    {Number(compositeScore.value).toFixed(1)}
+                  </div>
+                  <div className="text-xs text-arena-slate-light">
+                    Rank #{compositeScore.rank}
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={`mt-1 ${confidenceColor(compositeScore.confidenceTag)}`}
+                  >
+                    {confidenceLabel(compositeScore.confidenceTag)}
+                  </Badge>
+                </CardContent>
+              </Card>
+            )}
           </div>
-          {compositeScore && (
-            <Card className="min-w-[140px] text-center">
-              <CardHeader className="pb-1 pt-4">
-                <CardTitle className="text-sm font-normal text-arena-slate-light">
-                  Composite Score
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pb-4">
-                <div className="text-3xl font-bold text-arena-slate">
-                  {Number(compositeScore.value).toFixed(1)}
-                </div>
-                <div className="text-xs text-arena-slate-light">
-                  Rank #{compositeScore.rank}
-                </div>
-                <Badge
-                  variant="outline"
-                  className={`mt-1 ${confidenceColor(compositeScore.confidenceTag)}`}
-                >
-                  {confidenceLabel(compositeScore.confidenceTag)}
-                </Badge>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         {/* Badges */}
@@ -250,7 +252,7 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
                 <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-arena-slate-light">
                   {category}
                 </h3>
-                <div className="overflow-hidden rounded-lg border border-border">
+                <div className="overflow-x-auto rounded-lg border border-border">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-pale-grey">

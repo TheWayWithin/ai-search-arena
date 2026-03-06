@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
+import { TierBadge } from "@/components/tier-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 
@@ -36,7 +37,14 @@ export default async function HomePage() {
   if (latestCycle) {
     const topTools = await prisma.compositeScore.findMany({
       where: { cycleId: latestCycle.id, segmentId: null },
-      include: { tool: { include: { vendor: true } } },
+      include: {
+        tool: {
+          include: {
+            vendor: true,
+            badges: { where: { cycleId: latestCycle.id } },
+          },
+        },
+      },
       orderBy: { rank: "asc" },
       take: 5,
     });
@@ -88,7 +96,7 @@ export default async function HomePage() {
 
           {/* Latest Cycle Summary */}
           <section className="pb-16">
-            <div className="flex items-baseline justify-between">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
               <h2 className="text-xl font-semibold text-arena-slate">
                 {latestCycle.displayName} — Top 5
               </h2>
@@ -109,21 +117,32 @@ export default async function HomePage() {
                   href={`/tools/${cs.tool.slug}`}
                   className="group flex items-center rounded-lg border border-border p-4 transition-colors hover:bg-pale-grey"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-arena-slate text-sm font-bold text-white">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-arena-slate text-sm font-bold text-white">
                     {cs.rank}
                   </span>
-                  <div className="ml-4 flex-1">
-                    <span className="font-medium text-arena-slate group-hover:text-mastery-blue">
-                      {cs.tool.name}
-                    </span>
-                    <span className="ml-2 text-sm text-arena-slate-light">
+                  <div className="ml-4 min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="font-medium text-arena-slate group-hover:text-mastery-blue">
+                        {cs.tool.name}
+                      </span>
+                      {cs.tool.badges
+                        .filter((b) => b.badgeType.startsWith("Overall"))
+                        .map((b) => (
+                          <TierBadge
+                            key={b.id}
+                            tier={b.tier as "Gold" | "Silver" | "Bronze"}
+                            label={b.label}
+                          />
+                        ))}
+                    </div>
+                    <span className="text-sm text-arena-slate-light">
                       by {cs.tool.vendor?.companyName}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="ml-3 flex shrink-0 items-center gap-2">
                     <Badge
                       variant="outline"
-                      className={confidenceColor(cs.confidenceTag)}
+                      className={`hidden sm:inline-flex ${confidenceColor(cs.confidenceTag)}`}
                     >
                       {cs.confidenceTag === "InsufficientData"
                         ? "Insufficient"
