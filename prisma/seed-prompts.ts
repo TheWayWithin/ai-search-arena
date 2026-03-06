@@ -230,7 +230,7 @@ const DIMENSION_PROMPTS: Record<string, string[]> = {
     "How responsive and effective is this tool's customer support? Evaluate response times, support channel availability (chat, email, phone), knowledge base quality, and resolution rates.",
     "Assess support quality: How quickly do support tickets get resolved? Is there 24/7 support? Are there dedicated account managers for enterprise customers? Is the knowledge base comprehensive?",
   ],
-  "scalability": [
+  scalability: [
     "How well does this tool scale with growing business needs? Evaluate performance under increasing data volumes, multi-site management, enterprise-grade features, and infrastructure reliability.",
     "Assess scalability: Can the tool handle 1,000+ pages? 100,000+ keywords? Multiple domains? Enterprise-scale data volumes without performance degradation?",
   ],

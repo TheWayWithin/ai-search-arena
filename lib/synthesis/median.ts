@@ -52,11 +52,13 @@ function deriveConfidenceTag(
  * Synthesize scores for a single (tool x dimension) from model evaluations.
  * AC-011-03, BR-S12: Deterministic — identical inputs produce identical outputs.
  */
-export function synthesizeScores(evaluations: {
-  modelId: string;
-  parsedScore: number | null;
-  status: string;
-}[]): {
+export function synthesizeScores(
+  evaluations: {
+    modelId: string;
+    parsedScore: number | null;
+    status: string;
+  }[]
+): {
   medianValue: number;
   confidenceTag: ConfidenceTag;
   modelsSucceeded: number;
@@ -87,7 +89,8 @@ export function synthesizeScores(evaluations: {
 
   // Agreement metric: 1 - normalized standard deviation (0 = no agreement, 1 = perfect)
   const mean = successfulScores.reduce((a, b) => a + b, 0) / successfulScores.length;
-  const variance = successfulScores.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) / successfulScores.length;
+  const variance =
+    successfulScores.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) / successfulScores.length;
   const stdDev = Math.sqrt(variance);
   const agreementMetric = roundHalfUp(Math.max(0, 1 - stdDev / 5)); // Normalize to 0-1 range (max std dev ~5)
 

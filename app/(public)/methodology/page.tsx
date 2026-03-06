@@ -65,17 +65,15 @@ export default async function MethodologyPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
-          Methodology
-        </h1>
-        <p className="mt-2 max-w-2xl text-arena-slate-light">
-          Our benchmark methodology is designed for rigor, transparency, and
-          reproducibility. Every tool is evaluated identically using the same
-          prompts, the same AI models, and the same scoring rubric.
+        <h1 className="text-arena-slate text-3xl font-bold tracking-tight">Methodology</h1>
+        <p className="text-arena-slate-light mt-2 max-w-2xl">
+          Our benchmark methodology is designed for rigor, transparency, and reproducibility. Every
+          tool is evaluated identically using the same prompts, the same AI models, and the same
+          scoring rubric.
         </p>
 
         {methodology && (
-          <p className="mt-1 text-sm text-neutral-grey">
+          <p className="text-neutral-grey mt-1 text-sm">
             Version {methodology.versionNumber} &middot; Effective{" "}
             {methodology.effectiveDate.toLocaleDateString("en-US", {
               month: "long",
@@ -87,9 +85,7 @@ export default async function MethodologyPage() {
 
         {/* Process Overview */}
         <section className="mt-10">
-          <h2 className="text-xl font-semibold text-arena-slate">
-            Evaluation Process
-          </h2>
+          <h2 className="text-arena-slate text-xl font-semibold">Evaluation Process</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
@@ -116,16 +112,14 @@ export default async function MethodologyPage() {
               <Card key={item.step}>
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-arena-slate text-xs font-bold text-white">
+                    <span className="bg-arena-slate flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
                       {item.step}
                     </span>
-                    <CardTitle className="text-sm text-arena-slate">
-                      {item.title}
-                    </CardTitle>
+                    <CardTitle className="text-arena-slate text-sm">{item.title}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-arena-slate-light">{item.desc}</p>
+                  <p className="text-arena-slate-light text-sm">{item.desc}</p>
                 </CardContent>
               </Card>
             ))}
@@ -134,12 +128,10 @@ export default async function MethodologyPage() {
 
         {/* Confidence Tags */}
         <section className="mt-10">
-          <h2 className="text-xl font-semibold text-arena-slate">
-            Confidence Tags
-          </h2>
-          <p className="mt-2 text-sm text-arena-slate-light">
-            Each score includes a confidence tag based on inter-model agreement
-            (standard deviation of model scores).
+          <h2 className="text-arena-slate text-xl font-semibold">Confidence Tags</h2>
+          <p className="text-arena-slate-light mt-2 text-sm">
+            Each score includes a confidence tag based on inter-model agreement (standard deviation
+            of model scores).
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
@@ -164,16 +156,11 @@ export default async function MethodologyPage() {
                 desc: "Fewer than 4 of 6 models returned valid scores. Flagged for review.",
               },
             ].map((item) => (
-              <div
-                key={item.tag}
-                className="rounded-lg border border-border p-4"
-              >
+              <div key={item.tag} className="border-border rounded-lg border p-4">
                 <Badge variant="outline" className={item.color}>
                   {item.tag}
                 </Badge>
-                <p className="mt-2 text-sm text-arena-slate-light">
-                  {item.desc}
-                </p>
+                <p className="text-arena-slate-light mt-2 text-sm">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -182,103 +169,86 @@ export default async function MethodologyPage() {
         {/* Scoring Dimensions */}
         {methodology && dimensionsByCategory.size > 0 && (
           <section className="mt-10">
-            <h2 className="text-xl font-semibold text-arena-slate">
+            <h2 className="text-arena-slate text-xl font-semibold">
               Scoring Dimensions ({methodology.scoringDimensions.length})
             </h2>
-            <p className="mt-2 text-sm text-arena-slate-light">
-              Each tool is scored on the following dimensions. Weights determine
-              the contribution to the composite score. Within each category,
-              weights are renormalized if any dimension is marked N/A for a
-              specific tool.
+            <p className="text-arena-slate-light mt-2 text-sm">
+              Each tool is scored on the following dimensions. Weights determine the contribution to
+              the composite score. Within each category, weights are renormalized if any dimension
+              is marked N/A for a specific tool.
             </p>
 
             <div className="mt-6 space-y-6">
-              {[...dimensionsByCategory.entries()].map(
-                ([category, dimensions]) => {
-                  const categoryWeight = dimensions.reduce(
-                    (sum, d) => sum + Number(d.weight),
-                    0
-                  );
-                  return (
-                    <div key={category}>
-                      <div className="flex items-baseline justify-between">
-                        <h3 className="text-sm font-semibold uppercase tracking-wider text-arena-slate-light">
-                          {category}
-                        </h3>
-                        <span className="text-xs text-neutral-grey">
-                          Category weight:{" "}
-                          {(categoryWeight * 100).toFixed(0)}%
-                        </span>
-                      </div>
-                      <div className="mt-2 overflow-hidden rounded-lg border border-border">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="bg-pale-grey">
-                              <TableHead>Dimension</TableHead>
-                              <TableHead className="w-64">
-                                Description
-                              </TableHead>
-                              <TableHead className="w-20 text-center">
-                                Weight
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {dimensions.map((dim) => (
-                              <TableRow key={dim.id}>
-                                <TableCell className="font-medium text-arena-slate">
-                                  {dim.name}
-                                </TableCell>
-                                <TableCell className="text-sm text-arena-slate-light">
-                                  {dim.description}
-                                </TableCell>
-                                <TableCell className="text-center text-sm text-arena-slate">
-                                  {(Number(dim.weight) * 100).toFixed(1)}%
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
+              {[...dimensionsByCategory.entries()].map(([category, dimensions]) => {
+                const categoryWeight = dimensions.reduce((sum, d) => sum + Number(d.weight), 0);
+                return (
+                  <div key={category}>
+                    <div className="flex items-baseline justify-between">
+                      <h3 className="text-arena-slate-light text-sm font-semibold tracking-wider uppercase">
+                        {category}
+                      </h3>
+                      <span className="text-neutral-grey text-xs">
+                        Category weight: {(categoryWeight * 100).toFixed(0)}%
+                      </span>
                     </div>
-                  );
-                }
-              )}
+                    <div className="border-border mt-2 overflow-hidden rounded-lg border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-pale-grey">
+                            <TableHead>Dimension</TableHead>
+                            <TableHead className="w-64">Description</TableHead>
+                            <TableHead className="w-20 text-center">Weight</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {dimensions.map((dim) => (
+                            <TableRow key={dim.id}>
+                              <TableCell className="text-arena-slate font-medium">
+                                {dim.name}
+                              </TableCell>
+                              <TableCell className="text-arena-slate-light text-sm">
+                                {dim.description}
+                              </TableCell>
+                              <TableCell className="text-arena-slate text-center text-sm">
+                                {(Number(dim.weight) * 100).toFixed(1)}%
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}
 
         {/* Composite Score Calculation */}
         <section className="mt-10 pb-8">
-          <h2 className="text-xl font-semibold text-arena-slate">
-            Composite Score Calculation
-          </h2>
-          <div className="mt-4 rounded-lg border border-border bg-pale-grey p-6">
-            <p className="text-sm text-arena-slate">
-              The composite score is a weighted average of all applicable
-              dimension scores:
+          <h2 className="text-arena-slate text-xl font-semibold">Composite Score Calculation</h2>
+          <div className="border-border bg-pale-grey mt-4 rounded-lg border p-6">
+            <p className="text-arena-slate text-sm">
+              The composite score is a weighted average of all applicable dimension scores:
             </p>
-            <div className="mt-4 rounded bg-white p-4 font-mono text-sm text-arena-slate">
-              Composite = &Sigma; (dimension_score &times; weight /
-              total_applicable_weight)
+            <div className="text-arena-slate mt-4 rounded bg-white p-4 font-mono text-sm">
+              Composite = &Sigma; (dimension_score &times; weight / total_applicable_weight)
             </div>
-            <ul className="mt-4 space-y-2 text-sm text-arena-slate-light">
+            <ul className="text-arena-slate-light mt-4 space-y-2 text-sm">
               <li>
-                <strong>Scale:</strong> 0.0 to 10.0, rounded to one decimal
-                place (round half up)
+                <strong>Scale:</strong> 0.0 to 10.0, rounded to one decimal place (round half up)
               </li>
               <li>
-                <strong>N/A handling:</strong> If a dimension is not applicable
-                to a tool, it is excluded and remaining weights are
-                renormalized to sum to 1.0
+                <strong>N/A handling:</strong> If a dimension is not applicable to a tool, it is
+                excluded and remaining weights are renormalized to sum to 1.0
               </li>
               <li>
-                <strong>Ranking:</strong> Dense ranking — tied composite scores
-                receive the same rank
+                <strong>Ranking:</strong> Dense ranking — tied composite scores receive the same
+                rank
               </li>
               <li>
-                <strong>Minimum models:</strong> At least 4 of 6 AI models must
-                return valid scores for a dimension to be considered sufficient
+                <strong>Minimum models:</strong> At least 4 of 6 AI models must return valid scores
+                for a dimension to be considered sufficient
               </li>
             </ul>
           </div>

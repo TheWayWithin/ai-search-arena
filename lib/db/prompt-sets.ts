@@ -56,9 +56,7 @@ export async function createPromptSet(data: {
   // Check immutability constraint (AC-008-02)
   const isLocked = await isMethodologyLockedToActiveCycle(data.methodologyVersionId);
   if (isLocked) {
-    throw new Error(
-      "Cannot create prompt set: methodology version is locked to an active cycle"
-    );
+    throw new Error("Cannot create prompt set: methodology version is locked to an active cycle");
   }
 
   return prisma.promptSet.create({
@@ -96,10 +94,7 @@ async function isMethodologyLockedToActiveCycle(methodologyVersionId: string): P
 /**
  * Update a prompt set's prompts (only if methodology is not locked to active cycle).
  */
-export async function updatePromptSetPrompts(
-  promptSetId: string,
-  prompts: unknown[]
-) {
+export async function updatePromptSetPrompts(promptSetId: string, prompts: unknown[]) {
   const promptSet = await prisma.promptSet.findUnique({
     where: { id: promptSetId },
   });
@@ -111,9 +106,7 @@ export async function updatePromptSetPrompts(
   // Check immutability constraint (AC-008-02)
   const isLocked = await isMethodologyLockedToActiveCycle(promptSet.methodologyVersionId);
   if (isLocked) {
-    throw new Error(
-      "Cannot modify prompt set: methodology version is locked to an active cycle"
-    );
+    throw new Error("Cannot modify prompt set: methodology version is locked to an active cycle");
   }
 
   return prisma.promptSet.update({
@@ -141,9 +134,7 @@ export async function togglePromptSetRotation(promptSetId: string, isRotating: b
 
   const isLocked = await isMethodologyLockedToActiveCycle(promptSet.methodologyVersionId);
   if (isLocked) {
-    throw new Error(
-      "Cannot modify prompt set: methodology version is locked to an active cycle"
-    );
+    throw new Error("Cannot modify prompt set: methodology version is locked to an active cycle");
   }
 
   return prisma.promptSet.update({
@@ -155,10 +146,7 @@ export async function togglePromptSetRotation(promptSetId: string, isRotating: b
 /**
  * Get prompt sets for a specific dimension within a methodology version.
  */
-export async function getPromptSetsForDimension(
-  methodologyVersionId: string,
-  dimensionId: string
-) {
+export async function getPromptSetsForDimension(methodologyVersionId: string, dimensionId: string) {
   return prisma.promptSet.findMany({
     where: {
       methodologyVersionId,

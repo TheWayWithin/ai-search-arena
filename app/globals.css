@@ -7,20 +7,25 @@
 @theme inline {
   /* Brand: Arena Slate palette */
   --color-arena-slate: #475569;
-  --color-arena-slate-light: #64748B;
-  --color-arena-slate-pale: #CBD5E1;
+  --color-arena-slate-light: #64748b;
+  --color-arena-slate-pale: #cbd5e1;
 
   /* Brand: Parent attribution */
-  --color-mastery-blue: #1E3A5F;
+  --color-mastery-blue: #1e3a5f;
 
   /* Functional: Confidence indicators */
   --color-confidence-green: #059669;
-  --color-caution-amber: #D97706;
-  --color-insufficient-red: #DC2626;
-  --color-neutral-grey: #9CA3AF;
+  --color-caution-amber: #d97706;
+  --color-insufficient-red: #dc2626;
+  --color-neutral-grey: #9ca3af;
+
+  /* Badge tiers */
+  --color-badge-gold: #d97706;
+  --color-badge-silver: #6b7280;
+  --color-badge-bronze: #92400e;
 
   /* Neutrals */
-  --color-pale-grey: #F8FAFC;
+  --color-pale-grey: #f8fafc;
 
   /* Font */
   --font-sans: var(--font-inter);

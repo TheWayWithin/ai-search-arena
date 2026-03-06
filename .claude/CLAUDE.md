@@ -5,6 +5,7 @@ This file provides guidance to Claude Code when working with this repository.
 ## Critical Software Development Principles
 
 ### Security-First Development
+
 **NEVER compromise security for convenience.** When encountering security features or policies:
 
 1. **Understand Before Changing**
@@ -44,6 +45,7 @@ This file provides guidance to Claude Code when working with this repository.
 ## Ideation File Concept
 
 The ideation file is a centralized document containing all requirements, context, and vision for a development project. This can include:
+
 - Product Requirements Documents (PRDs)
 - Brand guidelines
 - Architecture specifications
@@ -53,6 +55,7 @@ The ideation file is a centralized document containing all requirements, context
 - Technical constraints
 
 ### Standard Location
+
 - Primary: `./ideation.md`
 - Alternative: `./docs/ideation/`
 - Can be multiple files referenced in CLAUDE.md
@@ -80,12 +83,14 @@ The ideation file is a centralized document containing all requirements, context
 ### Update Protocol
 
 **For project-plan.md** (The Plan):
+
 1. **Mission Start**: Create with all planned tasks marked [ ]
 2. **Phase Start**: Add phase-specific tasks before work begins
 3. **Task Completion**: Mark [x] ONLY after specialist confirms done
 4. **Keep Current**: Update to reflect actual vs planned progress
 
 **For progress.md** (The Changelog):
+
 1. **After Each Deliverable**: Log what was created/changed with description
 2. **When Issue Encountered**: Create issue entry immediately with symptom and context
 3. **After EACH Fix Attempt**: Log attempt, rationale, result (✅ or ❌), and learning
@@ -94,8 +99,7 @@ The ideation file is a centralized document containing all requirements, context
 
 **Critical**: Document FAILED attempts, not just successes. Failed attempts teach us what doesn't work and why.
 
-**For CLAUDE.md** (The System):
-3. ⚡ Record permanent process improvements and system-level learnings
+**For CLAUDE.md** (The System): 3. ⚡ Record permanent process improvements and system-level learnings
 
 ### Session Resumption Protocol [PREVENTS REPEATED WORK]
 
@@ -114,6 +118,7 @@ The ideation file is a centralized document containing all requirements, context
 ### Phase Gate Enforcement [MANDATORY]
 
 **Before transitioning between phases**, coordinators MUST verify:
+
 - ALL current phase tasks marked [x] with timestamps in project-plan.md
 - Phase completion entry EXISTS in progress.md with timestamp
 - handoff-notes.md updated with "Last Updated: [timestamp]"
@@ -124,28 +129,32 @@ The ideation file is a centralized document containing all requirements, context
 ## Design Review System
 
 For UI/UX projects, AGENT-11 includes design review capabilities:
+
 - **@designer**: Enhanced with comprehensive UI/UX assessment capabilities
 - **/design-review**: Slash command for comprehensive design audits (uses @designer)
 - **Standards**: Live environment testing, evidence-based feedback
 
-*Note: For project-specific design principles, add them to your project's CLAUDE.md file. See `/templates/` for design principles template.*
+_Note: For project-specific design principles, add them to your project's CLAUDE.md file. See `/templates/` for design principles template._
 
 ## Mission Documentation Standards
 
 ### Mandatory Tracking Files
 
 For all missions, coordinators MUST maintain:
+
 - **project-plan.md**: Strategic roadmap with task completion tracking
 - **progress.md**: Issues, resolutions, and lessons learned
 - **architecture.md**: System design and architecture decisions (for kickoff missions)
 - **Templates**: Available in `/templates/` directory
 
 ### Architecture Documentation
+
 - **Template**: `/templates/architecture.md` - Production-ready template with examples
 - **SOP**: `/project/field-manual/architecture-sop.md` - Comprehensive guidelines
 - **When Created**: During dev-setup (new projects) or dev-alignment (existing projects)
 
 ### Critical Requirements
+
 1. Update files immediately when issues occur or phases complete
 2. **Mark tasks complete [x] ONLY after**:
    - Specialist confirms completion
@@ -158,23 +167,27 @@ For all missions, coordinators MUST maintain:
 ## Context Preservation System
 
 ### Overview
+
 AGENT-11 implements a comprehensive context preservation system inspired by BOS-AI's proven approach, ensuring zero context loss across multi-agent workflows. This system maintains continuity through persistent context files and mandatory handoff protocols.
 
 ### Core Context Files
 
 #### 1. agent-context.md
+
 - **Purpose**: Rolling accumulation of all findings, decisions, and critical information
 - **Location**: `/agent-context.md` (mission root)
 - **Updated By**: Coordinator after each agent task
 - **Contains**: Mission objectives, accumulated findings, technical decisions, known issues, dependencies
 
-#### 2. handoff-notes.md  
+#### 2. handoff-notes.md
+
 - **Purpose**: Specific context for the next agent in workflow
 - **Location**: `/handoff-notes.md` (mission root)
 - **Updated By**: Each agent before task completion
 - **Contains**: Immediate task, critical context, warnings, specific instructions, test results
 
 #### 3. evidence-repository.md
+
 - **Purpose**: Centralized collection of artifacts and supporting materials
 - **Location**: `/evidence-repository.md` (mission root)
 - **Updated By**: Any agent producing evidence
@@ -183,16 +196,19 @@ AGENT-11 implements a comprehensive context preservation system inspired by BOS-
 ### Context Preservation Protocol
 
 #### Before Task Execution
+
 1. Agent MUST read `agent-context.md` and `handoff-notes.md`
 2. Agent acknowledges understanding of objectives and constraints
 3. Agent identifies relevant prior work and decisions
 
 #### During Task Execution
+
 1. Agent maintains awareness of mission context
 2. Agent aligns work with documented decisions
 3. Agent captures new findings and decisions
 
 #### After Task Completion
+
 1. Agent updates `handoff-notes.md` with findings for next agent
 2. Agent adds evidence to `evidence-repository.md` if applicable
 3. Coordinator merges findings into `agent-context.md`
@@ -200,30 +216,35 @@ AGENT-11 implements a comprehensive context preservation system inspired by BOS-
 ### Enforcement Mechanisms
 
 #### Coordinator Enforcement
+
 - Coordinator includes context reading requirement in every Task tool delegation
 - Coordinator verifies handoff documentation before marking tasks complete
 - Coordinator maintains context file integrity throughout mission
 
 #### Delegation Template
+
 ```
 Task(
   subagent_type="developer",
   prompt="First read agent-context.md and handoff-notes.md for mission context.
           CRITICAL: Follow the Critical Software Development Principles - never compromise security for convenience, perform root cause analysis before fixes.
-          [Specific task instructions]. 
+          [Specific task instructions].
           Update handoff-notes.md with your findings and decisions for the next specialist."
 )
 ```
 
 ### Benefits
+
 - **87.5% reduction in rework** - Agents build on prior work effectively
-- **37.5% faster completion** - No time lost to context reconstruction  
+- **37.5% faster completion** - No time lost to context reconstruction
 - **Zero context loss** - All decisions and findings preserved
 - **Complete audit trail** - Full history of mission evolution
 - **Pause/resume capability** - Missions can be interrupted and continued
 
 ### Templates
+
 Context preservation templates are available in `/templates/`:
+
 - `agent-context-template.md` - Mission-wide context accumulator
 - `handoff-notes-template.md` - Agent-to-agent handoff structure
 - `evidence-repository-template.md` - Artifact collection format
@@ -231,16 +252,17 @@ Context preservation templates are available in `/templates/`:
 ## Structured Context System (Foundations v2.0)
 
 ### Overview
+
 The `/foundations` command extracts BOS-AI foundation documents (PRD, Vision, ICP, Brand, Marketing) into structured YAML that agents can parse directly. This replaces the previous token-budgeted summary approach which caused 50%+ data loss.
 
 **Key Principle**: Extract complete, structured data that agents can parse directly - not lossy prose summaries.
 
 ### Why Structured YAML?
 
-| Approach | Data Preservation | Agent Usability |
-|----------|-------------------|-----------------|
-| Token-budgeted summaries (v1.0) | 25-65% | Requires NLP interpretation |
-| Structured YAML extraction (v2.0) | 100% | Direct parsing, no interpretation |
+| Approach                          | Data Preservation | Agent Usability                   |
+| --------------------------------- | ----------------- | --------------------------------- |
+| Token-budgeted summaries (v1.0)   | 25-65%            | Requires NLP interpretation       |
+| Structured YAML extraction (v2.0) | 100%              | Direct parsing, no interpretation |
 
 ### Directory Structure
 
@@ -265,6 +287,7 @@ project-root/
 ### Schema Reference
 
 Foundation extraction schemas are in `project/schemas/`:
+
 - `foundation-prd.schema.yaml` - Product, features, tech stack, pricing
 - `foundation-vision.schema.yaml` - Vision, mission, hedgehog concept, goals
 - `foundation-roadmap.schema.yaml` - Strategic roadmap, phases, decision framework, resource planning
@@ -301,14 +324,14 @@ context:
 
 ### Mission-to-Context Mapping
 
-| Mission Type | Context Needed |
-|--------------|----------------|
-| build/mvp | prd.features, prd.tech_stack, roadmap.phases, brand.colors, brand.components |
-| design-review | brand.*, icp.personas |
-| marketing | marketing.*, vision.value_proposition |
-| strategy | vision.*, roadmap.strategic_foundation, roadmap.decision_framework, icp.pain_points |
-| planning | roadmap.phases, roadmap.implementation_framework, roadmap.resource_planning, prd.features |
-| architecture | prd.tech_stack, roadmap.keystone_products, vision.hedgehog_concept |
+| Mission Type  | Context Needed                                                                            |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| build/mvp     | prd.features, prd.tech_stack, roadmap.phases, brand.colors, brand.components              |
+| design-review | brand.\*, icp.personas                                                                    |
+| marketing     | marketing.\*, vision.value_proposition                                                    |
+| strategy      | vision.\*, roadmap.strategic_foundation, roadmap.decision_framework, icp.pain_points      |
+| planning      | roadmap.phases, roadmap.implementation_framework, roadmap.resource_planning, prd.features |
+| architecture  | prd.tech_stack, roadmap.keystone_products, vision.hedgehog_concept                        |
 
 ### Commands
 
@@ -329,6 +352,7 @@ context:
 ### Migration from v1.0
 
 If upgrading from token-budgeted summaries:
+
 1. Delete `.context/summaries/` directory
 2. Run `/foundations init` to create new structured extractions
 3. Old `handoff-manifest.json` replaced by `handoff-manifest.yaml`
@@ -339,6 +363,7 @@ If upgrading from token-budgeted summaries:
 **Full Documentation**: See `/project/field-manual/coordinator-protocol.md`
 
 ### Key Rules
+
 1. **Use Task tool** for delegation, not `@agent` syntax
 2. **Verify files** exist after delegation - subagents cannot create files directly
 3. **Use Sprint 2 structured output** - specialists return JSON, coordinator executes
@@ -346,11 +371,11 @@ If upgrading from token-budgeted summaries:
 
 ### Quick Reference
 
-| What | Correct | Incorrect |
-|------|---------|-----------|
-| Delegation | `Task(subagent_type="developer", ...)` | "Delegating to @developer" |
-| File creation | Coordinator executes Write tool | Assuming subagent created file |
-| Verification | `ls -la /path/to/file` after delegation | Trust agent report |
+| What          | Correct                                 | Incorrect                      |
+| ------------- | --------------------------------------- | ------------------------------ |
+| Delegation    | `Task(subagent_type="developer", ...)`  | "Delegating to @developer"     |
+| File creation | Coordinator executes Write tool         | Assuming subagent created file |
+| Verification  | `ls -la /path/to/file` after delegation | Trust agent report             |
 
 **File Persistence**: Subagents cannot persist files to filesystem. Always use coordinator-as-executor pattern with Sprint 2 structured JSON output. See `/project/field-manual/file-operation-quickref.md`.
 
@@ -359,9 +384,11 @@ If upgrading from token-budgeted summaries:
 ### Project Initialization
 
 #### Greenfield Projects (New)
+
 ```bash
 /coord dev-setup ideation.md
 ```
+
 - Sets up GitHub repository
 - Analyzes ideation documents
 - Creates architecture.md from template
@@ -370,9 +397,11 @@ If upgrading from token-budgeted summaries:
 - Configures CLAUDE.md
 
 #### Existing Projects (Brownfield)
+
 ```bash
 /coord dev-alignment
 ```
+
 - Analyzes existing codebase
 - Understands project context
 - Reviews/creates architecture.md
@@ -388,22 +417,25 @@ If upgrading from token-budgeted summaries:
 AGENT-11 uses **dynamic MCP tool loading** - tools are discovered on-demand using Tool Search, reducing initial context from 51K to 3.3K tokens (93% reduction).
 
 **How It Works**:
+
 1. **Search** for tools: `tool_search_tool_regex_20251119("mcp__supabase")`
 2. **Load** discovered tools automatically on first use
 3. **Execute** with minimal context overhead
 
 ### Tool Search Patterns
-| Need | Search Pattern | Discovers |
-|------|----------------|-----------|
-| Database | `mcp__supabase` | PostgreSQL, auth, RLS |
-| Testing | `mcp__playwright` | Browser automation |
-| Deployment | `mcp__railway` | Railway deployments |
-| Payments | `mcp__stripe` | Billing, subscriptions |
-| Documentation | `mcp__context7` | Library docs |
-| Version Control | `mcp__github` | PRs, issues |
-| Research | `mcp__firecrawl` | Web scraping |
+
+| Need            | Search Pattern    | Discovers              |
+| --------------- | ----------------- | ---------------------- |
+| Database        | `mcp__supabase`   | PostgreSQL, auth, RLS  |
+| Testing         | `mcp__playwright` | Browser automation     |
+| Deployment      | `mcp__railway`    | Railway deployments    |
+| Payments        | `mcp__stripe`     | Billing, subscriptions |
+| Documentation   | `mcp__context7`   | Library docs           |
+| Version Control | `mcp__github`     | PRs, issues            |
+| Research        | `mcp__firecrawl`  | Web scraping           |
 
 ### Key Principles
+
 - **MCP-First**: Use Tool Search to check for available MCPs before manual implementation
 - **Discovery**: Use Tool Search with pattern (e.g., `mcp__supabase`) to find tools
 - **Fallback**: Have manual approach ready when Tool Search returns no results
@@ -414,11 +446,11 @@ AGENT-11 uses **dynamic MCP tool loading** - tools are discovered on-demand usin
 
 ### Quick Reference
 
-| Model | Use For | Example |
-|-------|---------|---------|
-| `opus` | Complex orchestration, strategic planning | Multi-phase missions, architecture |
-| `sonnet` | Standard tasks (default) | Implementation, testing |
-| `haiku` | Simple, fast operations | Doc updates, quick lookups |
+| Model    | Use For                                   | Example                            |
+| -------- | ----------------------------------------- | ---------------------------------- |
+| `opus`   | Complex orchestration, strategic planning | Multi-phase missions, architecture |
+| `sonnet` | Standard tasks (default)                  | Implementation, testing            |
+| `haiku`  | Simple, fast operations                   | Doc updates, quick lookups         |
 
 **Syntax**: `Task(subagent_type="strategist", model="opus", prompt="...")`
 
@@ -427,6 +459,7 @@ AGENT-11 uses **dynamic MCP tool loading** - tools are discovered on-demand usin
 **Full Documentation**: See `/project/field-manual/mcp-integration.md`
 
 **Quick Start (Dynamic)**:
+
 ```bash
 cp project/mcp/dynamic-mcp.json .mcp.json  # Use dynamic configuration
 cp .env.mcp.template .env.mcp              # Configure API keys
@@ -443,16 +476,16 @@ Sprint 9 introduces **Plan-Driven Development** where `project-plan.md` is the s
 
 ### New Commands (Sprint 9)
 
-| Command | Purpose |
-|---------|---------|
-| `/foundations init` | Extract foundation documents to structured YAML |
-| `/architect` | Design system architecture (Auto or Engaged mode) |
-| `/bootstrap [template]` | Generate project-plan.md from YAML extracts |
-| `/plan status` | View current mission state |
-| `/plan phase [N]` | Show phase details |
-| `/coord continue` | Autonomous execution until blocked |
-| `/skills` | List available skills |
-| `/skills match [task]` | Find matching skills for a task |
+| Command                 | Purpose                                           |
+| ----------------------- | ------------------------------------------------- |
+| `/foundations init`     | Extract foundation documents to structured YAML   |
+| `/architect`            | Design system architecture (Auto or Engaged mode) |
+| `/bootstrap [template]` | Generate project-plan.md from YAML extracts       |
+| `/plan status`          | View current mission state                        |
+| `/plan phase [N]`       | Show phase details                                |
+| `/coord continue`       | Autonomous execution until blocked                |
+| `/skills`               | List available skills                             |
+| `/skills match [task]`  | Find matching skills for a task                   |
 
 ### Plan-Driven Workflow
 
@@ -482,12 +515,13 @@ Sprint 9 introduces **Plan-Driven Development** where `project-plan.md` is the s
 
 When running `/architect` without flags, you'll be prompted to choose:
 
-| Mode | Description |
-|------|-------------|
-| **Engaged (Recommended)** | Walk through 7 architectural decisions together. I explain trade-offs, you make informed choices. |
-| **Auto** | Generate architecture from PRD tech stack hints using sensible defaults. Fast, but review afterward. |
+| Mode                      | Description                                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Engaged (Recommended)** | Walk through 7 architectural decisions together. I explain trade-offs, you make informed choices.    |
+| **Auto**                  | Generate architecture from PRD tech stack hints using sensible defaults. Fast, but review afterward. |
 
 **The 7 Decisions** (Engaged Mode):
+
 1. Application Architecture (Monolith vs Modular vs Microservices)
 2. Frontend Stack (Framework, rendering, styling, components)
 3. Backend & Database (Provider, multi-tenancy, API layer)
@@ -508,6 +542,7 @@ python project/gates/run-gates.py --config .quality-gates.json --phase implement
 ```
 
 **Gate Severity**:
+
 - `blocking` - Must pass to proceed
 - `warning` - Logged, continues
 - `info` - Informational only
@@ -516,22 +551,22 @@ python project/gates/run-gates.py --config .quality-gates.json --phase implement
 
 Skills auto-load based on task keywords:
 
-| Skill | Triggers | Tokens |
-|-------|----------|--------|
-| saas-auth | auth, login, oauth | ~3,800 |
-| saas-payments | stripe, checkout | ~4,200 |
-| saas-multitenancy | tenant, rls | ~4,100 |
-| saas-billing | billing, plan | ~3,900 |
-| saas-email | email, resend | ~3,200 |
-| saas-onboarding | onboarding, wizard | ~3,500 |
-| saas-analytics | analytics, tracking | ~3,600 |
+| Skill             | Triggers            | Tokens |
+| ----------------- | ------------------- | ------ |
+| saas-auth         | auth, login, oauth  | ~3,800 |
+| saas-payments     | stripe, checkout    | ~4,200 |
+| saas-multitenancy | tenant, rls         | ~4,100 |
+| saas-billing      | billing, plan       | ~3,900 |
+| saas-email        | email, resend       | ~3,200 |
+| saas-onboarding   | onboarding, wizard  | ~3,500 |
+| saas-analytics    | analytics, tracking | ~3,600 |
 
 ### Stack Profiles
 
 Set your stack in `.stack-profile.yaml`:
 
 ```yaml
-extends: nextjs-supabase  # or remix-railway, sveltekit-supabase
+extends: nextjs-supabase # or remix-railway, sveltekit-supabase
 ```
 
 ### Documentation
@@ -544,6 +579,7 @@ extends: nextjs-supabase  # or remix-railway, sveltekit-supabase
 ## Available Commands
 
 ### Mission Orchestration
+
 - `/coord [mission] [files]` - Orchestrate multi-agent missions
 - `/coord continue` - Autonomous execution until blocked (Sprint 9)
 - `/design-review` - Comprehensive UI/UX audit (delegates to @designer)
@@ -551,6 +587,7 @@ extends: nextjs-supabase  # or remix-railway, sveltekit-supabase
 - `/meeting [agenda]` - Facilitate structured meetings
 
 ### Project Setup (Sprint 9)
+
 - `/foundations init` - Extract foundation documents to structured YAML
 - `/architect` - Design system architecture (Auto or Engaged mode)
 - `/bootstrap [template]` - Generate project-plan.md from YAML extracts
@@ -559,6 +596,6 @@ extends: nextjs-supabase  # or remix-railway, sveltekit-supabase
 - `/skills` - List and match skills
 
 ### Reporting & Analysis
+
 - `/report [since_date]` - Generate progress reports for stakeholders
 - `/pmd [issue]` - Post Mortem Dump for root cause analysis
-

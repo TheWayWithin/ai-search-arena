@@ -5,6 +5,7 @@
 **Usage**: `/plan [subcommand] [args]`
 
 **Available Subcommands**:
+
 - `status` - Show current phase, task, progress, blockers
 - `next` - Show what's coming up
 - `phase [N]` - Show details for specific phase
@@ -17,6 +18,7 @@
 ### Prerequisites
 
 Before executing any `/plan` command:
+
 1. Verify `project-plan.md` exists (created by `/bootstrap`)
 2. Validate plan structure against `project/schemas/project-plan.schema.yaml`
 3. Check for `.context/phase-N-context.yaml` files for active phases
@@ -24,6 +26,7 @@ Before executing any `/plan` command:
 ### Error Handling
 
 **Common Errors**:
+
 - **No project-plan.md**: "No project plan found. Run `/bootstrap` to generate one."
 - **Invalid schema**: "Project plan validation failed. Check against schema at project/schemas/project-plan.schema.yaml"
 - **Phase not found**: "Phase N not found. Available phases: 1-{total}"
@@ -36,6 +39,7 @@ Before executing any `/plan` command:
 **Purpose**: Display current project state at a glance.
 
 **Algorithm**:
+
 ```python
 1. Read project-plan.md YAML frontmatter
 2. Parse metadata:
@@ -54,6 +58,7 @@ Before executing any `/plan` command:
 ```
 
 **Output Format**:
+
 ```
 📊 Project: {project_name}
 📍 Phase: {current_phase}/{total_phases} - {phase_name}
@@ -76,6 +81,7 @@ Status Legend:
 ```
 
 **Example Output**:
+
 ```
 📊 Project: SaaSify MVP
 📍 Phase: 2/4 - Core Features
@@ -93,6 +99,7 @@ Status Legend:
 ```
 
 **Schema Validation**:
+
 ```yaml
 # Validates against project-plan.schema.yaml
 required_fields:
@@ -109,6 +116,7 @@ required_fields:
 **Purpose**: Show upcoming work to maintain momentum.
 
 **Algorithm**:
+
 ```python
 1. Read project-plan.md and current phase context
 2. Find first task with status != "complete" in current phase
@@ -123,6 +131,7 @@ required_fields:
 ```
 
 **Output Format**:
+
 ```
 ➡️ Next Up
 
@@ -150,6 +159,7 @@ First Task: {first_task_description}
 ```
 
 **Example Output**:
+
 ```
 ➡️ Next Up
 
@@ -180,6 +190,7 @@ First Task: Set up Playwright test suite
 **Usage**: `/plan phase 2`
 
 **Algorithm**:
+
 ```python
 1. Validate phase number (1 <= N <= total_phases)
 2. Read project-plan.md phases section
@@ -195,6 +206,7 @@ First Task: Set up Playwright test suite
 ```
 
 **Output Format**:
+
 ```
 📦 Phase {N}/{total_phases}: {phase_name}
 
@@ -229,6 +241,7 @@ Status Legend:
 ```
 
 **Example Output**:
+
 ```
 📦 Phase 2/4: Core Features
 
@@ -294,6 +307,7 @@ subscription handling, and core business logic.
 **Usage**: `/plan gate 2`
 
 **Algorithm**:
+
 ```python
 1. Validate phase number
 2. Read project-plan.md for phase gate definition
@@ -310,15 +324,16 @@ subscription handling, and core business logic.
 ```
 
 **Schema Reference**:
+
 ```yaml
 # In project-plan.md phases section:
 phases:
   - id: phase-1
     gate:
-      type: build      # Gate category (enum)
-      blocking: true   # Blocks next phase
+      type: build # Gate category (enum)
+      blocking: true # Blocks next phase
       criteria: "npm run build passes"
-      status: passed   # pending|passed|failed
+      status: passed # pending|passed|failed
 
 # In .context/phase-N-context.yaml:
 gate_criteria:
@@ -333,6 +348,7 @@ gate_criteria:
 ```
 
 **Output Format**:
+
 ```
 🚦 Quality Gates - Phase {N}: {phase_name}
 
@@ -369,6 +385,7 @@ Criteria: {success_criteria}
 ```
 
 **Example Output**:
+
 ```
 🚦 Quality Gates - Phase 2: Core Features
 
@@ -414,12 +431,14 @@ Criteria: All endpoints documented with examples
 **Purpose**: Update project plan state with validation.
 
 **Usage Examples**:
+
 - `/plan update task 3 complete`
 - `/plan update blocker "Waiting for API keys"`
 - `/plan update phase 3`
 - `/plan update focus "Implementing payment flow"`
 
 **Valid Fields**:
+
 - `task [N] [status]` - Update task status (pending|in_progress|complete|blocked)
 - `phase [N]` - Move to new phase
 - `blocker [description]` - Add blocker
@@ -428,6 +447,7 @@ Criteria: All endpoints documented with examples
 - `gate [phase_N_gate_id] [status]` - Update quality gate status
 
 **Algorithm**:
+
 ```python
 1. Parse field and value from command
 2. Validate field name against allowed fields
@@ -446,6 +466,7 @@ Criteria: All endpoints documented with examples
 ```
 
 **Schema Validation**:
+
 ```yaml
 # Before write, validate:
 task_status:
@@ -461,6 +482,7 @@ quality_gate_status:
 ```
 
 **Output Format**:
+
 ```
 ✅ Updated: {field}
 
@@ -526,6 +548,7 @@ After:  Phase 3 (Integration & Testing)
 ```
 
 **Error Cases**:
+
 ```
 ❌ Error: Invalid field 'taks' (did you mean 'task'?)
 
@@ -548,6 +571,7 @@ After:  Phase 3 (Integration & Testing)
 **Purpose**: Archive completed phases to reduce context overhead.
 
 **Algorithm**:
+
 ```python
 1. Read project-plan.md
 2. Identify completed phases:
@@ -567,6 +591,7 @@ After:  Phase 3 (Integration & Testing)
 ```
 
 **Integration with `/planarchive` command**:
+
 ```python
 # Leverage existing planarchive.md command
 1. Use planarchive algorithm for archival logic
@@ -578,6 +603,7 @@ After:  Phase 3 (Integration & Testing)
 ```
 
 **Output Format**:
+
 ```
 📦 Archiving Completed Phases
 
@@ -606,6 +632,7 @@ project-plan.md:
 ```
 
 **Example Output**:
+
 ```
 📦 Archiving Completed Phases
 
@@ -639,6 +666,7 @@ project-plan.md:
 ```
 
 **project-plan.md Summary Section** (after archive):
+
 ```yaml
 # Added to metadata section
 archived_phases:
@@ -656,6 +684,7 @@ archived_phases:
 ```
 
 **Archive File Structure** (project-plan-archive.md):
+
 ```markdown
 # Project Plan Archive
 
@@ -681,16 +710,19 @@ Active phases remain in main project-plan.md.
 ### Quality Gates
 
 ✅ **Repository Setup Complete**
+
 - Command: git remote -v
 - Status: PASSED (2025-01-08)
 - Result: Origin and upstream configured
 
 ✅ **Development Environment Ready**
+
 - Command: docker-compose up
 - Status: PASSED (2025-01-09)
 - Result: All services running
 
 ✅ **CI/CD Pipeline Functional**
+
 - Command: Check GitHub Actions
 - Status: PASSED (2025-01-10)
 - Result: Tests passing, auto-deploy to staging
@@ -711,6 +743,7 @@ Active phases remain in main project-plan.md.
 ```
 
 **Error Cases**:
+
 ```
 ⚠️ Warning: No completed phases found
    All phases have incomplete tasks or failed gates.
@@ -747,11 +780,13 @@ project/
 ### Schema Validation
 
 All `/plan` operations must validate against schemas:
+
 - `project/schemas/project-plan.schema.yaml` - Main plan structure
 - `project/schemas/phase-context.schema.yaml` - Phase context files
 - `project/schemas/quality-gate.schema.yaml` - Quality gate definitions
 
 **Validation Steps**:
+
 1. Parse YAML/frontmatter
 2. Validate structure against schema
 3. Check required fields present
@@ -759,6 +794,7 @@ All `/plan` operations must validate against schemas:
 5. Verify cross-references (phase numbers, task IDs)
 
 **On Validation Failure**:
+
 ```
 ❌ Schema Validation Failed
 
@@ -776,6 +812,7 @@ Errors:
 ### Additional Error Scenarios
 
 **Malformed YAML**:
+
 ```
 ❌ YAML Parse Error
 
@@ -792,6 +829,7 @@ Context: "   - task: auth"
 ```
 
 **Missing Task Status**:
+
 ```
 ⚠️ Missing Required Field
 
@@ -806,6 +844,7 @@ To fix permanently, add status to project-plan.md:
 ```
 
 **Empty Phase**:
+
 ```
 ⚠️ Empty Phase Detected
 
@@ -819,6 +858,7 @@ Options:
 ```
 
 **Circular Dependencies**:
+
 ```
 ❌ Circular Dependency Detected
 
@@ -943,48 +983,56 @@ def update_task_status(project_plan, task_number, new_status):
 ## Usage Examples
 
 ### Quick Status Check
+
 ```bash
 /plan status
 # Shows current progress, blockers, next action
 ```
 
 ### Check What's Next
+
 ```bash
 /plan next
 # Shows next task and upcoming work
 ```
 
 ### Review Specific Phase
+
 ```bash
 /plan phase 2
 # Deep dive into Phase 2 details
 ```
 
 ### Check Quality Gates
+
 ```bash
 /plan gate 2
 # Review all quality gates for Phase 2
 ```
 
 ### Update Task Status
+
 ```bash
 /plan update task 3 complete
 # Mark task 3 as complete
 ```
 
 ### Add Blocker
+
 ```bash
 /plan update blocker "Waiting for API keys"
 # Add blocker to current phase
 ```
 
 ### Move to Next Phase
+
 ```bash
 /plan update phase 3
 # Transition to Phase 3
 ```
 
 ### Archive Completed Work
+
 ```bash
 /plan archive
 # Archive all completed phases
@@ -1037,6 +1085,7 @@ Task(
 ## Error Recovery
 
 ### Corrupted Plan File
+
 ```bash
 # If project-plan.md is corrupted:
 1. Backup current file: cp project-plan.md project-plan.md.backup
@@ -1045,6 +1094,7 @@ Task(
 ```
 
 ### Schema Validation Errors
+
 ```bash
 # If schema validation fails:
 1. Check schema at project/schemas/project-plan.schema.yaml
@@ -1054,6 +1104,7 @@ Task(
 ```
 
 ### Missing Context Files
+
 ```bash
 # If .context/phase-N-context.yaml missing:
 1. /plan will use defaults (no blockers, generic next action)
@@ -1068,16 +1119,19 @@ Task(
 ## Performance Considerations
 
 ### Large Projects (>10 phases)
+
 - Use `/plan archive` regularly to reduce context
 - Keep only active 2-3 phases in project-plan.md
 - Archive completed phases immediately after verification
 
 ### Fast Status Checks
+
 - `/plan status` reads only frontmatter and current phase context
 - Optimized for <100ms response time
 - Cached progress calculations
 
 ### Batch Updates
+
 - Multiple updates in sequence may be slow
 - Consider using Task tool to batch operations:
   ```python
@@ -1095,17 +1149,20 @@ Task(
 ## Testing Recommendations
 
 ### Unit Tests
+
 - Schema validation functions
 - Progress calculation
 - Status determination logic
 - Update operations
 
 ### Integration Tests
+
 - Full workflow: status → update → gate → archive
 - Error cases: invalid phase, missing file, schema violation
 - Edge cases: empty plan, all tasks complete, no gates
 
 ### User Acceptance Tests
+
 - Real project workflows
 - Multi-phase transitions
 - Long-running projects (>30 days)
@@ -1116,6 +1173,7 @@ Task(
 ## Future Enhancements
 
 ### Planned Features
+
 1. **Visual Progress Bar**: ASCII art progress visualization
 2. **Time Tracking**: Estimate vs. actual time per task
 3. **Burndown Charts**: Text-based burndown in terminal
@@ -1125,6 +1183,7 @@ Task(
 7. **Team Features**: Multi-user task assignment
 
 ### Integration Opportunities
+
 - **GitHub Issues**: Sync tasks with GitHub Issues
 - **Project Management**: Export to Jira, Asana, etc.
 - **CI/CD**: Automated quality gate validation
@@ -1147,18 +1206,23 @@ Task(
 ### Common Issues
 
 **Issue**: "No project plan found"
+
 - **Solution**: Run `/bootstrap` to generate project-plan.md
 
 **Issue**: Schema validation fails
+
 - **Solution**: Check schema requirements, fix manually or regenerate
 
 **Issue**: Progress percentage incorrect
+
 - **Solution**: Verify all tasks have valid status values, check calculation
 
 **Issue**: Quality gates not showing
+
 - **Solution**: Ensure gates defined in project-plan.md phases section
 
 **Issue**: Archive command does nothing
+
 - **Solution**: Check if any phases are actually complete (all tasks + gates)
 
 ### Debug Mode
@@ -1172,5 +1236,5 @@ Task(
 ---
 
 **Last Updated**: 2025-12-30 (Phase 9D - /plan Command Specification)
-**Dependencies**: /bootstrap, /foundations, project/schemas/*.yaml
+**Dependencies**: /bootstrap, /foundations, project/schemas/\*.yaml
 **Related**: Phase 9 Foundation Docs Sprint, planarchive.md

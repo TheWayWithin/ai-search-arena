@@ -76,6 +76,7 @@ Running `/dailyreport` later the same day appends to existing daily report:
 When enabled (default), `/dailyreport` generates a polished blog-ready version of your daily report.
 
 **Blog Output** (`YYYY-MM-DD-blog.md`):
+
 - Narrative structure with engaging introduction
 - Categorized milestones with context and impact
 - Issue analysis with root cause explanations
@@ -84,6 +85,7 @@ When enabled (default), `/dailyreport` generates a polished blog-ready version o
 - 5-10 minute read length
 
 **Configuration**:
+
 ```bash
 # Required for AI features
 OPENAI_API_KEY=your_openai_key_here
@@ -94,6 +96,7 @@ OPENAI_API_KEY=your_openai_key_here
 When enabled (default), `/dailyreport` generates platform-optimized social media posts for Twitter/X and LinkedIn.
 
 **Social Media Output**:
+
 - `YYYY-MM-DD-twitter.md` - Twitter/X post (280 char limit, 71-100 optimal)
 - `YYYY-MM-DD-linkedin.md` - LinkedIn post (800-1000 character sweet spot)
 - Copy-paste ready format with character count validation
@@ -108,6 +111,7 @@ When enabled (default), `/dailyreport` generates platform-optimized social media
 | LinkedIn | linkedin.com/in/jamie-watters-solo |
 
 **Configuration**:
+
 ```bash
 # Enable/disable social media generation (default: true)
 DAILYREPORT_ENABLE_SOCIAL=true
@@ -127,6 +131,7 @@ When social media generation is enabled, `/dailyreport` automatically creates pl
 ### Platforms Supported
 
 **Twitter/X**:
+
 - 280 character hard limit (aims for 71-100 optimal)
 - 1-2 hashtags from: #buildinpublic #solofounder #indiehacker #devlog
 - Strong hook + accomplishment + dual-link pattern
@@ -134,6 +139,7 @@ When social media generation is enabled, `/dailyreport` automatically creates pl
 - Behind-the-scenes, authentic tone
 
 **LinkedIn**:
+
 - 800-1000 character sweet spot (3,000 max)
 - First 140 characters optimized as hook (shown before "see more")
 - Short one-line phrases for scannability
@@ -143,26 +149,29 @@ When social media generation is enabled, `/dailyreport` automatically creates pl
 
 ### Output Files
 
-| File | Platform | Format |
-|------|----------|--------|
-| `YYYY-MM-DD-twitter.md` | Twitter/X | Copy-paste ready with character count |
-| `YYYY-MM-DD-linkedin.md` | LinkedIn | Copy-paste ready with hook validation |
+| File                     | Platform  | Format                                |
+| ------------------------ | --------- | ------------------------------------- |
+| `YYYY-MM-DD-twitter.md`  | Twitter/X | Copy-paste ready with character count |
+| `YYYY-MM-DD-linkedin.md` | LinkedIn  | Copy-paste ready with hook validation |
 
 ### Dual-Link Structure (OG Preview Optimization)
 
 Social posts include **two links** strategically ordered for optimal OG preview behavior:
 
 **Link Order:**
+
 1. **Product Link ({{PRODUCT_URL}})** - Your live product/app (modeloptix.com, plebtest.com, etc.)
 2. **Article Link (LAST)** - Your blog post with branded OG image
 
 **Why This Order Matters:**
+
 - Social platforms use the **LAST link** for the OG preview card
 - Your jamiewatters.work blog posts have custom OG images
 - Product link appears first as a clear call-to-action
 - Article link at the end generates the branded preview image
 
 **Example Output:**
+
 ```
 Shipped bulletproof file persistence today 🚀
 
@@ -208,6 +217,7 @@ progress/
 ```
 
 Automatically:
+
 1. Captures your progress for the day
 2. Generates blog-ready narrative version
 3. Generates Twitter/X post (if enabled)
@@ -322,11 +332,13 @@ Full build story: jamiewatters.work/progress/2025-11-19
 ### Social Posts Not Generating
 
 **Check if disabled**:
+
 ```bash
 grep "DAILYREPORT_ENABLE_SOCIAL" .env.mcp
 ```
 
 **Enable if disabled**:
+
 ```bash
 echo "DAILYREPORT_ENABLE_SOCIAL=true" >> .env.mcp
 ```
@@ -334,17 +346,20 @@ echo "DAILYREPORT_ENABLE_SOCIAL=true" >> .env.mcp
 ### Character Count Issues
 
 **Twitter/X Post Too Long**:
+
 - Character limit: 280 (hard limit)
 - Optimal: 71-100 characters
 - Solution: Re-run to regenerate, or manually edit
 
 **LinkedIn Hook Too Long**:
+
 - First 140 chars shown before "see more"
 - Check optimization notes in output file
 
 ### Missing Files
 
 **Only Raw Report Created**:
+
 - Indicates AI enhancement is disabled or API key missing
 - Add `OPENAI_API_KEY` to `.env.mcp`
 - Set `DAILYREPORT_ENABLE_SOCIAL=true`
@@ -361,26 +376,28 @@ DailyReport works seamlessly with:
 
 ## QUICK REFERENCE
 
-| Task | Command/Setting |
-|------|-----------------|
-| Create daily report | `/dailyreport` |
-| Enable social posts | `DAILYREPORT_ENABLE_SOCIAL=true` |
-| Set custom domain | `DAILYREPORT_BASE_URL=yourdomain.com` |
-| View today's report | `cat progress/$(date +%Y-%m-%d).md` |
-| View today's twitter | `cat progress/$(date +%Y-%m-%d)-twitter.md` |
+| Task                  | Command/Setting                              |
+| --------------------- | -------------------------------------------- |
+| Create daily report   | `/dailyreport`                               |
+| Enable social posts   | `DAILYREPORT_ENABLE_SOCIAL=true`             |
+| Set custom domain     | `DAILYREPORT_BASE_URL=yourdomain.com`        |
+| View today's report   | `cat progress/$(date +%Y-%m-%d).md`          |
+| View today's twitter  | `cat progress/$(date +%Y-%m-%d)-twitter.md`  |
 | View today's linkedin | `cat progress/$(date +%Y-%m-%d)-linkedin.md` |
 
 ## COST & EFFICIENCY
 
 **Per Complete Report** (blog + social):
+
 - API cost: ~$0.002
 - Processing time: 3-5 seconds
 - Manual effort saved: 15-20 minutes
 
 **Monthly Estimate** (daily reports):
+
 - 30 reports × $0.002 = $0.06
 - Time saved: 7.5-10 hours
 
 ---
 
-*The /dailyreport command transforms daily work into shareable progress summaries, enabling authentic build-in-public documentation with platform-optimized social media posts.*
+_The /dailyreport command transforms daily work into shareable progress summaries, enabling authentic build-in-public documentation with platform-optimized social media posts._

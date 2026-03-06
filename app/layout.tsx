@@ -28,8 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "AI Search Arena",
-    description:
-      "Independent monthly benchmarks for AI search optimization tools.",
+    description: "Independent monthly benchmarks for AI search optimization tools.",
   },
   alternates: {
     canonical: "https://aisearcharena.com",
@@ -46,10 +45,7 @@ export default function RootLayout({
       <head>
         {process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL && (
           <>
-            <script
-              async
-              src={process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL}
-            />
+            <script async src={process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL} />
             <script
               dangerouslySetInnerHTML={{
                 __html: `window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()`,
@@ -58,9 +54,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
-      </body>
+      <body className={`${inter.variable} font-sans antialiased`}>{children}</body>
     </html>
   );
 }

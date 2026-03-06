@@ -20,7 +20,11 @@ export function calculateCompositeScore(
   const totalApplicableWeight = applicableScores.reduce((sum, s) => sum + s.weight, 0);
 
   if (totalApplicableWeight === 0) {
-    return { compositeScore: 0, applicableDimensions: applicableScores.length, totalDimensions: scores.length };
+    return {
+      compositeScore: 0,
+      applicableDimensions: applicableScores.length,
+      totalDimensions: scores.length,
+    };
   }
 
   const weightedSum = applicableScores.reduce(
@@ -130,9 +134,7 @@ export async function calculateCycleCompositeScores(cycleId: string) {
     const { compositeScore } = calculateCompositeScore(scoreInputs);
 
     // Derive composite confidence from individual score confidence tags
-    const applicableTags = tScores
-      .filter((s) => s.isApplicable)
-      .map((s) => s.confidenceTag);
+    const applicableTags = tScores.filter((s) => s.isApplicable).map((s) => s.confidenceTag);
     const confidenceTag = deriveCompositeConfidence(applicableTags);
 
     // Nullable segmentId can't use compound unique in upsert, so find-then-create/update

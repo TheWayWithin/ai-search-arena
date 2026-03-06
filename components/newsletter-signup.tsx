@@ -16,9 +16,7 @@ export function NewsletterSignup({ variant = "hero" }: { variant?: Variant }) {
     return (
       <div className="w-full">
         {state.ok ? (
-          <p className="text-sm font-medium text-confidence-green">
-            {state.message}
-          </p>
+          <p className="text-confidence-green text-sm font-medium">{state.message}</p>
         ) : (
           <form action={action} className="flex gap-2">
             <Input
@@ -33,14 +31,14 @@ export function NewsletterSignup({ variant = "hero" }: { variant?: Variant }) {
               type="submit"
               size="sm"
               disabled={pending}
-              className="bg-arena-slate text-white hover:bg-arena-slate/90"
+              className="bg-arena-slate hover:bg-arena-slate/90 text-white"
             >
               {pending ? "..." : "Subscribe"}
             </Button>
           </form>
         )}
         {!state.ok && state.message && (
-          <p className="mt-1 text-xs text-insufficient-red">{state.message}</p>
+          <p className="text-insufficient-red mt-1 text-xs">{state.message}</p>
         )}
       </div>
     );
@@ -50,17 +48,15 @@ export function NewsletterSignup({ variant = "hero" }: { variant?: Variant }) {
   return (
     <div className="mx-auto mt-8 max-w-md">
       {state.ok ? (
-        <div className="rounded-lg border border-confidence-green/20 bg-confidence-green/5 px-4 py-3">
-          <p className="font-medium text-confidence-green">
-            {state.message}
-          </p>
-          <p className="mt-1 text-sm text-arena-slate-light">
+        <div className="border-confidence-green/20 bg-confidence-green/5 rounded-lg border px-4 py-3">
+          <p className="text-confidence-green font-medium">{state.message}</p>
+          <p className="text-arena-slate-light mt-1 text-sm">
             We&apos;ll email you when the first benchmark drops.
           </p>
         </div>
       ) : (
         <>
-          <p className="mb-3 text-sm font-medium text-arena-slate">
+          <p className="text-arena-slate mb-3 text-sm font-medium">
             Be the first to know when we publish new rankings.
           </p>
           <form action={action} className="flex gap-2">
@@ -75,7 +71,7 @@ export function NewsletterSignup({ variant = "hero" }: { variant?: Variant }) {
             <Button
               type="submit"
               disabled={pending}
-              className="bg-arena-slate text-white hover:bg-arena-slate/90"
+              className="bg-arena-slate hover:bg-arena-slate/90 text-white"
             >
               {pending ? "Subscribing..." : "Get Benchmark Alerts"}
             </Button>
@@ -83,7 +79,7 @@ export function NewsletterSignup({ variant = "hero" }: { variant?: Variant }) {
         </>
       )}
       {!state.ok && state.message && (
-        <p className="mt-2 text-sm text-insufficient-red">{state.message}</p>
+        <p className="text-insufficient-red mt-2 text-sm">{state.message}</p>
       )}
     </div>
   );

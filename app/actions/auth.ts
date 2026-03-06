@@ -17,20 +17,12 @@ export type AuthState = {
   message: string;
 };
 
-export async function loginAction(
-  _prev: AuthState,
-  formData: FormData
-): Promise<AuthState> {
+export async function loginAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const username = formData.get("username");
   const password = formData.get("password");
   const from = formData.get("from");
 
-  if (
-    !username ||
-    typeof username !== "string" ||
-    !password ||
-    typeof password !== "string"
-  ) {
+  if (!username || typeof username !== "string" || !password || typeof password !== "string") {
     return { ok: false, message: "Username and password are required." };
   }
 
@@ -57,8 +49,7 @@ export async function loginAction(
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, getSessionCookieOptions());
 
-  const redirectTo =
-    typeof from === "string" && from.startsWith("/admin") ? from : "/admin";
+  const redirectTo = typeof from === "string" && from.startsWith("/admin") ? from : "/admin";
   redirect(redirectTo);
 }
 

@@ -1,7 +1,6 @@
 "use server";
 
-const BUTTONDOWN_USERNAME =
-  process.env.NEXT_PUBLIC_BUTTONDOWN_USERNAME ?? "watters";
+const BUTTONDOWN_USERNAME = process.env.NEXT_PUBLIC_BUTTONDOWN_USERNAME ?? "watters";
 
 export async function subscribe(
   _prev: { ok: boolean; message: string },

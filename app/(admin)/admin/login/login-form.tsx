@@ -15,10 +15,7 @@ export function LoginForm({ from }: { from?: string }) {
       {from && <input type="hidden" name="from" value={from} />}
 
       <div>
-        <label
-          htmlFor="username"
-          className="mb-1 block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="username" className="mb-1 block text-sm font-medium text-gray-700">
           Username
         </label>
         <Input
@@ -32,10 +29,7 @@ export function LoginForm({ from }: { from?: string }) {
       </div>
 
       <div>
-        <label
-          htmlFor="password"
-          className="mb-1 block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
           Password
         </label>
         <Input
@@ -48,9 +42,7 @@ export function LoginForm({ from }: { from?: string }) {
         />
       </div>
 
-      {state.message && (
-        <p className="text-sm text-red-600">{state.message}</p>
-      )}
+      {state.message && <p className="text-sm text-red-600">{state.message}</p>}
 
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? "Signing in..." : "Sign in"}

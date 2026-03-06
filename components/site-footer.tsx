@@ -3,19 +3,19 @@ import { NewsletterSignup } from "@/components/newsletter-signup";
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-pale-grey">
+    <footer className="border-border bg-pale-grey border-t">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <p className="text-sm text-arena-slate-light">
+          <p className="text-arena-slate-light text-sm">
             Monthly benchmark results, delivered to your inbox.
           </p>
           <NewsletterSignup variant="footer" />
         </div>
 
-        <div className="my-6 border-t border-border" />
+        <div className="border-border my-6 border-t" />
 
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="text-sm text-arena-slate-light">
+          <div className="text-arena-slate-light text-sm">
             &copy; {new Date().getFullYear()} AI Search Arena. An{" "}
             <a
               href="https://aisearchmastery.com"
@@ -27,7 +27,7 @@ export function SiteFooter() {
             </a>{" "}
             project.
           </div>
-          <nav className="flex gap-4 text-sm text-arena-slate-light">
+          <nav className="text-arena-slate-light flex gap-4 text-sm">
             <Link href="/methodology" className="hover:text-arena-slate">
               Methodology
             </Link>

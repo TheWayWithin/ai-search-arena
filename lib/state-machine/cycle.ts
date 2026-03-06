@@ -121,10 +121,7 @@ export function isValidTransition(from: CycleState, to: CycleState): boolean {
  *
  * AC-005-05: Invalid transitions rejected with current state preserved.
  */
-export async function transitionCycle(
-  cycleId: string,
-  newState: CycleState
-) {
+export async function transitionCycle(cycleId: string, newState: CycleState) {
   const cycle = await prisma.benchmarkCycle.findUniqueOrThrow({
     where: { id: cycleId },
   });

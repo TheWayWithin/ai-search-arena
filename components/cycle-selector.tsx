@@ -41,7 +41,7 @@ export function CycleSelector({ cycles, currentCycleId }: CycleSelectorProps) {
     <select
       value={currentCycle?.cycleIdentifier ?? cycles[0].cycleIdentifier}
       onChange={handleChange}
-      className="rounded border border-border bg-white px-2 py-1 text-sm text-arena-slate outline-none transition-colors hover:border-arena-slate-light focus:border-arena-slate"
+      className="border-border text-arena-slate hover:border-arena-slate-light focus:border-arena-slate rounded border bg-white px-2 py-1 text-sm transition-colors outline-none"
     >
       {cycles.map((c) => (
         <option key={c.id} value={c.cycleIdentifier}>

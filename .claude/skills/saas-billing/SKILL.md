@@ -51,43 +51,51 @@ Implement subscription lifecycle management, plan enforcement, usage tracking, a
 // Plan definitions
 const PLANS = {
   free: {
-    id: 'free',
-    name: 'Free',
+    id: "free",
+    name: "Free",
     price: 0,
     limits: {
       projects: 3,
       teamMembers: 1,
       storageGb: 1,
-      apiRequestsPerMonth: 1000
+      apiRequestsPerMonth: 1000,
     },
-    features: ['basic_analytics']
+    features: ["basic_analytics"],
   },
   pro: {
-    id: 'pro',
-    name: 'Pro',
-    stripePriceId: 'price_pro_monthly',
+    id: "pro",
+    name: "Pro",
+    stripePriceId: "price_pro_monthly",
     price: 29,
     limits: {
       projects: 25,
       teamMembers: 10,
       storageGb: 50,
-      apiRequestsPerMonth: 50000
+      apiRequestsPerMonth: 50000,
     },
-    features: ['basic_analytics', 'advanced_analytics', 'api_access', 'priority_support']
+    features: ["basic_analytics", "advanced_analytics", "api_access", "priority_support"],
   },
   enterprise: {
-    id: 'enterprise',
-    name: 'Enterprise',
-    stripePriceId: 'price_enterprise_monthly',
+    id: "enterprise",
+    name: "Enterprise",
+    stripePriceId: "price_enterprise_monthly",
     price: 99,
     limits: {
       projects: -1, // unlimited
       teamMembers: -1,
       storageGb: 500,
-      apiRequestsPerMonth: -1
+      apiRequestsPerMonth: -1,
     },
-    features: ['basic_analytics', 'advanced_analytics', 'api_access', 'priority_support', 'sso', 'audit_logs', 'custom_integrations']
-  }
+    features: [
+      "basic_analytics",
+      "advanced_analytics",
+      "api_access",
+      "priority_support",
+      "sso",
+      "audit_logs",
+      "custom_integrations",
+    ],
+  },
 } as const;
 
 // Check feature access
@@ -109,10 +117,9 @@ async function requireFeature(feature: string) {
   return async (req: Request, next: NextFunction) => {
     const org = req.tenant;
     if (!hasFeature(org.plan, feature)) {
-      throw new PaymentRequiredError(
-        `Upgrade to access ${feature}`,
-        { requiredPlan: getMinimumPlanForFeature(feature) }
-      );
+      throw new PaymentRequiredError(`Upgrade to access ${feature}`, {
+        requiredPlan: getMinimumPlanForFeature(feature),
+      });
     }
     return next();
   };
@@ -131,11 +138,12 @@ async function startTrial(organizationId: string, trialDays = 14) {
   const trialEnd = new Date();
   trialEnd.setDate(trialEnd.getDate() + trialDays);
 
-  await db.update(organizations)
+  await db
+    .update(organizations)
     .set({
-      plan: 'pro', // Full access during trial
+      plan: "pro", // Full access during trial
       trialEndsAt: trialEnd,
-      trialStartedAt: new Date()
+      trialStartedAt: new Date(),
     })
     .where(eq(organizations.id, organizationId));
 
@@ -146,7 +154,7 @@ async function startTrial(organizationId: string, trialDays = 14) {
 // Check trial status
 async function getSubscriptionStatus(org: Organization) {
   if (org.stripeSubscriptionId) {
-    return { status: 'active', plan: org.plan };
+    return { status: "active", plan: org.plan };
   }
 
   if (org.trialEndsAt) {
@@ -155,19 +163,17 @@ async function getSubscriptionStatus(org: Organization) {
       const daysLeft = Math.ceil(
         (org.trialEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
       );
-      return { status: 'trialing', plan: org.plan, daysLeft };
+      return { status: "trialing", plan: org.plan, daysLeft };
     }
-    return { status: 'trial_expired', plan: 'free' };
+    return { status: "trial_expired", plan: "free" };
   }
 
-  return { status: 'free', plan: 'free' };
+  return { status: "free", plan: "free" };
 }
 
 // Handle trial expiration
 async function handleTrialExpired(organizationId: string) {
-  await db.update(organizations)
-    .set({ plan: 'free' })
-    .where(eq(organizations.id, organizationId));
+  await db.update(organizations).set({ plan: "free" }).where(eq(organizations.id, organizationId));
 
   // Notify org admins
   await notifyTrialExpired(organizationId);
@@ -182,37 +188,38 @@ async function handleTrialExpired(organizationId: string) {
 
 ```typescript
 // Usage tracking table
-const usage = pgTable('usage', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id').references(() => organizations.id),
-  resource: text('resource').notNull(), // 'api_requests', 'storage_bytes', etc.
-  count: integer('count').default(0),
-  periodStart: timestamp('period_start').notNull(),
-  periodEnd: timestamp('period_end').notNull()
+const usage = pgTable("usage", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  organizationId: uuid("organization_id").references(() => organizations.id),
+  resource: text("resource").notNull(), // 'api_requests', 'storage_bytes', etc.
+  count: integer("count").default(0),
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
 });
 
 // Increment usage
 async function trackUsage(orgId: string, resource: string, amount = 1) {
   const period = getCurrentBillingPeriod(orgId);
 
-  await db.insert(usage)
+  await db
+    .insert(usage)
     .values({
       organizationId: orgId,
       resource,
       count: amount,
       periodStart: period.start,
-      periodEnd: period.end
+      periodEnd: period.end,
     })
     .onConflictDoUpdate({
       target: [usage.organizationId, usage.resource, usage.periodStart],
-      set: { count: sql`${usage.count} + ${amount}` }
+      set: { count: sql`${usage.count} + ${amount}` },
     });
 }
 
 // Check quota before operation
 async function checkQuota(orgId: string, resource: string): Promise<boolean> {
   const org = await db.query.organizations.findFirst({
-    where: eq(organizations.id, orgId)
+    where: eq(organizations.id, orgId),
   });
 
   const plan = PLANS[org.plan];
@@ -228,10 +235,10 @@ async function enforceQuota(resource: string) {
   return async (req: Request, next: NextFunction) => {
     const canProceed = await checkQuota(req.tenantId, resource);
     if (!canProceed) {
-      throw new QuotaExceededError(
-        `${resource} quota exceeded for your plan`,
-        { currentPlan: req.tenant.plan, upgradeUrl: '/settings/billing' }
-      );
+      throw new QuotaExceededError(`${resource} quota exceeded for your plan`, {
+        currentPlan: req.tenant.plan,
+        upgradeUrl: "/settings/billing",
+      });
     }
     await trackUsage(req.tenantId, resource);
     return next();
@@ -252,32 +259,33 @@ async function changePlan(
   options: { immediate?: boolean } = {}
 ) {
   const org = await db.query.organizations.findFirst({
-    where: eq(organizations.id, organizationId)
+    where: eq(organizations.id, organizationId),
   });
 
   const newPlan = PLANS[newPlanId];
   if (!newPlan.stripePriceId) {
-    throw new Error('Cannot subscribe to free plan via Stripe');
+    throw new Error("Cannot subscribe to free plan via Stripe");
   }
 
   // Update Stripe subscription
-  const subscription = await stripe.subscriptions.retrieve(
-    org.stripeSubscriptionId
-  );
+  const subscription = await stripe.subscriptions.retrieve(org.stripeSubscriptionId);
 
   const isUpgrade = newPlan.price > PLANS[org.plan].price;
 
   await stripe.subscriptions.update(subscription.id, {
-    items: [{
-      id: subscription.items.data[0].id,
-      price: newPlan.stripePriceId
-    }],
-    proration_behavior: isUpgrade ? 'always_invoice' : 'create_prorations',
-    billing_cycle_anchor: options.immediate ? 'now' : 'unchanged'
+    items: [
+      {
+        id: subscription.items.data[0].id,
+        price: newPlan.stripePriceId,
+      },
+    ],
+    proration_behavior: isUpgrade ? "always_invoice" : "create_prorations",
+    billing_cycle_anchor: options.immediate ? "now" : "unchanged",
   });
 
   // Update local record (webhook will also fire)
-  await db.update(organizations)
+  await db
+    .update(organizations)
     .set({ plan: newPlanId })
     .where(eq(organizations.id, organizationId));
 
@@ -295,13 +303,13 @@ async function enforceDowngradeLimits(orgId: string, newPlanId: string) {
 
   // Check project limit
   const projectCount = await db.query.projects.count({
-    where: eq(projects.organizationId, orgId)
+    where: eq(projects.organizationId, orgId),
   });
 
   if (limits.projects !== -1 && projectCount > limits.projects) {
     // Mark excess projects as archived (don't delete)
     // Notify user they need to archive projects
-    await notifyLimitExceeded(orgId, 'projects', projectCount, limits.projects);
+    await notifyLimitExceeded(orgId, "projects", projectCount, limits.projects);
   }
 
   // Similar checks for other resources...
@@ -313,6 +321,7 @@ async function enforceDowngradeLimits(orgId: string, newPlanId: string) {
 ### {{stack.frontend.framework}} + Stripe
 
 **Billing Page Component**:
+
 ```typescript
 // Billing settings page
 export default async function BillingPage() {
@@ -350,6 +359,7 @@ export default async function BillingPage() {
 ## Anti-Patterns
 
 ### Checking Limits Only in UI
+
 ```typescript
 // WRONG: Only hiding buttons in frontend
 {plan === 'pro' && <CreateProjectButton />}
@@ -359,6 +369,7 @@ app.post('/projects', enforceQuota('projects'), createProject);
 ```
 
 ### Hard Deleting on Downgrade
+
 ```typescript
 // WRONG: Delete user's projects immediately
 await deleteExcessProjects(orgId, limits.projects);

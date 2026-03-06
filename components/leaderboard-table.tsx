@@ -79,7 +79,7 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-lg border border-border">
+      <div className="border-border overflow-hidden rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow className="bg-pale-grey">
@@ -105,17 +105,17 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
                     checked={selected.has(cs.tool.slug)}
                     disabled={!selected.has(cs.tool.slug) && selected.size >= 4}
                     onChange={() => toggleTool(cs.tool.slug)}
-                    className="h-4 w-4 rounded border-border text-mastery-blue accent-mastery-blue"
+                    className="border-border text-mastery-blue accent-mastery-blue h-4 w-4 rounded"
                   />
                 </TableCell>
-                <TableCell className="text-center font-semibold text-arena-slate">
+                <TableCell className="text-arena-slate text-center font-semibold">
                   {cs.rank}
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap items-center gap-1.5">
                     <Link
                       href={`/tools/${cs.tool.slug}`}
-                      className="font-medium text-arena-slate hover:text-mastery-blue hover:underline"
+                      className="text-arena-slate hover:text-mastery-blue font-medium hover:underline"
                     >
                       {cs.tool.name}
                     </Link>
@@ -124,12 +124,12 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
                     ))}
                   </div>
                   {cs.tool.vendor && (
-                    <div className="mt-0.5 text-xs text-arena-slate-light md:hidden">
+                    <div className="text-arena-slate-light mt-0.5 text-xs md:hidden">
                       {cs.tool.vendor.companyName}
                     </div>
                   )}
                 </TableCell>
-                <TableCell className="hidden text-arena-slate-light md:table-cell">
+                <TableCell className="text-arena-slate-light hidden md:table-cell">
                   {cs.tool.vendor ? (
                     <Link
                       href={`/vendors/${cs.tool.vendor.slug}`}
@@ -140,16 +140,13 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
                   ) : null}
                 </TableCell>
                 <TableCell className="text-center">
-                  <span className="text-lg font-bold text-arena-slate">
+                  <span className="text-arena-slate text-lg font-bold">
                     {Number(cs.value).toFixed(1)}
                   </span>
-                  <span className="text-sm text-arena-slate-light">/10</span>
+                  <span className="text-arena-slate-light text-sm">/10</span>
                 </TableCell>
                 <TableCell className="hidden text-center sm:table-cell">
-                  <Badge
-                    variant="outline"
-                    className={confidenceColor(cs.confidenceTag)}
-                  >
+                  <Badge variant="outline" className={confidenceColor(cs.confidenceTag)}>
                     {confidenceLabel(cs.confidenceTag)}
                   </Badge>
                 </TableCell>
@@ -157,10 +154,7 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
             ))}
             {compositeScores.length === 0 && (
               <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="py-8 text-center text-arena-slate-light"
-                >
+                <TableCell colSpan={6} className="text-arena-slate-light py-8 text-center">
                   {emptyMessage}
                 </TableCell>
               </TableRow>
@@ -171,14 +165,12 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
 
       {/* Floating compare bar */}
       {selected.size >= 2 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-white shadow-lg">
+        <div className="border-border fixed right-0 bottom-0 left-0 z-50 border-t bg-white shadow-lg">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-            <span className="text-sm text-arena-slate">
-              {selected.size} tools selected
-            </span>
+            <span className="text-arena-slate text-sm">{selected.size} tools selected</span>
             <button
               onClick={goToCompare}
-              className="rounded-lg bg-arena-slate px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-arena-slate/90"
+              className="bg-arena-slate hover:bg-arena-slate/90 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors"
             >
               Compare {selected.size} tools &rarr;
             </button>

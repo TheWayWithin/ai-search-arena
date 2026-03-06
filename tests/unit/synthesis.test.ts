@@ -17,10 +17,7 @@ function roundHalfUp(value: number): number {
 
 type ConfidenceTag = "High" | "Medium" | "Low" | "InsufficientData";
 
-function deriveConfidenceTag(
-  scores: number[],
-  successCount: number,
-): ConfidenceTag {
+function deriveConfidenceTag(scores: number[], successCount: number): ConfidenceTag {
   if (successCount < 4) return "InsufficientData";
   const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
   const variance = scores.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) / scores.length;
@@ -38,7 +35,10 @@ function calculateCompositeScore(
   const totalWeight = applicable.reduce((sum, s) => sum + s.weight, 0);
   if (totalWeight === 0) return { compositeScore: 0, applicableDimensions: applicable.length };
   const weighted = applicable.reduce((sum, s) => sum + s.value * (s.weight / totalWeight), 0);
-  return { compositeScore: Math.round(weighted * 10) / 10, applicableDimensions: applicable.length };
+  return {
+    compositeScore: Math.round(weighted * 10) / 10,
+    applicableDimensions: applicable.length,
+  };
 }
 
 function applyDenseRanking(items: { id: string; compositeScore: number }[]) {
@@ -131,9 +131,7 @@ describe("composite score calculation", () => {
   });
 
   it("returns 0 for no applicable dimensions", () => {
-    const result = calculateCompositeScore([
-      { value: 8.0, weight: 0.5, isApplicable: false },
-    ]);
+    const result = calculateCompositeScore([{ value: 8.0, weight: 0.5, isApplicable: false }]);
     expect(result.compositeScore).toBe(0);
   });
 });

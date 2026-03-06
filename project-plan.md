@@ -3,24 +3,24 @@
 version: "1.0"
 project_type: web-app
 generated_from:
-  prd_checksum: "f7e445e85894ce281298fb5ce1775755647d2f4a3121d36764b36a8635cdeb28"
-  vision_checksum: "754c3fa132c00614e8b676137dfaa45fec0de39485d29f0851d1f3278796cad5"
-  timestamp: "2026-03-01"
+prd_checksum: "f7e445e85894ce281298fb5ce1775755647d2f4a3121d36764b36a8635cdeb28"
+vision_checksum: "754c3fa132c00614e8b676137dfaa45fec0de39485d29f0851d1f3278796cad5"
+timestamp: "2026-03-01"
 
 ---
 
 ## Meta
 
-| Field | Value |
-|-------|-------|
-| **Product** | AISearchArena.com |
-| **Description** | Monthly independent benchmark platform evaluating 27+ AI search optimization (GEO/AEO) tools against 50+ standardized metrics using 6-model AI consensus methodology |
-| **Owner** | Jamie Watters / AI Search Mastery |
-| **Repository** | TBD |
-| **Created** | 2026-03-01 |
-| **Last Updated** | 2026-03-03 |
-| **Target Launch** | March 2026, Week 4 |
-| **Brand Essence** | Rigor |
+| Field             | Value                                                                                                                                                                |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Product**       | AISearchArena.com                                                                                                                                                    |
+| **Description**   | Monthly independent benchmark platform evaluating 27+ AI search optimization (GEO/AEO) tools against 50+ standardized metrics using 6-model AI consensus methodology |
+| **Owner**         | Jamie Watters / AI Search Mastery                                                                                                                                    |
+| **Repository**    | TBD                                                                                                                                                                  |
+| **Created**       | 2026-03-01                                                                                                                                                           |
+| **Last Updated**  | 2026-03-03                                                                                                                                                           |
+| **Target Launch** | March 2026, Week 4                                                                                                                                                   |
+| **Brand Essence** | Rigor                                                                                                                                                                |
 
 ---
 
@@ -30,33 +30,33 @@ generated_from:
 
 ### Success Metrics
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Monthly publication consistency | 6/6 months on schedule (Mar-Aug 2026) | Publication date tracking |
-| Tools evaluated per cycle | 20+ tools scored | Database count |
-| Methodology documentation | 100% scoring criteria published | Page audit |
-| Vendor engagement rate | 30%+ acknowledge or engage | Vendor response tracking |
-| Practitioner citation | 3+ external references | Manual tracking |
-| Correction rate | <5% scores requiring post-pub correction | Score correction records |
+| Metric                          | Target                                   | Measurement               |
+| ------------------------------- | ---------------------------------------- | ------------------------- |
+| Monthly publication consistency | 6/6 months on schedule (Mar-Aug 2026)    | Publication date tracking |
+| Tools evaluated per cycle       | 20+ tools scored                         | Database count            |
+| Methodology documentation       | 100% scoring criteria published          | Page audit                |
+| Vendor engagement rate          | 30%+ acknowledge or engage               | Vendor response tracking  |
+| Practitioner citation           | 3+ external references                   | Manual tracking           |
+| Correction rate                 | <5% scores requiring post-pub correction | Score correction records  |
 
 ---
 
 ## Tech Stack
 
-| Layer | Decision | Notes |
-|-------|----------|-------|
-| Frontend | Next.js 15 (App Router) | SSG/ISR for SEO-critical benchmark pages |
-| Styling | Tailwind CSS + shadcn/ui | Data-dense benchmark UI components |
-| Content | MDX | Static pages (methodology, about, disclosure) |
-| Backend | Next.js API Routes (REST) | Unified Vercel deployment |
-| Database | Neon serverless PostgreSQL + Prisma | 23-entity model, $0 free tier |
-| AI Pipeline | OpenRouter → 6 models | Single gateway; min 4/6 for synthesis |
-| Hosting | Vercel + GitHub Actions | Zero-config Next.js, preview deploys |
-| Storage | Cloudflare R2 | $0 egress for evidence artifacts |
-| Email (transactional) | Resend | Vendor notifications, alerts |
-| Newsletter | Buttondown | Monthly benchmark announcements |
-| Error Tracking | Sentry | |
-| Analytics | Plausible | Privacy-respecting, no cookies |
+| Layer                 | Decision                            | Notes                                         |
+| --------------------- | ----------------------------------- | --------------------------------------------- |
+| Frontend              | Next.js 15 (App Router)             | SSG/ISR for SEO-critical benchmark pages      |
+| Styling               | Tailwind CSS + shadcn/ui            | Data-dense benchmark UI components            |
+| Content               | MDX                                 | Static pages (methodology, about, disclosure) |
+| Backend               | Next.js API Routes (REST)           | Unified Vercel deployment                     |
+| Database              | Neon serverless PostgreSQL + Prisma | 23-entity model, $0 free tier                 |
+| AI Pipeline           | OpenRouter → 6 models               | Single gateway; min 4/6 for synthesis         |
+| Hosting               | Vercel + GitHub Actions             | Zero-config Next.js, preview deploys          |
+| Storage               | Cloudflare R2                       | $0 egress for evidence artifacts              |
+| Email (transactional) | Resend                              | Vendor notifications, alerts                  |
+| Newsletter            | Buttondown                          | Monthly benchmark announcements               |
+| Error Tracking        | Sentry                              |                                               |
+| Analytics             | Plausible                           | Privacy-respecting, no cookies                |
 
 ---
 
@@ -66,13 +66,13 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 
 **Complexity weights (simplified IFPUG)**:
 
-| Component | Low | Average | High |
-|-----------|-----|---------|------|
-| External Input (EI) | 3 | 4 | 6 |
-| External Output (EO) | 4 | 5 | 7 |
-| External Query (EQ) | 3 | 4 | 6 |
-| Internal Logical File (ILF) | 7 | 10 | 15 |
-| External Interface File (EIF) | 5 | 7 | 10 |
+| Component                     | Low | Average | High |
+| ----------------------------- | --- | ------- | ---- |
+| External Input (EI)           | 3   | 4       | 6    |
+| External Output (EO)          | 4   | 5       | 7    |
+| External Query (EQ)           | 3   | 4       | 6    |
+| Internal Logical File (ILF)   | 7   | 10      | 15   |
+| External Interface File (EIF) | 5   | 7       | 10   |
 
 ---
 
@@ -82,6 +82,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 **Objective**: Scaffold project, establish database schema, and build independent admin features with no upstream dependencies.
 
 ### Phase 1 Deliverables
+
 - Next.js 15 project with Prisma, Neon, Tailwind, shadcn/ui, MDX configured
 - Full 23-entity database schema deployed
 - Seed data for AI models (via OpenRouter), market segments, and initial track definitions
@@ -91,6 +92,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 ### Phase 1 Tasks
 
 #### Task 1.1: Project Scaffolding & Infrastructure
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 00:40
@@ -108,6 +110,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Environment variable structure defined (.env.example)
 
 #### Task 1.2: Database Schema (24 Entities)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 00:47
@@ -121,6 +124,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Seed script creates: 7 market segments, 2 benchmark tracks, 6 AI model configs, 28 vendors/tools, 51 scoring dimensions
 
 #### Task 1.3: AI Model Configuration Management (F-009)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 00:55
@@ -137,6 +141,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Timeout settings configurable per model
 
 #### Task 1.4: Prompt Set Management (F-008)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 00:55
@@ -153,6 +158,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Prompts stored as JSON array
 
 #### Task 1.5: Vendor & Tool Administration (F-010)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 00:55
@@ -170,6 +176,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Seed data: 28 tools across 7 market segments with vendor records
 
 #### Task 1.6: Methodology Version Management (F-013)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 00:55
@@ -186,6 +193,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Seed data: v1.0 methodology with 51 scoring dimensions across GEO Platform track
 
 #### Task 1.7: Static Content & About Pages (F-024)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 00:55
@@ -210,13 +218,13 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 
 ### Phase 1 Summary
 
-| Metric | Value |
-|--------|-------|
-| Tasks | 7 |
-| Features | 5 (F-009, F-008, F-010, F-013, F-024) + setup |
-| Total Function Points | 317 FP |
-| Entities Established | 23 |
-| External Interfaces | 5 (OpenRouter, R2, Neon, Resend, Plausible) |
+| Metric                | Value                                         |
+| --------------------- | --------------------------------------------- |
+| Tasks                 | 7                                             |
+| Features              | 5 (F-009, F-008, F-010, F-013, F-024) + setup |
+| Total Function Points | 317 FP                                        |
+| Entities Established  | 23                                            |
+| External Interfaces   | 5 (OpenRouter, R2, Neon, Resend, Plausible)   |
 
 ---
 
@@ -228,6 +236,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 ### Phase 2 Tasks
 
 #### Task 2.1: Benchmark Cycle Lifecycle Management (F-005)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:04
@@ -247,6 +256,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Each transition logged with timestamp and operator context
 
 #### Task 2.2: Tool Enrollment & Track Assignment (F-006)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:04
@@ -264,6 +274,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Enrolled tools locked once cycle enters Evaluation
 
 #### Task 2.3: AI Model Evaluation Execution (F-007)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:04
@@ -285,6 +296,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Timeout handling per model (configurable via AIModel.timeout_ms)
 
 #### Task 2.4: Evidence Artifact Capture & Storage (F-018)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:04
@@ -313,12 +325,12 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 
 ### Phase 2 Summary
 
-| Metric | Value |
-|--------|-------|
-| Tasks | 4 |
-| Features | 4 (F-005, F-006, F-007, F-018) |
-| Total Function Points | 166 FP |
-| Key Complexity | Cycle state machine (10 states), parallel AI evaluation with retry |
+| Metric                | Value                                                              |
+| --------------------- | ------------------------------------------------------------------ |
+| Tasks                 | 4                                                                  |
+| Features              | 4 (F-005, F-006, F-007, F-018)                                     |
+| Total Function Points | 166 FP                                                             |
+| Key Complexity        | Cycle state machine (10 states), parallel AI evaluation with retry |
 
 ---
 
@@ -330,6 +342,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 ### Phase 3 Tasks
 
 #### Task 3.1: Score Synthesis Pipeline (F-011)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:13
@@ -348,6 +361,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] SynthesisRecord created linking to source ModelEvaluation IDs, models_succeeded, models_failed, median_value
 
 #### Task 3.2: Composite Score & Ranking Calculation (F-012)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:13
@@ -365,6 +379,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Audit trail: operator ID, timestamp, original value, new value, reason — schema supports via adjustedBy, adjustedAt, adjustReason, originalValue fields
 
 #### Task 3.3: Vendor Review Workflow (F-015)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:13
@@ -384,6 +399,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [ ] Email notifications via Resend (deferred — Resend integration requires API key)
 
 #### Task 3.4: Report Generation & Publication (F-014)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:13
@@ -401,6 +417,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Report includes: rankings with composite scores, confidence tags, methodology version reference
 
 #### Task 3.5: Audit Package Generation (F-016)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:13
@@ -429,12 +446,12 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 
 ### Phase 3 Summary
 
-| Metric | Value |
-|--------|-------|
-| Tasks | 5 |
-| Features | 5 (F-011, F-012, F-015, F-014, F-016) |
-| Total Function Points | 180 FP |
-| Key Complexity | Deterministic synthesis, weighted composite with N/A handling, vendor review state machine |
+| Metric                | Value                                                                                      |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| Tasks                 | 5                                                                                          |
+| Features              | 5 (F-011, F-012, F-015, F-014, F-016)                                                      |
+| Total Function Points | 180 FP                                                                                     |
+| Key Complexity        | Deterministic synthesis, weighted composite with N/A handling, vendor review state machine |
 
 ---
 
@@ -446,6 +463,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 ### Phase 4 Tasks
 
 #### Task 4.1: Track Leaderboard (F-002)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:21
@@ -466,6 +484,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Responsive layout with shadcn/ui Table component
 
 #### Task 4.2: Tool Detail Page (F-003)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:21
@@ -484,6 +503,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Synthesis detail: models succeeded/failed per dimension
 
 #### Task 4.3: Public Homepage & Cycle Highlights (F-001)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:21
@@ -501,6 +521,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Responsive design with feature cards (50+ Metrics, 6-Model Consensus, Full Transparency)
 
 #### Task 4.4: Methodology Public Pages (F-017)
+
 - **Agent**: developer
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:21
@@ -516,6 +537,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] 4-step evaluation process overview (Standardized Prompts → 6-Model Consensus → Median Synthesis → Weighted Composite)
 
 #### Task 4.5: Production Deployment & Launch Readiness
+
 - **Agent**: operator
 - **Priority**: p0
 - **Status**: complete - 2026-03-01 01:21
@@ -548,30 +570,31 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 
 ### Phase 4 Summary
 
-| Metric | Value |
-|--------|-------|
-| Tasks | 5 |
-| Features | 4 (F-002, F-003, F-001, F-017) + production deploy |
-| Total Function Points | 154 FP |
-| Key Complexity | SSG/ISR rendering, data-dense UI, SEO optimization |
+| Metric                | Value                                              |
+| --------------------- | -------------------------------------------------- |
+| Tasks                 | 5                                                  |
+| Features              | 4 (F-002, F-003, F-001, F-017) + production deploy |
+| Total Function Points | 154 FP                                             |
+| Key Complexity        | SSG/ISR rendering, data-dense UI, SEO optimization |
 
 ---
 
 ## Project Totals
 
-| Phase | Features | Tasks | Function Points |
-|-------|----------|-------|-----------------|
-| Phase 1: Foundation & Data Model | 5 + setup | 7 | 317 FP |
-| Phase 2: Evaluation Pipeline | 4 | 4 | 166 FP |
-| Phase 3: Scoring & Publication | 5 | 5 | 180 FP |
-| Phase 4: Public Interface & Launch | 4 + deploy | 5 | 154 FP |
-| **Total MVP** | **18 features** | **21 tasks** | **817 FP** |
+| Phase                              | Features        | Tasks        | Function Points |
+| ---------------------------------- | --------------- | ------------ | --------------- |
+| Phase 1: Foundation & Data Model   | 5 + setup       | 7            | 317 FP          |
+| Phase 2: Evaluation Pipeline       | 4               | 4            | 166 FP          |
+| Phase 3: Scoring & Publication     | 5               | 5            | 180 FP          |
+| Phase 4: Public Interface & Launch | 4 + deploy      | 5            | 154 FP          |
+| **Total MVP**                      | **18 features** | **21 tasks** | **817 FP**      |
 
 ---
 
 ## Post-Launch Milestones
 
 ### First Benchmark Cycle (2026-03-03)
+
 - [x] Cycle 2026-03 created, 32 tools enrolled (28 competitors + 4 AI Search Mastery)
 - [x] Model panel upgraded to v1.3 (frontier models, cost-optimized)
 - [x] 9,792 model evaluations completed (100% success rate)
@@ -584,6 +607,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 - [x] Homepage showing top 5 tools from published cycle
 
 ### Market Segment Filters (2026-03-03)
+
 - [x] Fixed segmentId "overall" → null consistency across 6 files
 - [x] Fixed Prisma upsert → findFirst/create/update for nullable compound unique
 - [x] Refactored leaderboard page from inline Prisma to data layer
@@ -593,9 +617,11 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 - [x] Segment filter live and working on production
 
 ### llms.txt (2026-03-03)
+
 - [x] Published public/llms.txt for AI discoverability (37 pages, ~14,936 words)
 
 ### Admin Authentication F-025 (2026-03-05)
+
 - [x] `bcryptjs` + `jose` dependencies installed
 - [x] `AdminLoginAttempt` Prisma model + migration applied
 - [x] `lib/auth.ts` — JWT sign/verify (24h, HS256), bcrypt credentials with timingSafeEqual, DB-backed lockout (5 attempts → 15min), session cookie helpers
@@ -606,54 +632,58 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 - [x] Password hash stored as base64-encoded bcrypt to avoid `$` escaping issues in `.env`
 - [x] All admin pages have `robots: { index: false, follow: false }`
 - [x] `npm run build` passes — 10 admin routes registered, middleware 39.9 kB
+- [x] Build script updated: `prisma generate && next build` (fixes Vercel cached Prisma client)
+- [x] Vercel env vars set: `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` (base64), `JWT_SECRET`
+- [x] Deployed to production — admin login verified at aisearcharena.com/admin
 
 ### Build Pipeline Fixes (2026-03-03)
+
 - [x] Fixed ModelEvaluation createMany type error (blocked 3 Vercel deploys)
 - [x] Fixed missing publishedAt on cycle (set on report but not cycle)
 - [x] Added publishedAt stamp to Publication → Completed transition
 
 ## P1 Backlog (Post-Launch)
 
-| ID | Feature | Dependencies | FP Estimate |
-|----|---------|--------------|-------------|
-| F-025 | Admin Authentication | none | ~20 FP | **COMPLETE** — 2026-03-05 |
-| F-004 | Tool Comparison View | F-003 | ~35 FP |
-| F-019 | Badge Awarding & Display | F-012 | ~25 FP |
-| F-020 | Cycle Archive & Historical Access | F-014 | ~22 FP |
-| F-021 | Vendor Directory & Profile Pages | F-010 | ~28 FP |
+| ID        | Feature                           | Dependencies | FP Estimate |
+| --------- | --------------------------------- | ------------ | ----------- | ------------------------------------------------- |
+| ~~F-025~~ | ~~Admin Authentication~~          | ~~none~~     | ~~20 FP~~   | **COMPLETE** — 2026-03-05, deployed to production |
+| F-004     | Tool Comparison View              | F-003        | ~35 FP      |
+| F-019     | Badge Awarding & Display          | F-012        | ~25 FP      |
+| F-020     | Cycle Archive & Historical Access | F-014        | ~22 FP      |
+| F-021     | Vendor Directory & Profile Pages  | F-010        | ~28 FP      |
 
 ## P2 Backlog
 
-| ID | Feature | Dependencies | FP Estimate |
-|----|---------|--------------|-------------|
-| F-022 | Cross-Cycle Anomaly Detection | F-011 | ~30 FP |
-| F-023 | Score Correction Workflow | F-014 | ~18 FP |
+| ID    | Feature                       | Dependencies | FP Estimate |
+| ----- | ----------------------------- | ------------ | ----------- |
+| F-022 | Cross-Cycle Anomaly Detection | F-011        | ~30 FP      |
+| F-023 | Score Correction Workflow     | F-014        | ~18 FP      |
 
 ---
 
 ## Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| Solo developer capacity bottleneck | High | High | AI-assisted development; strict P0 scope; defer P1 |
-| OpenRouter API reliability | Medium | High | Retry with exponential backoff; 4/6 minimum threshold; per-model timeout |
-| First publication quality | Medium | High | 50+ scoring dimensions defined upfront; deterministic synthesis; audit packages |
-| Vendor non-engagement (cycle 1) | High | Low | Process exists even if unused; builds credibility for future cycles |
-| Compressed timeline | High | Medium | Function point tracking reveals actual progress; scope already trimmed |
-| Neon free tier limits | Low | Medium | Monitor usage; upgrade path clear ($19/mo) |
+| Risk                               | Probability | Impact | Mitigation                                                                      |
+| ---------------------------------- | ----------- | ------ | ------------------------------------------------------------------------------- |
+| Solo developer capacity bottleneck | High        | High   | AI-assisted development; strict P0 scope; defer P1                              |
+| OpenRouter API reliability         | Medium      | High   | Retry with exponential backoff; 4/6 minimum threshold; per-model timeout        |
+| First publication quality          | Medium      | High   | 50+ scoring dimensions defined upfront; deterministic synthesis; audit packages |
+| Vendor non-engagement (cycle 1)    | High        | Low    | Process exists even if unused; builds credibility for future cycles             |
+| Compressed timeline                | High        | Medium | Function point tracking reveals actual progress; scope already trimmed          |
+| Neon free tier limits              | Low         | Medium | Monitor usage; upgrade path clear ($19/mo)                                      |
 
 ---
 
 ## Changes from PRD
 
-| Change | Rationale |
-|--------|-----------|
-| F-025 Admin Auth → P1 | Architecture already marked deferred; basic auth sufficient for solo operator at launch |
-| 6 direct AI providers → OpenRouter | Single API key, single bill, unified format; same 6 models |
-| Day estimates → Function points | Tangible, objective sizing; AI-assisted dev makes time estimates unreliable |
-| Next.js (unspecified) → Next.js 15 | Battle-tested, full ecosystem compatibility for March launch |
+| Change                             | Rationale                                                                               |
+| ---------------------------------- | --------------------------------------------------------------------------------------- |
+| F-025 Admin Auth → P1              | Architecture already marked deferred; basic auth sufficient for solo operator at launch |
+| 6 direct AI providers → OpenRouter | Single API key, single bill, unified format; same 6 models                              |
+| Day estimates → Function points    | Tangible, objective sizing; AI-assisted dev makes time estimates unreliable             |
+| Next.js (unspecified) → Next.js 15 | Battle-tested, full ecosystem compatibility for March launch                            |
 
 ---
 
-*Generated by /bootstrap (Engaged Mode) on 2026-03-01*
-*Source: Foundation YAML extracts (.context/structured/)*
+_Generated by /bootstrap (Engaged Mode) on 2026-03-01_
+_Source: Foundation YAML extracts (.context/structured/)_

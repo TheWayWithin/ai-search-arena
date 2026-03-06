@@ -66,9 +66,7 @@ export async function createTool(data: {
   return prisma.tool.create({
     data: {
       ...toolData,
-      trackMappings: trackIds
-        ? { create: trackIds.map((trackId) => ({ trackId })) }
-        : undefined,
+      trackMappings: trackIds ? { create: trackIds.map((trackId) => ({ trackId })) } : undefined,
       segmentMappings: segmentIds
         ? { create: segmentIds.map((segmentId) => ({ segmentId })) }
         : undefined,
@@ -133,7 +131,11 @@ export async function getVendorWithScores(slug: string, cycleId?: string) {
   }
 
   if (!targetCycleId) {
-    return { vendor, tools: vendor.tools.map((t) => ({ ...t, compositeScore: null, badges: [] })), cycle: null };
+    return {
+      vendor,
+      tools: vendor.tools.map((t) => ({ ...t, compositeScore: null, badges: [] })),
+      cycle: null,
+    };
   }
 
   const cycle = await prisma.benchmarkCycle.findUnique({

@@ -10,10 +10,7 @@ import { evaluateToolDimension } from "./openrouter";
  * AC-007-02: Retry with exponential backoff on failure.
  * AC-007-03: Flags insufficient if <4/6 succeed.
  */
-export async function evaluateTool(
-  cycleId: string,
-  toolId: string
-) {
+export async function evaluateTool(cycleId: string, toolId: string) {
   // Get active AI models
   const models = await prisma.aIModel.findMany({
     where: { isActive: true },
@@ -149,9 +146,10 @@ function buildUserPromptFromSet(
   prompts: unknown
 ): string {
   const promptArray = Array.isArray(prompts) ? prompts : [];
-  const selectedPrompt = promptArray.length > 0
-    ? String(promptArray[Math.floor(Math.random() * promptArray.length)])
-    : "";
+  const selectedPrompt =
+    promptArray.length > 0
+      ? String(promptArray[Math.floor(Math.random() * promptArray.length)])
+      : "";
 
   return `Evaluate the tool "${toolName}" (${toolDescription}).
 

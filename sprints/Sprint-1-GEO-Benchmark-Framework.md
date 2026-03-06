@@ -14,6 +14,7 @@ AISearchArena currently has all benchmark configuration hardcoded in two TypeScr
 - `prisma/seed-prompts.ts` — 2-3 evaluation prompts per dimension
 
 This works for v1.0 but has real problems at scale:
+
 - Changing a weight or prompt requires a code change and redeployment
 - The methodology is opaque — vendors can't audit it
 - Nothing is versioned in a meaningful way
@@ -49,6 +50,7 @@ geo-benchmark-framework/
 ```
 
 **`dimensions.yaml` format** (one entry of 51):
+
 ```yaml
 - slug: ai-citation-frequency
   name: AI Citation Frequency
@@ -71,6 +73,7 @@ geo-benchmark-framework/
 ```
 
 **`models.yaml` format:**
+
 ```yaml
 - provider: OpenAI
   model_identifier: openai/gpt-4o
@@ -87,6 +90,7 @@ geo-benchmark-framework/
 ```
 
 **`tracks/geo-platform.yaml`** format:
+
 ```yaml
 slug: geo-platform
 name: GEO Platform Track
@@ -117,6 +121,7 @@ fetch framework YAML from GitHub (raw URL) or local clone
 ```
 
 **Updated `package.json` scripts:**
+
 ```json
 "framework:load": "tsx prisma/load-framework.ts"
 "framework:load:local": "tsx prisma/load-framework.ts --local ../geo-benchmark-framework"
@@ -126,7 +131,7 @@ The `--local` flag lets you test framework changes before pushing to GitHub.
 
 ### 3. Methodology Version Pinning
 
-AISearchArena should know *which version* of the framework it loaded. The `MethodologyVersion` record in the database should store the framework version (`1.0`), git SHA, and load timestamp — so you always know exactly what methodology produced any given benchmark cycle.
+AISearchArena should know _which version_ of the framework it loaded. The `MethodologyVersion` record in the database should store the framework version (`1.0`), git SHA, and load timestamp — so you always know exactly what methodology produced any given benchmark cycle.
 
 ---
 
@@ -167,18 +172,22 @@ AISearchArena should know *which version* of the framework it loaded. The `Metho
 ## Design Decisions
 
 ### Why YAML, not JSON?
+
 YAML is human-readable and supports multi-line strings (critical for prompts). JSON is better for machines; YAML is better for a document a vendor reads to understand how they're being scored.
 
 ### Why inline prompts inside dimensions.yaml?
+
 Keeps each dimension's definition self-contained. A vendor looking at their scoring criteria sees both the weight and the exact questions being asked in one place.
 
 ### Why a separate repo, not a folder in aisearcharena?
+
 - **Independently auditable** — vendors can review methodology without accessing application code
 - **Reusable** — future products can reference the same framework
 - **Community contributions** — others can propose new dimensions via PRs
 - **Versioning clarity** — framework v1.1 is independent of app deployments
 
 ### Framework versioning strategy
+
 - `v1.x` — same 51 dimensions, prompt or weight refinements only
 - `v2.x` — new dimensions added or dimensions removed (breaks historical comparisons)
 - `v3.x` — complete methodology redesign
@@ -186,7 +195,9 @@ Keeps each dimension's definition self-contained. A vendor looking at their scor
 The application enforces: a benchmark cycle is permanently linked to one framework version. Upgrading the framework creates a new cycle, never re-scores old ones.
 
 ### Local dev vs. GitHub loading
+
 The loader supports `--local <path>` to read from a local clone. This means:
+
 - You can draft framework changes, test locally, then push
 - No internet dependency for dev/CI
 - GitHub loading is the default for production seeds
@@ -214,10 +225,10 @@ The loader supports `--local <path>` to read from a local clone. This means:
 
 ## Estimated Effort
 
-| Task | Estimate |
-|------|----------|
-| Extract dimensions + prompts to YAML | 2-3 hours |
-| Write overview.md + README | 1-2 hours |
-| Build framework loader script | 3-4 hours |
-| Integration testing | 1-2 hours |
-| **Total** | **~1 day** |
+| Task                                 | Estimate   |
+| ------------------------------------ | ---------- |
+| Extract dimensions + prompts to YAML | 2-3 hours  |
+| Write overview.md + README           | 1-2 hours  |
+| Build framework loader script        | 3-4 hours  |
+| Integration testing                  | 1-2 hours  |
+| **Total**                            | **~1 day** |

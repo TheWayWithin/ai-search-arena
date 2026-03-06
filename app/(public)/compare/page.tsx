@@ -22,7 +22,8 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   if (slugs.length < 2) {
     return {
       title: "Compare Tools",
-      description: "Compare AI search optimization tools side-by-side across all benchmark dimensions.",
+      description:
+        "Compare AI search optimization tools side-by-side across all benchmark dimensions.",
     };
   }
 
@@ -62,7 +63,7 @@ export default async function ComparePage({ searchParams }: Props) {
   // Resolve cycle
   const publishedCycles = await getPublishedCycles();
   const activeCycle = cycleParam
-    ? publishedCycles.find((c) => c.cycleIdentifier === cycleParam) ?? publishedCycles[0]
+    ? (publishedCycles.find((c) => c.cycleIdentifier === cycleParam) ?? publishedCycles[0])
     : publishedCycles[0];
   const resolvedCycleId = activeCycle?.id;
 
@@ -70,14 +71,10 @@ export default async function ComparePage({ searchParams }: Props) {
   if (slugs.length === 0) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
-          Compare Tools
-        </h1>
-        <div className="mt-8 rounded-lg border border-border bg-pale-grey p-8 text-center">
-          <p className="text-lg text-arena-slate">
-            Select tools to compare side-by-side
-          </p>
-          <p className="mt-2 text-sm text-arena-slate-light">
+        <h1 className="text-arena-slate text-3xl font-bold tracking-tight">Compare Tools</h1>
+        <div className="border-border bg-pale-grey mt-8 rounded-lg border p-8 text-center">
+          <p className="text-arena-slate text-lg">Select tools to compare side-by-side</p>
+          <p className="text-arena-slate-light mt-2 text-sm">
             Visit the{" "}
             <Link href="/leaderboard" className="text-mastery-blue hover:underline">
               leaderboard
@@ -103,17 +100,12 @@ export default async function ComparePage({ searchParams }: Props) {
   if (tools.length < 2) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <Link
-          href="/leaderboard"
-          className="text-sm text-arena-slate-light hover:text-arena-slate"
-        >
+        <Link href="/leaderboard" className="text-arena-slate-light hover:text-arena-slate text-sm">
           &larr; Back to Leaderboard
         </Link>
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-arena-slate">
-          Compare Tools
-        </h1>
-        <div className="mt-8 rounded-lg border border-border bg-pale-grey p-8 text-center">
-          <p className="text-lg text-arena-slate">
+        <h1 className="text-arena-slate mt-4 text-3xl font-bold tracking-tight">Compare Tools</h1>
+        <div className="border-border bg-pale-grey mt-8 rounded-lg border p-8 text-center">
+          <p className="text-arena-slate text-lg">
             {tools.length === 1
               ? `Add at least one more tool to compare with ${tools[0].name}`
               : "The selected tools were not found. Try selecting from the dropdown."}
@@ -167,9 +159,7 @@ export default async function ComparePage({ searchParams }: Props) {
 
   // Maintain tool order consistent with slugs param
   const slugOrder = slugs.filter((s) => selectedSlugs.has(s));
-  const orderedTools = slugOrder
-    .map((s) => tools.find((t) => t.slug === s)!)
-    .filter(Boolean);
+  const orderedTools = slugOrder.map((s) => tools.find((t) => t.slug === s)!).filter(Boolean);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -190,16 +180,11 @@ export default async function ComparePage({ searchParams }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <Link
-          href="/leaderboard"
-          className="text-sm text-arena-slate-light hover:text-arena-slate"
-        >
+        <Link href="/leaderboard" className="text-arena-slate-light hover:text-arena-slate text-sm">
           &larr; Back to Leaderboard
         </Link>
         <div className="mt-4 flex items-baseline justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
-            Compare Tools
-          </h1>
+          <h1 className="text-arena-slate text-3xl font-bold tracking-tight">Compare Tools</h1>
           {publishedCycles.length > 1 && activeCycle && (
             <CycleSelector
               cycles={publishedCycles.map((c) => ({
@@ -212,9 +197,8 @@ export default async function ComparePage({ searchParams }: Props) {
           )}
         </div>
         {cycle && (
-          <p className="mt-1 text-sm text-arena-slate-light">
-            {cycle.displayName} &middot; Methodology v
-            {cycle.methodologyVersion?.versionNumber}
+          <p className="text-arena-slate-light mt-1 text-sm">
+            {cycle.displayName} &middot; Methodology v{cycle.methodologyVersion?.versionNumber}
           </p>
         )}
 
@@ -222,8 +206,8 @@ export default async function ComparePage({ searchParams }: Props) {
           <table className="w-full border-collapse text-sm">
             {/* Summary header */}
             <thead>
-              <tr className="border-b border-border bg-pale-grey">
-                <th className="sticky left-0 z-10 bg-pale-grey px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-arena-slate-light">
+              <tr className="border-border bg-pale-grey border-b">
+                <th className="bg-pale-grey text-arena-slate-light sticky left-0 z-10 px-4 py-3 text-left text-xs font-semibold tracking-wider uppercase">
                   Tool
                 </th>
                 {orderedTools.map((tool) => {
@@ -235,25 +219,25 @@ export default async function ComparePage({ searchParams }: Props) {
                         <div className="flex-1">
                           <Link
                             href={`/tools/${tool.slug}`}
-                            className="font-semibold text-arena-slate hover:text-mastery-blue hover:underline"
+                            className="text-arena-slate hover:text-mastery-blue font-semibold hover:underline"
                           >
                             {tool.name}
                           </Link>
                           {tool.vendor && (
                             <Link
                               href={`/vendors/${tool.vendor.slug}`}
-                              className="text-xs font-normal text-arena-slate-light hover:text-mastery-blue hover:underline"
+                              className="text-arena-slate-light hover:text-mastery-blue text-xs font-normal hover:underline"
                             >
                               {tool.vendor.companyName}
                             </Link>
                           )}
                           {cs && (
                             <div className="mt-1">
-                              <span className="text-lg font-bold text-arena-slate">
+                              <span className="text-arena-slate text-lg font-bold">
                                 {Number(cs.value).toFixed(1)}
                               </span>
-                              <span className="text-xs text-arena-slate-light">/10</span>
-                              <span className="ml-1 text-xs text-arena-slate-light">
+                              <span className="text-arena-slate-light text-xs">/10</span>
+                              <span className="text-arena-slate-light ml-1 text-xs">
                                 #{cs.rank}
                               </span>
                               <div className="mt-0.5">
@@ -270,10 +254,23 @@ export default async function ComparePage({ searchParams }: Props) {
                         {orderedTools.length > 2 && (
                           <Link
                             href={`/compare?tools=${removeSlugs.join(",")}`}
-                            className="ml-1 rounded p-0.5 text-arena-slate-light hover:bg-insufficient-red/10 hover:text-insufficient-red"
+                            className="text-arena-slate-light hover:bg-insufficient-red/10 hover:text-insufficient-red ml-1 rounded p-0.5"
                             title={`Remove ${tool.name}`}
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="14"
+                              height="14"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <line x1="18" y1="6" x2="6" y2="18" />
+                              <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
                           </Link>
                         )}
                       </div>
@@ -282,10 +279,7 @@ export default async function ComparePage({ searchParams }: Props) {
                 })}
                 {orderedTools.length < 4 && (
                   <th className="min-w-[140px] px-4 py-3">
-                    <ToolCompareSelector
-                      availableTools={availableTools}
-                      currentSlugs={slugOrder}
-                    />
+                    <ToolCompareSelector availableTools={availableTools} currentSlugs={slugOrder} />
                   </th>
                 )}
               </tr>
@@ -298,7 +292,7 @@ export default async function ComparePage({ searchParams }: Props) {
                   <tr key={`cat-${category}`}>
                     <td
                       colSpan={orderedTools.length + 1 + (orderedTools.length < 4 ? 1 : 0)}
-                      className="bg-pale-grey/50 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-arena-slate-light"
+                      className="bg-pale-grey/50 text-arena-slate-light px-4 py-2 text-xs font-semibold tracking-wider uppercase"
                     >
                       {category}
                     </td>
@@ -310,24 +304,15 @@ export default async function ComparePage({ searchParams }: Props) {
                       if (!s || !s.isApplicable) return null;
                       return Number(s.value);
                     });
-                    const applicableValues = toolScoreValues.filter(
-                      (v): v is number => v !== null
-                    );
+                    const applicableValues = toolScoreValues.filter((v): v is number => v !== null);
                     const bestValue =
-                      applicableValues.length > 0
-                        ? Math.max(...applicableValues)
-                        : null;
+                      applicableValues.length > 0 ? Math.max(...applicableValues) : null;
 
                     return (
-                      <tr
-                        key={dim.id}
-                        className="border-b border-border last:border-b-0"
-                      >
+                      <tr key={dim.id} className="border-border border-b last:border-b-0">
                         <td className="sticky left-0 z-10 bg-white px-4 py-2">
-                          <span className="font-medium text-arena-slate">
-                            {dim.name}
-                          </span>
-                          <span className="ml-2 text-xs text-arena-slate-light">
+                          <span className="text-arena-slate font-medium">{dim.name}</span>
+                          <span className="text-arena-slate-light ml-2 text-xs">
                             {(Number(dim.weight) * 100).toFixed(1)}%
                           </span>
                         </td>
@@ -342,10 +327,7 @@ export default async function ComparePage({ searchParams }: Props) {
 
                           if (!score || !score.isApplicable) {
                             return (
-                              <td
-                                key={tool.id}
-                                className="px-4 py-2 text-center text-neutral-grey"
-                              >
+                              <td key={tool.id} className="text-neutral-grey px-4 py-2 text-center">
                                 N/A
                               </td>
                             );
@@ -360,9 +342,7 @@ export default async function ComparePage({ searchParams }: Props) {
                             >
                               <span
                                 className={`font-semibold ${
-                                  isBest
-                                    ? "text-confidence-green"
-                                    : "text-arena-slate"
+                                  isBest ? "text-confidence-green" : "text-arena-slate"
                                 }`}
                               >
                                 {Number(score.value).toFixed(1)}

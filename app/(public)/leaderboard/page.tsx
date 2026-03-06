@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  getLeaderboardData,
-  getMarketSegments,
-  getPublishedCycles,
-} from "@/lib/db/leaderboard";
+import { getLeaderboardData, getMarketSegments, getPublishedCycles } from "@/lib/db/leaderboard";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { CycleSelector } from "@/components/cycle-selector";
 
@@ -29,20 +25,18 @@ export default async function LeaderboardPage({ searchParams }: Props) {
   if (publishedCycles.length === 0) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
-          Leaderboard
-        </h1>
-        <div className="mt-8 rounded-lg border border-border bg-pale-grey p-8 text-center">
-          <p className="text-lg text-arena-slate">
+        <h1 className="text-arena-slate text-3xl font-bold tracking-tight">Leaderboard</h1>
+        <div className="border-border bg-pale-grey mt-8 rounded-lg border p-8 text-center">
+          <p className="text-arena-slate text-lg">
             The first benchmark cycle is currently in progress.
           </p>
-          <p className="mt-2 text-sm text-arena-slate-light">
-            Rankings will appear here once the inaugural evaluation cycle is
-            published. Check back soon.
+          <p className="text-arena-slate-light mt-2 text-sm">
+            Rankings will appear here once the inaugural evaluation cycle is published. Check back
+            soon.
           </p>
           <Link
             href="/methodology"
-            className="mt-4 inline-block text-sm text-mastery-blue hover:underline"
+            className="text-mastery-blue mt-4 inline-block text-sm hover:underline"
           >
             Learn about our scoring methodology &rarr;
           </Link>
@@ -53,15 +47,12 @@ export default async function LeaderboardPage({ searchParams }: Props) {
 
   // Resolve active cycle from ?cycle= param or default to latest
   const activeCycle = cycleParam
-    ? publishedCycles.find((c) => c.cycleIdentifier === cycleParam) ??
-      publishedCycles[0]
+    ? (publishedCycles.find((c) => c.cycleIdentifier === cycleParam) ?? publishedCycles[0])
     : publishedCycles[0];
 
   // Fetch segments and resolve the active segment ID
   const segments = await getMarketSegments();
-  const activeSegment = segment
-    ? segments.find((s) => s.slug === segment) ?? null
-    : null;
+  const activeSegment = segment ? (segments.find((s) => s.slug === segment) ?? null) : null;
   const segmentId = activeSegment?.id ?? null;
 
   const compositeScores = await getLeaderboardData(activeCycle.id, segmentId);
@@ -116,12 +107,9 @@ export default async function LeaderboardPage({ searchParams }: Props) {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
-              Leaderboard
-            </h1>
-            <p className="mt-1 text-sm text-arena-slate-light">
-              {activeCycle.displayName} &middot;{" "}
-              {compositeScores.length} tools evaluated
+            <h1 className="text-arena-slate text-3xl font-bold tracking-tight">Leaderboard</h1>
+            <p className="text-arena-slate-light mt-1 text-sm">
+              {activeCycle.displayName} &middot; {compositeScores.length} tools evaluated
             </p>
           </div>
           <CycleSelector

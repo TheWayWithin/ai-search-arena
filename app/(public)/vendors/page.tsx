@@ -36,18 +36,12 @@ export default async function VendorsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
-          Vendor Directory
-        </h1>
-        <p className="mt-1 text-sm text-arena-slate-light">
-          {vendors.length} vendors evaluated
-        </p>
+        <h1 className="text-arena-slate text-3xl font-bold tracking-tight">Vendor Directory</h1>
+        <p className="text-arena-slate-light mt-1 text-sm">{vendors.length} vendors evaluated</p>
 
         {vendors.length === 0 ? (
-          <div className="mt-8 rounded-lg border border-border bg-pale-grey p-8 text-center">
-            <p className="text-lg text-arena-slate">
-              No vendors have been added yet.
-            </p>
+          <div className="border-border bg-pale-grey mt-8 rounded-lg border p-8 text-center">
+            <p className="text-arena-slate text-lg">No vendors have been added yet.</p>
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -55,17 +49,15 @@ export default async function VendorsPage() {
               <Link
                 key={vendor.id}
                 href={`/vendors/${vendor.slug}`}
-                className="rounded-lg border border-border bg-white p-6 transition-colors hover:border-arena-slate-light hover:bg-pale-grey"
+                className="border-border hover:border-arena-slate-light hover:bg-pale-grey rounded-lg border bg-white p-6 transition-colors"
               >
-                <h2 className="text-lg font-semibold text-arena-slate">
-                  {vendor.companyName}
-                </h2>
+                <h2 className="text-arena-slate text-lg font-semibold">{vendor.companyName}</h2>
                 {vendor.description && (
-                  <p className="mt-1 line-clamp-2 text-sm text-arena-slate-light">
+                  <p className="text-arena-slate-light mt-1 line-clamp-2 text-sm">
                     {vendor.description}
                   </p>
                 )}
-                <p className="mt-3 text-sm text-arena-slate-light">
+                <p className="text-arena-slate-light mt-3 text-sm">
                   {vendor.toolCount} {vendor.toolCount === 1 ? "tool" : "tools"}
                 </p>
               </Link>

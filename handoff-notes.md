@@ -23,6 +23,9 @@
    - 5 stub pages so nav links don't 404
    - Password hash stored as base64-encoded bcrypt (avoids `$` escaping with Next.js dotenv-expand)
    - All admin pages: `robots: { index: false, follow: false }`
+   - Build script: `prisma generate && next build` (fixes Vercel cached Prisma client)
+   - Vercel env vars set + deployed to production — login verified at aisearcharena.com/admin
+   - Issues resolved: bcrypt `$` escaping (base64), Vercel `echo` newline injection (`echo -n`), Prisma cache (prisma generate in build)
 
 ### Previous (2026-03-03)
 
@@ -48,6 +51,7 @@
 ## What Was Built
 
 ### Phase 1-4: MVP (2026-03-01)
+
 - Next.js 15.5.12, TypeScript strict, Tailwind v4, shadcn/ui, Prisma
 - 24-entity schema with 8 enums
 - 10-state cycle state machine
@@ -59,10 +63,12 @@
 - Production: Vercel + Neon + OpenRouter + R2 + Resend + Plausible + Sentry
 
 ### Sprint 1: GEO Benchmark Framework (2026-03-02)
+
 - Public methodology repo with 51 dimensions, 128 prompts, 6 models
 - Framework loader: YAML → DB with git SHA pinning
 
 ### Post-Launch (2026-03-02 — 2026-03-03)
+
 - Model panel v1.3 (frontier, cost-optimized)
 - AI Search Mastery vendor + 4 products enrolled (32 total tools)
 - First benchmark cycle complete and published
@@ -72,15 +78,15 @@
 
 ## Production Services (ALL LIVE)
 
-| Service | Status | Details |
-|---------|--------|---------|
-| **Neon** | Live | 25 tables, 32 tools, 9,792 evals, 1,632 scores, 111 composites |
-| **Vercel** | Live | aisearcharena.com, auto-deploy from GitHub |
-| **OpenRouter** | Configured | 6-model panel v1.3 |
-| **Cloudflare R2** | Configured | Evidence artifact storage |
-| **Resend** | Configured | Email (domain DNS pending verification) |
-| **Plausible** | Verified | Analytics tracking active |
-| **Sentry** | Configured | Error tracking |
+| Service           | Status     | Details                                                        |
+| ----------------- | ---------- | -------------------------------------------------------------- |
+| **Neon**          | Live       | 25 tables, 32 tools, 9,792 evals, 1,632 scores, 111 composites |
+| **Vercel**        | Live       | aisearcharena.com, auto-deploy from GitHub                     |
+| **OpenRouter**    | Configured | 6-model panel v1.3                                             |
+| **Cloudflare R2** | Configured | Evidence artifact storage                                      |
+| **Resend**        | Configured | Email (domain DNS pending verification)                        |
+| **Plausible**     | Verified   | Analytics tracking active                                      |
+| **Sentry**        | Configured | Error tracking                                                 |
 
 ## Known Issues / Warnings
 
@@ -89,21 +95,20 @@
 - Historical score trends on tool detail (AC-003-02) deferred — requires multiple cycles.
 - Email notifications via Resend not yet implemented — deferred.
 - Lighthouse audit TODO — site is live, can run now.
+- **Vercel env piping**: Always use `echo -n` (not `echo`) when piping values to `vercel env add` to avoid trailing newline injection.
+- **Bcrypt in .env**: Always base64-encode bcrypt hashes for Next.js projects (dotenv-expand mangles `$`).
 
 ## What's Next
 
-### Immediate
-- Deploy F-025 to production (commit + push)
-- Set `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` (base64), `JWT_SECRET` in Vercel env vars
-- Run `prisma migrate deploy` against production Neon to add `admin_login_attempts` table
-
 ### P1 Backlog
-- F-004: Tool Comparison View
+
+- F-004: Tool Comparison View — **COMPLETE** (committed 2026-03-03)
 - F-019: Badge Awarding & Display
 - F-020: Cycle Archive & Historical Access
 - F-021: Vendor Directory & Profile Pages
 
 ### Deferred UI Features
+
 - Cycle selector for historical rankings
 - Historical score trend on tool detail
 - Newsletter signup integration (Buttondown)

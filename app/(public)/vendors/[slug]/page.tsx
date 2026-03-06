@@ -70,28 +70,23 @@ export default async function VendorProfilePage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <Link
-          href="/vendors"
-          className="text-sm text-arena-slate-light hover:text-arena-slate"
-        >
+        <Link href="/vendors" className="text-arena-slate-light hover:text-arena-slate text-sm">
           &larr; Back to Vendors
         </Link>
 
         <div className="mt-4">
-          <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
+          <h1 className="text-arena-slate text-3xl font-bold tracking-tight">
             {vendor.companyName}
           </h1>
           {vendor.description && (
-            <p className="mt-2 max-w-2xl text-sm text-arena-slate-light">
-              {vendor.description}
-            </p>
+            <p className="text-arena-slate-light mt-2 max-w-2xl text-sm">{vendor.description}</p>
           )}
           {vendor.websiteUrl && (
             <a
               href={vendor.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-block text-sm text-mastery-blue hover:underline"
+              className="text-mastery-blue mt-2 inline-block text-sm hover:underline"
             >
               Visit website &rarr;
             </a>
@@ -100,42 +95,34 @@ export default async function VendorProfilePage({ params }: Props) {
 
         {/* Tools with scores */}
         <div className="mt-8">
-          <h2 className="text-xl font-semibold text-arena-slate">
+          <h2 className="text-arena-slate text-xl font-semibold">
             Tools
             {cycle && (
-              <span className="ml-2 text-sm font-normal text-arena-slate-light">
+              <span className="text-arena-slate-light ml-2 text-sm font-normal">
                 {cycle.displayName}
               </span>
             )}
           </h2>
 
           {tools.length === 0 ? (
-            <div className="mt-4 rounded-lg border border-border bg-pale-grey p-8 text-center">
-              <p className="text-arena-slate-light">
-                No tools found for this vendor.
-              </p>
+            <div className="border-border bg-pale-grey mt-4 rounded-lg border p-8 text-center">
+              <p className="text-arena-slate-light">No tools found for this vendor.</p>
             </div>
           ) : (
             <div className="mt-4 space-y-3">
               {/* Scored tools first, sorted by rank */}
               {[...scoredTools]
-                .sort(
-                  (a, b) =>
-                    (a.compositeScore?.rank ?? 999) -
-                    (b.compositeScore?.rank ?? 999)
-                )
+                .sort((a, b) => (a.compositeScore?.rank ?? 999) - (b.compositeScore?.rank ?? 999))
                 .map((tool) => (
                   <Link
                     key={tool.id}
                     href={`/tools/${tool.slug}`}
-                    className="block rounded-lg border border-border bg-white p-4 transition-colors hover:border-arena-slate-light hover:bg-pale-grey"
+                    className="border-border hover:border-arena-slate-light hover:bg-pale-grey block rounded-lg border bg-white p-4 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-semibold text-arena-slate">
-                            {tool.name}
-                          </span>
+                          <span className="text-arena-slate font-semibold">{tool.name}</span>
                           {tool.badges.map((b) => (
                             <TierBadge
                               key={b.id}
@@ -144,20 +131,20 @@ export default async function VendorProfilePage({ params }: Props) {
                             />
                           ))}
                         </div>
-                        <p className="mt-0.5 line-clamp-2 text-sm text-arena-slate-light">
+                        <p className="text-arena-slate-light mt-0.5 line-clamp-2 text-sm">
                           {tool.description}
                         </p>
                       </div>
                       {tool.compositeScore && (
                         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                           <div className="text-right">
-                            <div className="text-lg font-bold text-arena-slate">
+                            <div className="text-arena-slate text-lg font-bold">
                               {Number(tool.compositeScore.value).toFixed(1)}
-                              <span className="text-sm font-normal text-arena-slate-light">
+                              <span className="text-arena-slate-light text-sm font-normal">
                                 /10
                               </span>
                             </div>
-                            <div className="text-xs text-arena-slate-light">
+                            <div className="text-arena-slate-light text-xs">
                               #{tool.compositeScore.rank}
                             </div>
                           </div>
@@ -180,17 +167,13 @@ export default async function VendorProfilePage({ params }: Props) {
                 <Link
                   key={tool.id}
                   href={`/tools/${tool.slug}`}
-                  className="flex items-center justify-between rounded-lg border border-border bg-white p-4 transition-colors hover:border-arena-slate-light hover:bg-pale-grey"
+                  className="border-border hover:border-arena-slate-light hover:bg-pale-grey flex items-center justify-between rounded-lg border bg-white p-4 transition-colors"
                 >
                   <div>
-                    <span className="font-semibold text-arena-slate">
-                      {tool.name}
-                    </span>
-                    <p className="mt-0.5 text-sm text-arena-slate-light">
-                      {tool.description}
-                    </p>
+                    <span className="text-arena-slate font-semibold">{tool.name}</span>
+                    <p className="text-arena-slate-light mt-0.5 text-sm">{tool.description}</p>
                   </div>
-                  <span className="ml-4 shrink-0 text-sm text-arena-slate-light">
+                  <span className="text-arena-slate-light ml-4 shrink-0 text-sm">
                     Not yet evaluated
                   </span>
                 </Link>

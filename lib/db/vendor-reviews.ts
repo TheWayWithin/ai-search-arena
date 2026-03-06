@@ -96,10 +96,7 @@ export async function submitCorrection(data: {
  * AC-015-02: Triggers score adjustment with audit trail.
  * Status transitions to Completed with acceptance notes.
  */
-export async function acceptCorrection(
-  vendorReviewId: string,
-  operatorNotes: string
-) {
+export async function acceptCorrection(vendorReviewId: string, operatorNotes: string) {
   return prisma.vendorReview.update({
     where: { id: vendorReviewId },
     data: {
@@ -115,10 +112,7 @@ export async function acceptCorrection(
  * AC-015-02: Documented reason required.
  * Status transitions to Completed with rejection reason.
  */
-export async function rejectCorrection(
-  vendorReviewId: string,
-  operatorNotes: string
-) {
+export async function rejectCorrection(vendorReviewId: string, operatorNotes: string) {
   if (!operatorNotes.trim()) {
     throw new Error("Rejection reason is required");
   }

@@ -125,9 +125,7 @@ async function transitionCycle(cycleId: string, newState: CycleState): Promise<C
     });
 
     const requiredTrackIds = Array.from(
-      new Set(
-        cycleData.methodologyVersion?.scoringDimensions.map((d) => d.trackId) ?? []
-      )
+      new Set(cycleData.methodologyVersion?.scoringDimensions.map((d) => d.trackId) ?? [])
     );
 
     for (const trackId of requiredTrackIds) {
@@ -135,9 +133,7 @@ async function transitionCycle(cycleId: string, newState: CycleState): Promise<C
         e.tool.trackMappings.some((tm) => tm.trackId === trackId)
       ).length;
       if (count < 5) {
-        throw new Error(
-          `Guard failed: Track ${trackId} has only ${count} tools (minimum 5)`
-        );
+        throw new Error(`Guard failed: Track ${trackId} has only ${count} tools (minimum 5)`);
       }
     }
   }
@@ -265,8 +261,7 @@ async function callModel(
   } catch (error) {
     clearTimeout(timeout);
     const responseTimeMs = Date.now() - startTime;
-    const isTimeout =
-      error instanceof DOMException && error.name === "AbortError";
+    const isTimeout = error instanceof DOMException && error.name === "AbortError";
     return {
       success: false,
       modelIdentifier,
@@ -287,12 +282,7 @@ async function callModelWithRetry(
 ): Promise<EvaluationResult> {
   const backoffDelays = [1000, 4000, 16000];
   for (let attempt = 0; attempt <= 3; attempt++) {
-    const result = await callModel(
-      modelIdentifier,
-      systemPrompt,
-      userPrompt,
-      timeoutMs
-    );
+    const result = await callModel(modelIdentifier, systemPrompt, userPrompt, timeoutMs);
     if (result.success) return result;
     if (attempt < 3) {
       const delay = backoffDelays[attempt] ?? 16000;
@@ -308,9 +298,7 @@ function computeMedian(values: number[]): number {
   if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0
-    ? (sorted[mid - 1] + sorted[mid]) / 2
-    : sorted[mid];
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
 }
 
 function roundHalfUp(value: number): number {
@@ -501,10 +489,7 @@ async function main() {
         continue;
       }
 
-      log(
-        "EVAL",
-        `[${ti + 1}/${toolsToEvaluate.length}] ${tool.name} — evaluating...`
-      );
+      log("EVAL", `[${ti + 1}/${toolsToEvaluate.length}] ${tool.name} — evaluating...`);
 
       let dimSuccesses = 0;
       let dimInsufficient = 0;
@@ -539,14 +524,10 @@ Rationale: [Brief justification]`;
 
         let userPrompt: string;
         if (promptSet) {
-          const promptArray = Array.isArray(promptSet.prompts)
-            ? promptSet.prompts
-            : [];
+          const promptArray = Array.isArray(promptSet.prompts) ? promptSet.prompts : [];
           const selected =
             promptArray.length > 0
-              ? String(
-                  promptArray[Math.floor(Math.random() * promptArray.length)]
-                )
+              ? String(promptArray[Math.floor(Math.random() * promptArray.length)])
               : "";
           userPrompt = `Evaluate the tool "${tool.name}" (${tool.description ?? ""}).
 
@@ -567,12 +548,7 @@ Provide your score and rationale.`;
         // Dispatch to all models in parallel
         const results = await Promise.all(
           models.map((m) =>
-            callModelWithRetry(
-              m.modelIdentifier,
-              systemPrompt,
-              userPrompt,
-              m.timeoutMs
-            )
+            callModelWithRetry(m.modelIdentifier, systemPrompt, userPrompt, m.timeoutMs)
           )
         );
 
@@ -580,9 +556,7 @@ Provide your score and rationale.`;
         const promptSetId = promptSet?.id ?? "";
         const evalData: Prisma.ModelEvaluationCreateManyInput[] = [];
         for (const result of results) {
-          const model = models.find(
-            (m) => m.modelIdentifier === result.modelIdentifier
-          );
+          const model = models.find((m) => m.modelIdentifier === result.modelIdentifier);
           if (!model) continue;
 
           const status = result.success
@@ -626,9 +600,7 @@ Provide your score and rationale.`;
         }
 
         totalCalls += results.length;
-        const successCount = results.filter(
-          (r) => r.success && r.parsedScore !== null
-        ).length;
+        const successCount = results.filter((r) => r.success && r.parsedScore !== null).length;
         if (successCount >= 4) dimSuccesses++;
         else dimInsufficient++;
 
@@ -647,7 +619,10 @@ Provide your score and rationale.`;
       );
     }
 
-    log("EVAL", `Evaluations complete: ${totalCalls} API calls, ~${(totalTokens / 1000).toFixed(0)}k tokens`);
+    log(
+      "EVAL",
+      `Evaluations complete: ${totalCalls} API calls, ~${(totalTokens / 1000).toFixed(0)}k tokens`
+    );
 
     // ── Stage 6: Evaluation → Synthesis ──────────────────────────
 
@@ -702,8 +677,7 @@ Provide your score and rationale.`;
         medianValue = roundHalfUp(computeMedian(successfulScores));
 
         // Standard deviation for confidence
-        const mean =
-          successfulScores.reduce((a, b) => a + b, 0) / successfulScores.length;
+        const mean = successfulScores.reduce((a, b) => a + b, 0) / successfulScores.length;
         const variance =
           successfulScores.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) /
           successfulScores.length;
@@ -769,9 +743,7 @@ Provide your score and rationale.`;
         isActive: true,
       },
     });
-    const weightMap = new Map(
-      activeDimensions.map((d) => [d.id, Number(d.weight)])
-    );
+    const weightMap = new Map(activeDimensions.map((d) => [d.id, Number(d.weight)]));
 
     const scores = await prisma.score.findMany({ where: { cycleId } });
     const toolScoreMap = new Map<
@@ -810,10 +782,7 @@ Provide your score and rationale.`;
       const totalWeight = applicable.reduce((sum, s) => sum + s.weight, 0);
       if (totalWeight === 0) continue;
 
-      const weighted = applicable.reduce(
-        (sum, s) => sum + s.value * (s.weight / totalWeight),
-        0
-      );
+      const weighted = applicable.reduce((sum, s) => sum + s.value * (s.weight / totalWeight), 0);
       const compositeScore = Math.round(weighted * 10) / 10;
 
       // Most conservative confidence
@@ -926,7 +895,14 @@ Provide your score and rationale.`;
             });
           } else {
             await prisma.compositeScore.create({
-              data: { cycleId, toolId, segmentId: segment.id, value: compositeScore, rank: 0, confidenceTag },
+              data: {
+                cycleId,
+                toolId,
+                segmentId: segment.id,
+                value: compositeScore,
+                rank: 0,
+                confidenceTag,
+              },
             });
           }
 
@@ -1019,9 +995,7 @@ Provide your score and rationale.`;
 
     const { createHash } = await import("crypto");
     const contentJson = JSON.stringify(auditContent, null, 2);
-    const integrityHash = createHash("sha256")
-      .update(contentJson)
-      .digest("hex");
+    const integrityHash = createHash("sha256").update(contentJson).digest("hex");
     const fileUrl = `audit-packages/${cycleId}/${integrityHash}.json`;
 
     await prisma.cycleAuditPackage.upsert({
@@ -1047,6 +1021,13 @@ Provide your score and rationale.`;
 
     log("AUDIT", `✓ Audit package sealed (hash: ${integrityHash.slice(0, 12)}...)`);
 
+    // ── Stage 12.5: Award badges ──────────────────────────────────
+
+    log("BADGES", "Awarding cycle badges...");
+    const { awardCycleBadges } = await import("@/lib/badges/award");
+    const badgeCount = await awardCycleBadges(cycleId);
+    log("BADGES", `✓ Awarded ${badgeCount} badges`);
+
     // ── Stage 13: Generate report ──────────────────────────────────
 
     log("REPORT", "Generating benchmark report...");
@@ -1070,6 +1051,7 @@ Provide your score and rationale.`;
         compositeScore: Number(cs.value),
         confidenceTag: cs.confidenceTag,
       })),
+      badgesAwarded: badgeCount,
       generatedAt: new Date().toISOString(),
     };
 

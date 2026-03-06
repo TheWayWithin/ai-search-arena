@@ -174,10 +174,7 @@ export async function getComparisonData(toolSlugs: string[], cycleId?: string) {
       dimension: true,
       synthesis: true,
     },
-    orderBy: [
-      { dimension: { category: "asc" } },
-      { dimension: { displayOrder: "asc" } },
-    ],
+    orderBy: [{ dimension: { category: "asc" } }, { dimension: { displayOrder: "asc" } }],
   });
 
   // Fetch composite scores (overall, not segment-specific)

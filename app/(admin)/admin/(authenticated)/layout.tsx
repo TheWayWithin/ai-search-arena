@@ -25,9 +25,7 @@ export default async function AuthenticatedAdminLayout({
       <nav className="border-b bg-white">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
           <div className="flex items-center gap-6">
-            <span className="text-sm font-bold text-gray-900">
-              Arena Admin
-            </span>
+            <span className="text-sm font-bold text-gray-900">Arena Admin</span>
             <div className="flex items-center gap-4">
               {navLinks.map((link) => (
                 <Link
@@ -41,10 +39,7 @@ export default async function AuthenticatedAdminLayout({
             </div>
           </div>
           <form action={logoutAction}>
-            <button
-              type="submit"
-              className="text-sm text-gray-500 hover:text-gray-700"
-            >
+            <button type="submit" className="text-sm text-gray-500 hover:text-gray-700">
               Sign out
             </button>
           </form>

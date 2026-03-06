@@ -58,7 +58,7 @@ async function createCheckoutSession(userId: string, priceId: string, quantity =
 
   const session = await stripe.checkout.sessions.create({
     customer: customer.id,
-    mode: 'payment',
+    mode: "payment",
     line_items: [
       {
         price: priceId, // price_xxx from Stripe Dashboard
@@ -118,7 +118,7 @@ async function createSubscriptionCheckout(userId: string, priceId: string) {
   // Check if already subscribed
   const existingSubscriptions = await stripe.subscriptions.list({
     customer: customer.id,
-    status: 'active',
+    status: "active",
     limit: 1,
   });
 
@@ -129,7 +129,7 @@ async function createSubscriptionCheckout(userId: string, priceId: string) {
 
   const session = await stripe.checkout.sessions.create({
     customer: customer.id,
-    mode: 'subscription',
+    mode: "subscription",
     line_items: [
       {
         price: priceId,
@@ -147,7 +147,7 @@ async function createSubscriptionCheckout(userId: string, priceId: string) {
     // Allow promotion codes
     allow_promotion_codes: true,
     // Collect billing address for tax
-    billing_address_collection: 'required',
+    billing_address_collection: "required",
     // Enable automatic tax calculation
     automatic_tax: { enabled: true },
   });
@@ -168,7 +168,7 @@ async function createPortalSession(userId: string) {
   const user = await db.user.findUnique({ where: { id: userId } });
 
   if (!user.stripeCustomerId) {
-    throw new Error('No billing account found');
+    throw new Error("No billing account found");
   }
 
   const session = await stripe.billingPortal.sessions.create({
@@ -181,6 +181,7 @@ async function createPortalSession(userId: string) {
 ```
 
 **Portal Configuration** (via Stripe Dashboard > Settings > Billing > Customer Portal):
+
 - Enable subscription cancellation
 - Enable plan switching
 - Enable payment method updates
@@ -196,20 +197,16 @@ async function createPortalSession(userId: string) {
 ```typescript
 // Webhook handler - CRITICAL for subscription state
 async function handleWebhook(request: Request) {
-  const sig = request.headers.get('stripe-signature');
+  const sig = request.headers.get("stripe-signature");
   const body = await request.text();
 
   // Verify webhook signature - NEVER SKIP THIS
   let event;
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
-    );
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    console.error('Webhook signature verification failed:', err.message);
-    return new Response('Invalid signature', { status: 400 });
+    console.error("Webhook signature verification failed:", err.message);
+    return new Response("Invalid signature", { status: 400 });
   }
 
   // Handle event idempotently
@@ -219,29 +216,29 @@ async function handleWebhook(request: Request) {
   });
 
   if (processed) {
-    return new Response('Already processed', { status: 200 });
+    return new Response("Already processed", { status: 200 });
   }
 
   try {
     switch (event.type) {
-      case 'checkout.session.completed':
+      case "checkout.session.completed":
         await handleCheckoutComplete(event.data.object);
         break;
 
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated':
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
         await handleSubscriptionChange(event.data.object);
         break;
 
-      case 'customer.subscription.deleted':
+      case "customer.subscription.deleted":
         await handleSubscriptionCanceled(event.data.object);
         break;
 
-      case 'invoice.payment_failed':
+      case "invoice.payment_failed":
         await handlePaymentFailed(event.data.object);
         break;
 
-      case 'invoice.payment_succeeded':
+      case "invoice.payment_succeeded":
         await handlePaymentSucceeded(event.data.object);
         break;
     }
@@ -255,10 +252,10 @@ async function handleWebhook(request: Request) {
       },
     });
 
-    return new Response('OK', { status: 200 });
+    return new Response("OK", { status: 200 });
   } catch (err) {
-    console.error('Webhook processing error:', err);
-    return new Response('Processing error', { status: 500 });
+    console.error("Webhook processing error:", err);
+    return new Response("Processing error", { status: 500 });
   }
 }
 
@@ -289,15 +286,13 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
 
 // Handle payment failure
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
-  const subscription = await stripe.subscriptions.retrieve(
-    invoice.subscription as string
-  );
+  const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
   const userId = subscription.metadata.userId;
 
   // Send email about failed payment
   await sendEmail({
     to: invoice.customer_email,
-    template: 'payment-failed',
+    template: "payment-failed",
     data: {
       amount: formatCurrency(invoice.amount_due),
       nextAttempt: invoice.next_payment_attempt
@@ -311,7 +306,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   await db.user.update({
     where: { id: userId },
     data: {
-      subscriptionStatus: 'past_due',
+      subscriptionStatus: "past_due",
     },
   });
 }
@@ -334,7 +329,7 @@ async function reportUsage(subscriptionItemId: string, quantity: number, timesta
     {
       quantity,
       timestamp: Math.floor(timestamp / 1000),
-      action: 'increment', // or 'set' to override
+      action: "increment", // or 'set' to override
     },
     {
       idempotencyKey,
@@ -351,8 +346,8 @@ async function reportDailyUsage() {
   // Get all active metered subscriptions
   const subscriptions = await db.user.findMany({
     where: {
-      subscriptionStatus: 'active',
-      plan: 'metered',
+      subscriptionStatus: "active",
+      plan: "metered",
     },
   });
 
@@ -372,11 +367,7 @@ async function reportDailyUsage() {
     });
 
     if (usage._sum.count > 0) {
-      await reportUsage(
-        user.subscriptionItemId,
-        usage._sum.count,
-        yesterday.getTime()
-      );
+      await reportUsage(user.subscriptionItemId, usage._sum.count, yesterday.getTime());
     }
   }
 }
@@ -394,7 +385,7 @@ async function changePlan(userId: string, newPriceId: string) {
   const user = await db.user.findUnique({ where: { id: userId } });
 
   if (!user.subscriptionId) {
-    throw new Error('No active subscription');
+    throw new Error("No active subscription");
   }
 
   const subscription = await stripe.subscriptions.retrieve(user.subscriptionId);
@@ -407,7 +398,7 @@ async function changePlan(userId: string, newPriceId: string) {
         price: newPriceId,
       },
     ],
-    proration_behavior: 'create_prorations', // or 'none', 'always_invoice'
+    proration_behavior: "create_prorations", // or 'none', 'always_invoice'
   });
 
   // Database update happens via webhook
@@ -427,35 +418,37 @@ npm install stripe
 
 ```typescript
 // lib/stripe.ts
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
+  apiVersion: "2024-06-20",
   typescript: true,
 });
 ```
 
 ```typescript
 // app/api/checkout/route.ts
-import { createClient } from '@/lib/supabase/server';
-import { stripe } from '@/lib/stripe';
-import { NextResponse } from 'next/server';
+import { createClient } from "@/lib/supabase/server";
+import { stripe } from "@/lib/stripe";
+import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { priceId } = await request.json();
 
   // Get or create customer
   const { data: profile } = await supabase
-    .from('profiles')
-    .select('stripe_customer_id')
-    .eq('id', user.id)
+    .from("profiles")
+    .select("stripe_customer_id")
+    .eq("id", user.id)
     .single();
 
   let customerId = profile?.stripe_customer_id;
@@ -467,16 +460,13 @@ export async function POST(request: Request) {
     });
     customerId = customer.id;
 
-    await supabase
-      .from('profiles')
-      .update({ stripe_customer_id: customerId })
-      .eq('id', user.id);
+    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", user.id);
   }
 
   // Create checkout session
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
-    mode: 'subscription',
+    mode: "subscription",
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgraded=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
@@ -491,11 +481,11 @@ export async function POST(request: Request) {
 
 ```typescript
 // app/api/webhooks/stripe/route.ts
-import { stripe } from '@/lib/stripe';
-import { createClient } from '@supabase/supabase-js';
-import { headers } from 'next/headers';
-import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
+import { stripe } from "@/lib/stripe";
+import { createClient } from "@supabase/supabase-js";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
+import Stripe from "stripe";
 
 // Use service role for webhook (no user context)
 const supabase = createClient(
@@ -506,51 +496,45 @@ const supabase = createClient(
 export async function POST(request: Request) {
   const body = await request.text();
   const headersList = await headers();
-  const sig = headersList.get('stripe-signature')!;
+  const sig = headersList.get("stripe-signature")!;
 
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch (err) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   switch (event.type) {
-    case 'customer.subscription.created':
-    case 'customer.subscription.updated': {
+    case "customer.subscription.created":
+    case "customer.subscription.updated": {
       const subscription = event.data.object as Stripe.Subscription;
       const userId = subscription.metadata.userId;
 
       await supabase
-        .from('profiles')
+        .from("profiles")
         .update({
           subscription_id: subscription.id,
           subscription_status: subscription.status,
           plan: getPlanFromPrice(subscription.items.data[0].price.id),
-          current_period_end: new Date(
-            subscription.current_period_end * 1000
-          ).toISOString(),
+          current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
         })
-        .eq('id', userId);
+        .eq("id", userId);
       break;
     }
 
-    case 'customer.subscription.deleted': {
+    case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
       const userId = subscription.metadata.userId;
 
       await supabase
-        .from('profiles')
+        .from("profiles")
         .update({
-          subscription_status: 'canceled',
-          plan: 'free',
+          subscription_status: "canceled",
+          plan: "free",
         })
-        .eq('id', userId);
+        .eq("id", userId);
       break;
     }
   }
@@ -565,24 +549,24 @@ export async function POST(request: Request) {
 
 ```typescript
 // app/lib/stripe.server.ts
-import Stripe from 'stripe';
+import Stripe from "stripe";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
+  apiVersion: "2024-06-20",
 });
 ```
 
 ```typescript
 // app/routes/api.checkout.ts
-import { ActionFunctionArgs, json } from '@remix-run/node';
-import { stripe } from '~/lib/stripe.server';
-import { requireAuth } from '~/lib/session.server';
-import { db } from '~/lib/db.server';
+import { ActionFunctionArgs, json } from "@remix-run/node";
+import { stripe } from "~/lib/stripe.server";
+import { requireAuth } from "~/lib/session.server";
+import { db } from "~/lib/db.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const { user } = await requireAuth(request);
   const formData = await request.formData();
-  const priceId = formData.get('priceId') as string;
+  const priceId = formData.get("priceId") as string;
 
   // Get or create customer
   let customerId = user.stripeCustomerId;
@@ -602,7 +586,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
-    mode: 'subscription',
+    mode: "subscription",
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${process.env.APP_URL}/dashboard?upgraded=true`,
     cancel_url: `${process.env.APP_URL}/pricing`,
@@ -617,28 +601,24 @@ export async function action({ request }: ActionFunctionArgs) {
 
 ```typescript
 // app/routes/api.webhooks.stripe.ts
-import { ActionFunctionArgs } from '@remix-run/node';
-import { stripe } from '~/lib/stripe.server';
-import { db } from '~/lib/db.server';
+import { ActionFunctionArgs } from "@remix-run/node";
+import { stripe } from "~/lib/stripe.server";
+import { db } from "~/lib/db.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const payload = await request.text();
-  const sig = request.headers.get('stripe-signature')!;
+  const sig = request.headers.get("stripe-signature")!;
 
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      payload,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
+    event = stripe.webhooks.constructEvent(payload, sig, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch (err) {
-    return new Response('Invalid signature', { status: 400 });
+    return new Response("Invalid signature", { status: 400 });
   }
 
   switch (event.type) {
-    case 'customer.subscription.updated': {
+    case "customer.subscription.updated": {
       const subscription = event.data.object;
       await db.user.update({
         where: { id: subscription.metadata.userId },
@@ -653,7 +633,7 @@ export async function action({ request }: ActionFunctionArgs) {
     // Handle other events...
   }
 
-  return new Response('OK', { status: 200 });
+  return new Response("OK", { status: 200 });
 }
 ```
 

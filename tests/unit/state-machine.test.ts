@@ -19,8 +19,16 @@ const VALID_CYCLE_TRANSITIONS: Record<string, string[]> = {
 };
 
 const ALL_STATES = [
-  "Draft", "Planning", "Evaluation", "Synthesis", "Review",
-  "VendorReview", "Publication", "Completed", "Suspended", "Cancelled",
+  "Draft",
+  "Planning",
+  "Evaluation",
+  "Synthesis",
+  "Review",
+  "VendorReview",
+  "Publication",
+  "Completed",
+  "Suspended",
+  "Cancelled",
 ];
 
 function isValidTransition(from: string, to: string): boolean {
@@ -55,8 +63,14 @@ describe("BenchmarkCycle state machine", () => {
 
   it("happy path follows the full lifecycle", () => {
     const happyPath = [
-      "Draft", "Planning", "Evaluation", "Synthesis",
-      "Review", "VendorReview", "Publication", "Completed",
+      "Draft",
+      "Planning",
+      "Evaluation",
+      "Synthesis",
+      "Review",
+      "VendorReview",
+      "Publication",
+      "Completed",
     ];
 
     for (let i = 0; i < happyPath.length - 1; i++) {

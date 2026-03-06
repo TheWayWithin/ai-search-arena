@@ -199,9 +199,7 @@ export async function evaluateToolDimension(
   isInsufficient: boolean;
 }> {
   const results = await Promise.all(
-    models.map((m) =>
-      callModelWithRetry(m.modelIdentifier, systemPrompt, userPrompt, m.timeoutMs)
-    )
+    models.map((m) => callModelWithRetry(m.modelIdentifier, systemPrompt, userPrompt, m.timeoutMs))
   );
 
   const successCount = results.filter((r) => r.success && r.parsedScore !== null).length;

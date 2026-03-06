@@ -13,16 +13,16 @@ AISearchArena.com is a monthly benchmark publication platform that evaluates 27+
 
 **Key architectural decisions:**
 
-| Area | Decision | Rationale |
-|------|----------|-----------|
-| Architecture | Monolith (Next.js) | Solopreneur operation; batch evaluation workflow, not real-time |
-| Frontend | Next.js App Router + Tailwind + shadcn/ui + MDX | SSG/ISR for SEO-critical benchmark pages |
-| Database | Neon serverless PostgreSQL + Prisma | 24-entity model, $0 free tier, type-safe queries |
-| Auth | Custom (deferred) | Admin-only; not needed at launch for public site |
-| AI Pipeline | 6 providers, parallel with retry | Core product differentiator; min 4/6 for synthesis |
-| Hosting | Vercel + GitHub Actions | Zero-config Next.js deploys, preview branches |
-| Storage | Cloudflare R2 | $0 egress for publicly-served evidence artifacts |
-| Monitoring | Sentry + Plausible | Error tracking + privacy-respecting analytics |
+| Area         | Decision                                        | Rationale                                                       |
+| ------------ | ----------------------------------------------- | --------------------------------------------------------------- |
+| Architecture | Monolith (Next.js)                              | Solopreneur operation; batch evaluation workflow, not real-time |
+| Frontend     | Next.js App Router + Tailwind + shadcn/ui + MDX | SSG/ISR for SEO-critical benchmark pages                        |
+| Database     | Neon serverless PostgreSQL + Prisma             | 24-entity model, $0 free tier, type-safe queries                |
+| Auth         | Custom (deferred)                               | Admin-only; not needed at launch for public site                |
+| AI Pipeline  | 6 providers, parallel with retry                | Core product differentiator; min 4/6 for synthesis              |
+| Hosting      | Vercel + GitHub Actions                         | Zero-config Next.js deploys, preview branches                   |
+| Storage      | Cloudflare R2                                   | $0 egress for publicly-served evidence artifacts                |
+| Monitoring   | Sentry + Plausible                              | Error tracking + privacy-respecting analytics                   |
 
 ---
 
@@ -173,15 +173,15 @@ aisearcharena/
 
 **Rendering Strategy:**
 
-| Page Type | Strategy | Rationale |
-|-----------|----------|-----------|
-| Homepage | ISR (revalidate on publish) | Updates monthly when new cycle publishes |
+| Page Type   | Strategy                    | Rationale                                          |
+| ----------- | --------------------------- | -------------------------------------------------- |
+| Homepage    | ISR (revalidate on publish) | Updates monthly when new cycle publishes           |
 | Leaderboard | ISR (revalidate on publish) | Static between publications; dense ranking display |
-| Tool Detail | ISR (revalidate on publish) | Score data changes monthly |
-| Reports | SSG | Immutable after publication |
-| Methodology | SSG (MDX) | Static content, rarely changes |
-| Disclosure | SSG (MDX) | Static content |
-| Admin pages | CSR (dynamic) | Auth-protected, real-time interactions |
+| Tool Detail | ISR (revalidate on publish) | Score data changes monthly                         |
+| Reports     | SSG                         | Immutable after publication                        |
+| Methodology | SSG (MDX)                   | Static content, rarely changes                     |
+| Disclosure  | SSG (MDX)                   | Static content                                     |
+| Admin pages | CSR (dynamic)               | Auth-protected, real-time interactions             |
 
 **Component Library:** shadcn/ui provides the base components (DataTable, Card, Badge, Dialog, Tabs, Select, Tooltip). Custom benchmark-specific components built on top for leaderboard tables, score displays, and confidence indicators.
 
@@ -470,47 +470,47 @@ BenchmarkCycle State Machine
 // lib/state-machine/cycle.ts
 
 const VALID_CYCLE_TRANSITIONS: Record<CycleState, CycleState[]> = {
-  Draft:        ['Planning', 'Suspended', 'Cancelled'],
-  Planning:     ['Evaluation', 'Suspended', 'Cancelled'],
-  Evaluation:   ['Synthesis', 'Suspended'],
-  Synthesis:    ['Review'],
-  Review:       ['VendorReview'],
-  VendorReview: ['Publication'],
-  Publication:  ['Completed'],
-  Completed:    [],  // terminal
-  Suspended:    ['Draft', 'Cancelled'],
-  Cancelled:    [],  // terminal
+  Draft: ["Planning", "Suspended", "Cancelled"],
+  Planning: ["Evaluation", "Suspended", "Cancelled"],
+  Evaluation: ["Synthesis", "Suspended"],
+  Synthesis: ["Review"],
+  Review: ["VendorReview"],
+  VendorReview: ["Publication"],
+  Publication: ["Completed"],
+  Completed: [], // terminal
+  Suspended: ["Draft", "Cancelled"],
+  Cancelled: [], // terminal
 };
 
 type TransitionGuard = (cycleId: string) => Promise<{ valid: boolean; reason?: string }>;
 
 const TRANSITION_GUARDS: Partial<Record<string, TransitionGuard>> = {
-  'Draft->Planning': async (cycleId) => {
+  "Draft->Planning": async (cycleId) => {
     const cycle = await prisma.benchmarkCycle.findUnique({
       where: { id: cycleId },
       include: { methodologyVersion: true },
     });
     if (!cycle?.methodologyVersion) {
-      return { valid: false, reason: 'No methodology version assigned' };
+      return { valid: false, reason: "No methodology version assigned" };
     }
     return { valid: true };
   },
-  'Planning->Evaluation': async (cycleId) => {
+  "Planning->Evaluation": async (cycleId) => {
     const enrollmentCount = await prisma.cycleToolEnrollment.count({
       where: { cycleId, withdrawnAt: null },
     });
     if (enrollmentCount < 5) {
-      return { valid: false, reason: `Only ${enrollmentCount} tools enrolled (minimum 5 per BR-T03)` };
+      return {
+        valid: false,
+        reason: `Only ${enrollmentCount} tools enrolled (minimum 5 per BR-T03)`,
+      };
     }
     return { valid: true };
   },
   // ... additional guards
 };
 
-export async function transitionCycle(
-  cycleId: string,
-  newState: CycleState
-): Promise<void> {
+export async function transitionCycle(cycleId: string, newState: CycleState): Promise<void> {
   const cycle = await prisma.benchmarkCycle.findUniqueOrThrow({
     where: { id: cycleId },
   });
@@ -518,7 +518,7 @@ export async function transitionCycle(
   const validTargets = VALID_CYCLE_TRANSITIONS[cycle.state];
   if (!validTargets.includes(newState)) {
     throw new Error(
-      `Invalid transition: ${cycle.state} -> ${newState}. Valid targets: ${validTargets.join(', ')}`
+      `Invalid transition: ${cycle.state} -> ${newState}. Valid targets: ${validTargets.join(", ")}`
     );
   }
 
@@ -574,55 +574,55 @@ Score State Machine
 
 #### Scoring Rules (BR-S01 — BR-S15)
 
-| ID | Rule | Enforcement |
-|----|------|-------------|
-| BR-S01 | Scores use 0-10 scale, one decimal place | DB constraint (`Decimal(3,1)`), Zod validation |
+| ID     | Rule                                                                   | Enforcement                                        |
+| ------ | ---------------------------------------------------------------------- | -------------------------------------------------- |
+| BR-S01 | Scores use 0-10 scale, one decimal place                               | DB constraint (`Decimal(3,1)`), Zod validation     |
 | BR-S02 | Corrections require dual approval (different corrected_by/approved_by) | Application validation on ScoreCorrection creation |
-| BR-S03 | N/A scores excluded from composite calculation | Composite calculation logic |
-| BR-S04 | Composites use weighted average with renormalized weights for N/A | CompositeScore calculation function |
-| BR-S05 | Composites rounded to one decimal place (round half up) | Calculation function |
-| BR-S06 | Applicable scores must have evidence artifacts | Transition guard: Draft → Reviewed |
-| BR-S07 | Synthesis requires minimum 4/6 successful model evaluations | Synthesis pipeline validation |
-| BR-S08 | Dense ranking (tied scores get same rank) | Ranking calculation function |
-| BR-S09 | Synthesis uses median-based aggregation | Synthesis pipeline |
-| BR-S10 | Confidence tags derived from inter-model agreement | Synthesis pipeline |
-| BR-S11 | Model failures don't block synthesis if >= 4 succeed | Graceful degradation in pipeline |
-| BR-S12 | Synthesis is deterministic | Function design + regression tests |
-| BR-S13 | AI Search Mastery products scored identically | Operational policy + audit verification |
-| BR-S14 | No automated publishing (human review gate) | Score state machine (Review state mandatory) |
-| BR-S15 | Correction cascades trigger composite recalculation | Application logic on ScoreCorrection |
+| BR-S03 | N/A scores excluded from composite calculation                         | Composite calculation logic                        |
+| BR-S04 | Composites use weighted average with renormalized weights for N/A      | CompositeScore calculation function                |
+| BR-S05 | Composites rounded to one decimal place (round half up)                | Calculation function                               |
+| BR-S06 | Applicable scores must have evidence artifacts                         | Transition guard: Draft → Reviewed                 |
+| BR-S07 | Synthesis requires minimum 4/6 successful model evaluations            | Synthesis pipeline validation                      |
+| BR-S08 | Dense ranking (tied scores get same rank)                              | Ranking calculation function                       |
+| BR-S09 | Synthesis uses median-based aggregation                                | Synthesis pipeline                                 |
+| BR-S10 | Confidence tags derived from inter-model agreement                     | Synthesis pipeline                                 |
+| BR-S11 | Model failures don't block synthesis if >= 4 succeed                   | Graceful degradation in pipeline                   |
+| BR-S12 | Synthesis is deterministic                                             | Function design + regression tests                 |
+| BR-S13 | AI Search Mastery products scored identically                          | Operational policy + audit verification            |
+| BR-S14 | No automated publishing (human review gate)                            | Score state machine (Review state mandatory)       |
+| BR-S15 | Correction cascades trigger composite recalculation                    | Application logic on ScoreCorrection               |
 
 #### Vendor Rules (BR-V01 — BR-V05)
 
-| ID | Rule | Enforcement |
-|----|------|-------------|
-| BR-V01 | Disclosure status displayed wherever scores appear | UI rendering requirement |
-| BR-V02 | Vendor review window = exactly 5 business days | Timer on VendorReview state |
-| BR-V03 | Vendor corrections limited to factual accuracy | Submission form + operator review |
-| BR-V04 | Vendor-facing outputs show only their own data | Access controls, IDOR prevention |
-| BR-V05 | Benchmark functions without vendor participation | Architecture design |
+| ID     | Rule                                               | Enforcement                       |
+| ------ | -------------------------------------------------- | --------------------------------- |
+| BR-V01 | Disclosure status displayed wherever scores appear | UI rendering requirement          |
+| BR-V02 | Vendor review window = exactly 5 business days     | Timer on VendorReview state       |
+| BR-V03 | Vendor corrections limited to factual accuracy     | Submission form + operator review |
+| BR-V04 | Vendor-facing outputs show only their own data     | Access controls, IDOR prevention  |
+| BR-V05 | Benchmark functions without vendor participation   | Architecture design               |
 
 #### Track Rules (BR-T01 — BR-T03)
 
-| ID | Rule | Enforcement |
-|----|------|-------------|
-| BR-T01 | One active (non-terminal) cycle at a time | Validation on cycle creation |
-| BR-T02 | Withdrawn tools excluded from rankings/badges | Ranking calculation |
-| BR-T03 | Minimum 5 enrolled tools per track | Transition guard: Planning → Evaluation |
+| ID     | Rule                                          | Enforcement                             |
+| ------ | --------------------------------------------- | --------------------------------------- |
+| BR-T01 | One active (non-terminal) cycle at a time     | Validation on cycle creation            |
+| BR-T02 | Withdrawn tools excluded from rankings/badges | Ranking calculation                     |
+| BR-T03 | Minimum 5 enrolled tools per track            | Transition guard: Planning → Evaluation |
 
 #### Synthesis Rules (BR-SYN01 — BR-SYN02)
 
-| ID | Rule | Enforcement |
-|----|------|-------------|
-| BR-SYN01 | 70/30 prompt rotation (70% stable, 30% rotating) | PromptSet `is_rotating` field |
-| BR-SYN02 | Methodology locked at Draft → Planning transition | State machine side effect |
+| ID       | Rule                                              | Enforcement                   |
+| -------- | ------------------------------------------------- | ----------------------------- |
+| BR-SYN01 | 70/30 prompt rotation (70% stable, 30% rotating)  | PromptSet `is_rotating` field |
+| BR-SYN02 | Methodology locked at Draft → Planning transition | State machine side effect     |
 
 #### Audit Rules (BR-AUD01 — BR-AUD02)
 
-| ID | Rule | Enforcement |
-|----|------|-------------|
+| ID       | Rule                                    | Enforcement                                  |
+| -------- | --------------------------------------- | -------------------------------------------- |
 | BR-AUD01 | Audit package sealed before publication | Transition guard: VendorReview → Publication |
-| BR-AUD02 | Sealed packages immutable | `is_sealed` flag + application enforcement |
+| BR-AUD02 | Sealed packages immutable               | `is_sealed` flag + application enforcement   |
 
 ---
 
@@ -632,14 +632,14 @@ Score State Machine
 
 Six AI providers are used per evaluation to generate consensus scores:
 
-| Provider | Use | Fallback |
-|----------|-----|----------|
-| OpenAI | Primary evaluation model | Retry 3x, then mark failed |
+| Provider  | Use                      | Fallback                   |
+| --------- | ------------------------ | -------------------------- |
+| OpenAI    | Primary evaluation model | Retry 3x, then mark failed |
 | Anthropic | Primary evaluation model | Retry 3x, then mark failed |
-| Google | Primary evaluation model | Retry 3x, then mark failed |
-| Cohere | Primary evaluation model | Retry 3x, then mark failed |
-| Mistral | Primary evaluation model | Retry 3x, then mark failed |
-| Meta | Primary evaluation model | Retry 3x, then mark failed |
+| Google    | Primary evaluation model | Retry 3x, then mark failed |
+| Cohere    | Primary evaluation model | Retry 3x, then mark failed |
+| Mistral   | Primary evaluation model | Retry 3x, then mark failed |
+| Meta      | Primary evaluation model | Retry 3x, then mark failed |
 
 **Pipeline flow:** For each (tool × dimension), all 6 models are called in parallel. Individual failures are retried with exponential backoff. Synthesis proceeds with 4+ successes (BR-S07). See Section 10 for implementation detail.
 
@@ -647,14 +647,15 @@ Six AI providers are used per evaluation to generate consensus scores:
 
 ### 5.2 Email
 
-| Service | Purpose | Volume |
-|---------|---------|--------|
-| Resend | Transactional emails (vendor notifications, alerts) | < 100/month |
-| Buttondown | Newsletter (benchmark publication announcements) | Monthly |
+| Service    | Purpose                                             | Volume      |
+| ---------- | --------------------------------------------------- | ----------- |
+| Resend     | Transactional emails (vendor notifications, alerts) | < 100/month |
+| Buttondown | Newsletter (benchmark publication announcements)    | Monthly     |
 
 ### 5.3 File Storage
 
 **Cloudflare R2** for evidence artifacts (screenshots, documents, videos referenced in evaluations).
+
 - $0 egress — critical for publicly-served evidence links on tool detail pages
 - S3-compatible API — standard SDK usage
 - Organized by cycle: `evidence/{cycleId}/{toolId}/{artifactId}.{ext}`
@@ -666,6 +667,7 @@ Six AI providers are used per evaluation to generate consensus scores:
 ### 6.1 Hosting
 
 **Vercel** — Next.js application hosting.
+
 - Automatic preview deployments per PR
 - Edge network for static asset delivery
 - Serverless functions for API routes
@@ -704,11 +706,11 @@ CI/CD Pipeline (GitHub Actions → Vercel)
 
 ### 6.3 Environments
 
-| Environment | Hosting | Database | Purpose |
-|-------------|---------|----------|---------|
-| Development | localhost:3000 | Neon dev branch | Local development |
-| Staging | Vercel preview | Neon staging branch | PR review, QA |
-| Production | Vercel production | Neon main branch | Live site |
+| Environment | Hosting           | Database            | Purpose           |
+| ----------- | ----------------- | ------------------- | ----------------- |
+| Development | localhost:3000    | Neon dev branch     | Local development |
+| Staging     | Vercel preview    | Neon staging branch | PR review, QA     |
+| Production  | Vercel production | Neon main branch    | Live site         |
 
 Neon database branching provides isolated environments without additional cost.
 
@@ -718,37 +720,37 @@ Neon database branching provides isolated environments without additional cost.
 
 ### 7.1 Launch Security
 
-| Measure | Implementation |
-|---------|---------------|
-| Type safety | Strict TypeScript (`strict: true` in tsconfig) |
-| Input validation | Zod schemas on all API route inputs |
-| CORS | Configured for production domain only |
-| HTTPS | Vercel default (automatic SSL) |
+| Measure               | Implementation                                    |
+| --------------------- | ------------------------------------------------- |
+| Type safety           | Strict TypeScript (`strict: true` in tsconfig)    |
+| Input validation      | Zod schemas on all API route inputs               |
+| CORS                  | Configured for production domain only             |
+| HTTPS                 | Vercel default (automatic SSL)                    |
 | Environment variables | Vercel env var management, never in client bundle |
-| Dependency security | `npm audit` in CI pipeline |
+| Dependency security   | `npm audit` in CI pipeline                        |
 
 ### 7.2 Deferred Security (Post-Launch, with Admin Dashboard)
 
-| Measure | When | Implementation |
-|---------|------|---------------|
-| Rate limiting | Admin API routes | Per-IP and per-user limits |
-| CSRF protection | Admin forms | Token-based CSRF |
-| CSP headers | All pages | Strict Content Security Policy |
-| Audit logging | Admin operations | audit_logs table |
-| Structured logging | All environments | JSON logs with log aggregator |
+| Measure            | When             | Implementation                 |
+| ------------------ | ---------------- | ------------------------------ |
+| Rate limiting      | Admin API routes | Per-IP and per-user limits     |
+| CSRF protection    | Admin forms      | Token-based CSRF               |
+| CSP headers        | All pages        | Strict Content Security Policy |
+| Audit logging      | Admin operations | audit_logs table               |
+| Structured logging | All environments | JSON logs with log aggregator  |
 
 ### 7.3 Authentication (Deferred to Post-Launch)
 
 When admin dashboard is built:
 
-| Spec | Value |
-|------|-------|
-| Type | Custom (email/password) |
-| Password hashing | bcrypt |
-| Session | JWT, 24-hour expiry |
-| Lockout | After 5 failed attempts |
-| Scope | Admin-only (single operator) |
-| OAuth | Not needed (solopreneur operation) |
+| Spec             | Value                              |
+| ---------------- | ---------------------------------- |
+| Type             | Custom (email/password)            |
+| Password hashing | bcrypt                             |
+| Session          | JWT, 24-hour expiry                |
+| Lockout          | After 5 failed attempts            |
+| Scope            | Admin-only (single operator)       |
+| OAuth            | Not needed (solopreneur operation) |
 
 At launch, first benchmark cycle data is seeded via Prisma Studio or seed scripts.
 
@@ -756,12 +758,12 @@ At launch, first benchmark cycle data is seeded via Prisma Studio or seed script
 
 ## 8. Observability
 
-| Tool | Purpose | Cost |
-|------|---------|------|
-| Sentry | Error tracking + alerting | Free tier |
+| Tool                | Purpose                                           | Cost      |
+| ------------------- | ------------------------------------------------- | --------- |
+| Sentry              | Error tracking + alerting                         | Free tier |
 | Plausible Analytics | Privacy-respecting visitor analytics (no cookies) | ~$9/month |
-| Vercel Analytics | Built-in performance monitoring | Free |
-| Console logging | Application logs (v1) | $0 |
+| Vercel Analytics    | Built-in performance monitoring                   | Free      |
+| Console logging     | Application logs (v1)                             | $0        |
 
 **Why Plausible over Google Analytics:** Privacy-respecting (no cookies, no consent banners needed), lightweight script, matches the benchmark's transparency values. GDPR-compliant by default.
 
@@ -779,11 +781,11 @@ Public pages use SSG (Static Site Generation) or ISR (Incremental Static Regener
 
 ### 9.2 Structured Data (JSON-LD)
 
-| Page | Schema | Purpose |
-|------|--------|---------|
-| Tool detail | `Product` | Rich snippet for tool pages |
-| Benchmark report | `Article` | Rich snippet for reports |
-| Leaderboard | `ItemList` | Rich snippet for ranked list |
+| Page             | Schema     | Purpose                      |
+| ---------------- | ---------- | ---------------------------- |
+| Tool detail      | `Product`  | Rich snippet for tool pages  |
+| Benchmark report | `Article`  | Rich snippet for reports     |
+| Leaderboard      | `ItemList` | Rich snippet for ranked list |
 
 ### 9.3 Sitemap
 
@@ -810,7 +812,7 @@ The evaluation pipeline is the most operationally complex component. It calls 6 
 
 interface EvaluationResult {
   modelId: string;
-  status: 'Success' | 'Failed' | 'Timeout';
+  status: "Success" | "Failed" | "Timeout";
   parsedScore: number | null;
   rawResponse: string;
   responseTimeMs: number;
@@ -822,7 +824,7 @@ async function evaluateToolDimension(
   dimensionId: string,
   cycleId: string,
   models: AIModel[],
-  promptSet: PromptSet,
+  promptSet: PromptSet
 ): Promise<EvaluationResult[]> {
   // Call all 6 models in parallel with individual retry
   const results = await Promise.allSettled(
@@ -836,14 +838,14 @@ async function evaluateToolDimension(
   );
 
   return results.map((result, i) => {
-    if (result.status === 'fulfilled') {
+    if (result.status === "fulfilled") {
       return result.value;
     }
     return {
       modelId: models[i].id,
-      status: 'Failed' as const,
+      status: "Failed" as const,
       parsedScore: null,
-      rawResponse: result.reason?.message || 'Unknown error',
+      rawResponse: result.reason?.message || "Unknown error",
       responseTimeMs: 0,
       retryCount: 3,
     };
@@ -853,7 +855,7 @@ async function evaluateToolDimension(
 async function callModelWithRetry(
   model: AIModel,
   promptSet: PromptSet,
-  options: { maxRetries: number; backoff: number[]; timeoutMs: number },
+  options: { maxRetries: number; backoff: number[]; timeoutMs: number }
 ): Promise<EvaluationResult> {
   let lastError: Error | null = null;
 
@@ -863,7 +865,7 @@ async function callModelWithRetry(
       const response = await callProvider(model, promptSet, options.timeoutMs);
       return {
         modelId: model.id,
-        status: 'Success',
+        status: "Success",
         parsedScore: parseScore(response),
         rawResponse: response,
         responseTimeMs: Date.now() - startTime,
@@ -879,9 +881,9 @@ async function callModelWithRetry(
 
   return {
     modelId: model.id,
-    status: lastError?.message.includes('timeout') ? 'Timeout' : 'Failed',
+    status: lastError?.message.includes("timeout") ? "Timeout" : "Failed",
     parsedScore: null,
-    rawResponse: lastError?.message || 'All retries exhausted',
+    rawResponse: lastError?.message || "All retries exhausted",
     responseTimeMs: 0,
     retryCount: options.maxRetries,
   };
@@ -900,15 +902,13 @@ function synthesizeScore(evaluations: EvaluationResult[]): {
   modelsFailed: number;
   agreementMetric: number;
 } {
-  const successful = evaluations.filter(
-    (e) => e.status === 'Success' && e.parsedScore !== null
-  );
+  const successful = evaluations.filter((e) => e.status === "Success" && e.parsedScore !== null);
 
   // BR-S07: Minimum 4 successful evaluations
   if (successful.length < 4) {
     return {
       value: 0,
-      confidenceTag: 'InsufficientData',
+      confidenceTag: "InsufficientData",
       modelsSucceeded: successful.length,
       modelsFailed: evaluations.length - successful.length,
       agreementMetric: 0,
@@ -939,17 +939,18 @@ function synthesizeScore(evaluations: EvaluationResult[]): {
 
 ### 10.3 Graceful Degradation
 
-| Failure | Response |
-|---------|----------|
-| AI model API timeout | Retry 3x with exponential backoff (1s, 4s, 16s) |
-| < 4 models succeed | Confidence tag = Insufficient Data; flag for review |
-| All models fail for one dimension | Score not generated; operator notified |
-| Database connection lost | Neon auto-reconnect; Prisma retry |
-| R2 storage unavailable | Evidence upload queued; evaluation proceeds |
+| Failure                           | Response                                            |
+| --------------------------------- | --------------------------------------------------- |
+| AI model API timeout              | Retry 3x with exponential backoff (1s, 4s, 16s)     |
+| < 4 models succeed                | Confidence tag = Insufficient Data; flag for review |
+| All models fail for one dimension | Score not generated; operator notified              |
+| Database connection lost          | Neon auto-reconnect; Prisma retry                   |
+| R2 storage unavailable            | Evidence upload queued; evaluation proceeds         |
 
 ### 10.4 Future Scaling
 
 When volume or operational needs grow:
+
 - **BullMQ** job queue for evaluation pipeline (replace async/await)
 - **Separate worker** for evaluation runs (extract from monolith)
 - **Redis** for rate limiting and caching
@@ -959,16 +960,16 @@ When volume or operational needs grow:
 
 ## 11. Decision Log
 
-| # | Decision | Options Considered | Choice | Rationale |
-|---|----------|-------------------|--------|-----------|
-| 1 | Application Architecture | Monolith, Modular Monolith, Headless CMS + App | **Monolith** | Solopreneur; batch eval workflow; public pages mostly static |
-| 2 | Frontend Stack | Various combinations | **Next.js App Router + Tailwind + shadcn/ui + MDX** | SSG/ISR for SEO; shadcn for benchmark UI; MDX for content; no Zustand (overkill) |
-| 3 | Backend & Database | Neon, Supabase, Neon+Supabase | **Neon + Prisma** | $0 free tier vs $10/mo Supabase addon; type-safe 24-entity model |
-| 4 | Authentication | Supabase Auth, Custom, NextAuth | **Custom (deferred)** | Admin-only, single operator; not needed at launch; PRD specifies custom |
-| 5 | External Integrations | Various providers | **6 AI providers + R2 + Resend + Plausible + Sentry** | R2 for $0 egress; Plausible for privacy; 6 models for consensus |
-| 6 | Infrastructure | Vercel, Netlify, Railway | **Vercel + GitHub Actions** | Native Next.js support; preview deploys; free tier |
-| 7 | Security & Observability | Various levels | **PRD defaults (launch)** | Minimal attack surface at launch (public site, no auth) |
-| 8 | Production Readiness | Queue vs retry, various patterns | **Parallel + retry** | Simple async/await with 3x exponential backoff; upgrade to queue later |
+| #   | Decision                 | Options Considered                             | Choice                                                | Rationale                                                                        |
+| --- | ------------------------ | ---------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 1   | Application Architecture | Monolith, Modular Monolith, Headless CMS + App | **Monolith**                                          | Solopreneur; batch eval workflow; public pages mostly static                     |
+| 2   | Frontend Stack           | Various combinations                           | **Next.js App Router + Tailwind + shadcn/ui + MDX**   | SSG/ISR for SEO; shadcn for benchmark UI; MDX for content; no Zustand (overkill) |
+| 3   | Backend & Database       | Neon, Supabase, Neon+Supabase                  | **Neon + Prisma**                                     | $0 free tier vs $10/mo Supabase addon; type-safe 24-entity model                 |
+| 4   | Authentication           | Supabase Auth, Custom, NextAuth                | **Custom (deferred)**                                 | Admin-only, single operator; not needed at launch; PRD specifies custom          |
+| 5   | External Integrations    | Various providers                              | **6 AI providers + R2 + Resend + Plausible + Sentry** | R2 for $0 egress; Plausible for privacy; 6 models for consensus                  |
+| 6   | Infrastructure           | Vercel, Netlify, Railway                       | **Vercel + GitHub Actions**                           | Native Next.js support; preview deploys; free tier                               |
+| 7   | Security & Observability | Various levels                                 | **PRD defaults (launch)**                             | Minimal attack surface at launch (public site, no auth)                          |
+| 8   | Production Readiness     | Queue vs retry, various patterns               | **Parallel + retry**                                  | Simple async/await with 3x exponential backoff; upgrade to queue later           |
 
 ---
 
@@ -976,26 +977,28 @@ When volume or operational needs grow:
 
 ### Intentionally Deferred
 
-| Item | When to Revisit | Trigger |
-|------|-----------------|---------|
-| Admin dashboard + auth | After first benchmark is seeded | Need to manage cycles via UI |
-| Rate limiting | When admin API is built | Auth-protected endpoints exist |
-| Job queue (BullMQ) | Evaluation runs exceed 10 minutes | Performance monitoring |
-| Worker extraction | Evaluation affects site performance | Vercel function timeouts |
-| Redis caching | Public traffic exceeds ISR capacity | Analytics show cache misses |
-| Structured logging | Debugging requires log search | Console logging insufficient |
-| Revenue infrastructure | After credibility established | Revenue readiness triggers met |
-| Vendor portal | Vendor engagement > 50% | Vendors requesting self-service |
+| Item                   | When to Revisit                     | Trigger                         |
+| ---------------------- | ----------------------------------- | ------------------------------- |
+| Admin dashboard + auth | After first benchmark is seeded     | Need to manage cycles via UI    |
+| Rate limiting          | When admin API is built             | Auth-protected endpoints exist  |
+| Job queue (BullMQ)     | Evaluation runs exceed 10 minutes   | Performance monitoring          |
+| Worker extraction      | Evaluation affects site performance | Vercel function timeouts        |
+| Redis caching          | Public traffic exceeds ISR capacity | Analytics show cache misses     |
+| Structured logging     | Debugging requires log search       | Console logging insufficient    |
+| Revenue infrastructure | After credibility established       | Revenue readiness triggers met  |
+| Vendor portal          | Vendor engagement > 50%             | Vendors requesting self-service |
 
 ### Architecture Boundaries
 
 This architecture supports the **Foundation Phase** (Months 1-6) success indicators:
+
 - Monthly publication consistency (SSG/ISR ensures fast page loads)
 - 20+ tools scored per cycle (evaluation pipeline handles parallel processing)
 - 100% methodology documentation published (MDX content system)
 - < 5% score correction rate (dual approval, state machine guards)
 
 When the product enters the **Growth Phase** (Months 7-18), the primary architectural changes will be:
+
 1. Admin dashboard + custom auth
 2. Vendor portal for disclosure submissions
 3. Email notification system for publication alerts

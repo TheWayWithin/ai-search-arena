@@ -6,10 +6,7 @@ import { prisma } from "@/lib/db";
  * AC-006-01: Only in Draft or Planning state.
  * Track assignment validated against tool's ToolTrackMapping.
  */
-export async function enrollTool(data: {
-  cycleId: string;
-  toolId: string;
-}) {
+export async function enrollTool(data: { cycleId: string; toolId: string }) {
   // Verify cycle state allows enrollment
   const cycle = await prisma.benchmarkCycle.findUniqueOrThrow({
     where: { id: data.cycleId },
@@ -74,11 +71,7 @@ export async function enrollTool(data: {
  * Withdraw a tool from a benchmark cycle.
  * AC-006-03: Preserves all data; sets withdrawn_at + requires withdrawal_reason.
  */
-export async function withdrawTool(data: {
-  cycleId: string;
-  toolId: string;
-  reason: string;
-}) {
+export async function withdrawTool(data: { cycleId: string; toolId: string; reason: string }) {
   if (!data.reason.trim()) {
     throw new Error("Withdrawal reason is required");
   }
@@ -88,10 +81,7 @@ export async function withdrawTool(data: {
   });
 
   // Cannot withdraw after Evaluation starts
-  if (
-    cycle.state !== CycleState.Draft &&
-    cycle.state !== CycleState.Planning
-  ) {
+  if (cycle.state !== CycleState.Draft && cycle.state !== CycleState.Planning) {
     throw new Error(
       `Cannot withdraw tools: cycle is in ${cycle.state} state (enrolled tools locked after Planning)`
     );

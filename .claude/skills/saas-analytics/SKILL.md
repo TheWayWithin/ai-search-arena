@@ -58,13 +58,13 @@ class PostHogAnalytics implements AnalyticsService {
   private client: PostHog;
 
   constructor(apiKey: string, host?: string) {
-    this.client = new PostHog(apiKey, { host: host || 'https://app.posthog.com' });
+    this.client = new PostHog(apiKey, { host: host || "https://app.posthog.com" });
   }
 
   async identify(userId: string, traits: Record<string, unknown>) {
     this.client.identify({
       distinctId: userId,
-      properties: traits
+      properties: traits,
     });
   }
 
@@ -74,29 +74,29 @@ class PostHogAnalytics implements AnalyticsService {
       event,
       properties: {
         ...properties,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
   }
 
   async page(userId: string, name: string, properties?: Record<string, unknown>) {
     this.client.capture({
       distinctId: userId,
-      event: '$pageview',
-      properties: { $current_url: name, ...properties }
+      event: "$pageview",
+      properties: { $current_url: name, ...properties },
     });
   }
 
   async group(userId: string, groupId: string, traits: Record<string, unknown>) {
     this.client.groupIdentify({
-      groupType: 'organization',
+      groupType: "organization",
       groupKey: groupId,
-      properties: traits
+      properties: traits,
     });
     this.client.capture({
       distinctId: userId,
-      event: '$groupidentify',
-      properties: { $group_type: 'organization', $group_key: groupId }
+      event: "$groupidentify",
+      properties: { $group_type: "organization", $group_key: groupId },
     });
   }
 
@@ -113,13 +113,13 @@ await analytics.identify(user.id, {
   email: user.email,
   name: user.name,
   plan: user.plan,
-  createdAt: user.createdAt
+  createdAt: user.createdAt,
 });
 
 // Track event
-await analytics.track(user.id, 'project_created', {
+await analytics.track(user.id, "project_created", {
   projectId: project.id,
-  projectType: project.type
+  projectType: project.type,
 });
 ```
 
@@ -137,14 +137,14 @@ await analytics.track(user.id, 'project_created', {
 interface BaseEventProperties {
   timestamp: string;
   sessionId?: string;
-  source?: 'web' | 'api' | 'mobile';
+  source?: "web" | "api" | "mobile";
   version?: string;
 }
 
 // Event catalog with type safety
 const EVENTS = {
   // Auth events
-  user_signed_up: (props: { method: 'email' | 'google' | 'github' }) => props,
+  user_signed_up: (props: { method: "email" | "google" | "github" }) => props,
   user_logged_in: (props: { method: string }) => props,
   user_logged_out: () => ({}),
 
@@ -165,28 +165,28 @@ const EVENTS = {
 
   // Billing events
   plan_viewed: (props: { currentPlan: string }) => props,
-  plan_selected: (props: { plan: string; interval: 'monthly' | 'yearly' }) => props,
+  plan_selected: (props: { plan: string; interval: "monthly" | "yearly" }) => props,
   checkout_started: (props: { plan: string }) => props,
   subscription_created: (props: { plan: string; mrr: number }) => props,
-  subscription_cancelled: (props: { plan: string; reason?: string }) => props
+  subscription_cancelled: (props: { plan: string; reason?: string }) => props,
 } as const;
 
 // Type-safe track function
 async function trackEvent<E extends keyof typeof EVENTS>(
   userId: string,
   event: E,
-  properties: ReturnType<typeof EVENTS[E]>
+  properties: ReturnType<(typeof EVENTS)[E]>
 ) {
   await analytics.track(userId, event, {
     ...properties,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
 // Usage with full type safety
-await trackEvent(user.id, 'project_created', {
+await trackEvent(user.id, "project_created", {
   projectId: project.id,
-  template: 'starter'
+  template: "starter",
 });
 ```
 
@@ -224,13 +224,13 @@ async function analyticsMiddleware(req: Request, res: Response, next: NextFuncti
         ...properties,
         sessionId,
         path: req.path,
-        method: req.method
+        method: req.method,
       });
-    }
+    },
   };
 
   // Track page view for GET requests
-  if (req.method === 'GET' && userId) {
+  if (req.method === "GET" && userId) {
     await analytics.page(userId, req.path);
   }
 
@@ -238,12 +238,12 @@ async function analyticsMiddleware(req: Request, res: Response, next: NextFuncti
 }
 
 // Usage in API route
-app.post('/api/projects', async (req, res) => {
+app.post("/api/projects", async (req, res) => {
   const project = await createProject(req.body);
 
-  await req.analytics.track('project_created', {
+  await req.analytics.track("project_created", {
     projectId: project.id,
-    projectType: project.type
+    projectType: project.type,
   });
 
   res.json(project);
@@ -258,10 +258,10 @@ app.post('/api/projects', async (req, res) => {
 
 ```tsx
 // Analytics context provider
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect } from 'react';
-import posthog from 'posthog-js';
+import { createContext, useContext, useEffect } from "react";
+import posthog from "posthog-js";
 
 const AnalyticsContext = createContext<{
   track: (event: string, properties?: Record<string, unknown>) => void;
@@ -271,7 +271,7 @@ const AnalyticsContext = createContext<{
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST
+      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
     });
   }, []);
 
@@ -284,15 +284,13 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AnalyticsContext.Provider value={{ track, identify }}>
-      {children}
-    </AnalyticsContext.Provider>
+    <AnalyticsContext.Provider value={{ track, identify }}>{children}</AnalyticsContext.Provider>
   );
 }
 
 export function useAnalytics() {
   const context = useContext(AnalyticsContext);
-  if (!context) throw new Error('useAnalytics must be used within AnalyticsProvider');
+  if (!context) throw new Error("useAnalytics must be used within AnalyticsProvider");
   return context;
 }
 
@@ -301,9 +299,9 @@ function CreateProjectButton() {
   const { track } = useAnalytics();
 
   const handleClick = async () => {
-    track('create_project_clicked', { location: 'dashboard' });
+    track("create_project_clicked", { location: "dashboard" });
     // ... create project
-    track('project_created', { projectId: newProject.id });
+    track("project_created", { projectId: newProject.id });
   };
 
   return <button onClick={handleClick}>Create Project</button>;
@@ -315,7 +313,7 @@ function PageViewTracker() {
   const { track } = useAnalytics();
 
   useEffect(() => {
-    track('$pageview', { path: pathname });
+    track("$pageview", { path: pathname });
   }, [pathname, track]);
 
   return null;
@@ -336,26 +334,17 @@ async function calculateDailyMetrics(date: Date) {
 
   // Active users (logged in today)
   const dau = await db.query.sessions.count({
-    where: and(
-      gte(sessions.createdAt, startOfDay),
-      lte(sessions.createdAt, endOfDay)
-    )
+    where: and(gte(sessions.createdAt, startOfDay), lte(sessions.createdAt, endOfDay)),
   });
 
   // New signups
   const newUsers = await db.query.users.count({
-    where: and(
-      gte(users.createdAt, startOfDay),
-      lte(users.createdAt, endOfDay)
-    )
+    where: and(gte(users.createdAt, startOfDay), lte(users.createdAt, endOfDay)),
   });
 
   // Activated users (completed key action)
   const activatedUsers = await db.query.users.count({
-    where: and(
-      gte(users.activatedAt, startOfDay),
-      lte(users.activatedAt, endOfDay)
-    )
+    where: and(gte(users.activatedAt, startOfDay), lte(users.activatedAt, endOfDay)),
   });
 
   // MRR (Monthly Recurring Revenue)
@@ -369,18 +358,18 @@ async function calculateDailyMetrics(date: Date) {
     activatedUsers,
     activationRate: newUsers > 0 ? activatedUsers / newUsers : 0,
     mrr,
-    churnRate: await calculateChurnRate(startOfDay)
+    churnRate: await calculateChurnRate(startOfDay),
   });
 }
 
 // Key metrics dashboard API
-app.get('/api/admin/metrics', async (req, res) => {
-  const { period = '30d' } = req.query;
+app.get("/api/admin/metrics", async (req, res) => {
+  const { period = "30d" } = req.query;
   const days = parseInt(period) || 30;
 
   const metrics = await db.query.dailyMetrics.findMany({
     where: gte(dailyMetrics.date, subDays(new Date(), days)),
-    orderBy: asc(dailyMetrics.date)
+    orderBy: asc(dailyMetrics.date),
   });
 
   // Calculate trends
@@ -390,12 +379,12 @@ app.get('/api/admin/metrics', async (req, res) => {
   res.json({
     metrics,
     summary: {
-      totalDAU: sum(currentPeriod, 'dau'),
-      dauTrend: calculateTrend(previousPeriod, currentPeriod, 'dau'),
+      totalDAU: sum(currentPeriod, "dau"),
+      dauTrend: calculateTrend(previousPeriod, currentPeriod, "dau"),
       currentMRR: metrics[metrics.length - 1]?.mrr || 0,
-      mrrGrowth: calculateGrowth(previousPeriod, currentPeriod, 'mrr'),
-      avgActivationRate: average(currentPeriod, 'activationRate')
-    }
+      mrrGrowth: calculateGrowth(previousPeriod, currentPeriod, "mrr"),
+      avgActivationRate: average(currentPeriod, "activationRate"),
+    },
   });
 });
 ```
@@ -405,20 +394,23 @@ app.get('/api/admin/metrics', async (req, res) => {
 ### {{stack.services.analytics}} Integration
 
 **PostHog (Recommended for product analytics)**:
+
 ```typescript
-import { PostHog } from 'posthog-node';
+import { PostHog } from "posthog-node";
 const posthog = new PostHog(process.env.POSTHOG_API_KEY);
 ```
 
 **Mixpanel**:
+
 ```typescript
-import Mixpanel from 'mixpanel';
+import Mixpanel from "mixpanel";
 const mixpanel = Mixpanel.init(process.env.MIXPANEL_TOKEN);
 ```
 
 **Segment (for multi-destination)**:
+
 ```typescript
-import Analytics from '@segment/analytics-node';
+import Analytics from "@segment/analytics-node";
 const analytics = new Analytics({ writeKey: process.env.SEGMENT_WRITE_KEY });
 ```
 
@@ -438,34 +430,37 @@ const analytics = new Analytics({ writeKey: process.env.SEGMENT_WRITE_KEY });
 ## Anti-Patterns
 
 ### Tracking Everything
+
 ```typescript
 // WRONG: Noise drowns out signal
-track('button_hovered');
-track('scroll_position_changed');
-track('mouse_moved');
+track("button_hovered");
+track("scroll_position_changed");
+track("mouse_moved");
 
 // RIGHT: Track meaningful actions
-track('feature_used', { feature: 'export', format: 'csv' });
+track("feature_used", { feature: "export", format: "csv" });
 ```
 
 ### No User Context
+
 ```typescript
 // WRONG: Can't attribute to user
-analytics.track('project_created');
+analytics.track("project_created");
 
 // RIGHT: Always include user
-analytics.track(userId, 'project_created', { projectId });
+analytics.track(userId, "project_created", { projectId });
 ```
 
 ### Inconsistent Naming
+
 ```typescript
 // WRONG: Inconsistent patterns
-track('UserCreatedProject');
-track('project-deleted');
-track('BILLING_UPGRADED');
+track("UserCreatedProject");
+track("project-deleted");
+track("BILLING_UPGRADED");
 
 // RIGHT: Consistent object_action format
-track('project_created');
-track('project_deleted');
-track('subscription_upgraded');
+track("project_created");
+track("project_deleted");
+track("subscription_upgraded");
 ```

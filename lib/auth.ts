@@ -36,9 +36,7 @@ export async function signSessionToken(payload: SessionPayload): Promise<string>
     .sign(getJwtSecret());
 }
 
-export async function verifySessionToken(
-  token: string
-): Promise<SessionPayload | null> {
+export async function verifySessionToken(token: string): Promise<SessionPayload | null> {
   try {
     const { payload } = await jwtVerify(token, getJwtSecret(), {
       issuer: JWT_ISSUER,
@@ -52,10 +50,7 @@ export async function verifySessionToken(
 
 // ── Credentials ────────────────────────────────────────────────
 
-export async function verifyCredentials(
-  username: string,
-  password: string
-): Promise<boolean> {
+export async function verifyCredentials(username: string, password: string): Promise<boolean> {
   const expectedUsername = process.env.ADMIN_USERNAME;
   const passwordHashB64 = process.env.ADMIN_PASSWORD_HASH;
 

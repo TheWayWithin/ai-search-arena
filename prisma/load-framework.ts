@@ -77,7 +77,9 @@ async function main() {
   const versionDir = `methodology/v${version}`;
 
   console.log(`GEO Benchmark Framework Loader`);
-  console.log(`  Source: ${isLocal ? `local (${path.resolve(basePath)})` : "GitHub (TheWayWithin/geo-benchmark-framework)"}`);
+  console.log(
+    `  Source: ${isLocal ? `local (${path.resolve(basePath)})` : "GitHub (TheWayWithin/geo-benchmark-framework)"}`
+  );
   console.log(`  Version: ${version}`);
   console.log(`  Mode: ${dryRun ? "DRY RUN (no DB writes)" : "LIVE"}`);
   console.log("");
@@ -111,7 +113,8 @@ async function main() {
     if (!d.slug) errors.push(`Dimension missing slug: ${JSON.stringify(d).slice(0, 100)}`);
     if (!d.name) errors.push(`Dimension ${d.slug} missing name`);
     if (!d.category) errors.push(`Dimension ${d.slug} missing category`);
-    if (typeof d.weight !== "number" || d.weight <= 0) errors.push(`Dimension ${d.slug} invalid weight: ${d.weight}`);
+    if (typeof d.weight !== "number" || d.weight <= 0)
+      errors.push(`Dimension ${d.slug} invalid weight: ${d.weight}`);
     if (!d.prompts || !Array.isArray(d.prompts) || d.prompts.length < 2) {
       errors.push(`Dimension ${d.slug} needs at least 2 prompts (has ${d.prompts?.length || 0})`);
     }
@@ -158,13 +161,17 @@ async function main() {
   if (isLocal) {
     try {
       const { execSync } = await import("child_process");
-      gitSha = execSync("git rev-parse HEAD", { cwd: path.resolve(basePath) }).toString().trim();
+      gitSha = execSync("git rev-parse HEAD", { cwd: path.resolve(basePath) })
+        .toString()
+        .trim();
     } catch {
       // not a git repo — ok
     }
   } else {
     try {
-      const res = await fetch("https://api.github.com/repos/TheWayWithin/geo-benchmark-framework/commits/main");
+      const res = await fetch(
+        "https://api.github.com/repos/TheWayWithin/geo-benchmark-framework/commits/main"
+      );
       if (res.ok) {
         const data = (await res.json()) as { sha: string };
         gitSha = data.sha;
@@ -335,9 +342,15 @@ async function main() {
   console.log("\n" + "=".repeat(50));
   console.log(`Framework v${version} loaded successfully`);
   console.log(`  Git SHA: ${gitSha.slice(0, 7)}`);
-  console.log(`  Dimensions: ${dimCreated + dimUpdated} (${dimCreated} new, ${dimUpdated} updated)`);
-  console.log(`  Prompt sets: ${promptCreated + promptUpdated} (${promptCreated} new, ${promptUpdated} updated)`);
-  console.log(`  AI models: ${modelCreated + modelUpdated} (${modelCreated} new, ${modelUpdated} updated)`);
+  console.log(
+    `  Dimensions: ${dimCreated + dimUpdated} (${dimCreated} new, ${dimUpdated} updated)`
+  );
+  console.log(
+    `  Prompt sets: ${promptCreated + promptUpdated} (${promptCreated} new, ${promptUpdated} updated)`
+  );
+  console.log(
+    `  AI models: ${modelCreated + modelUpdated} (${modelCreated} new, ${modelUpdated} updated)`
+  );
   console.log(`  Weights total: ${totalWeight.toFixed(4)}`);
   console.log("=".repeat(50));
 }

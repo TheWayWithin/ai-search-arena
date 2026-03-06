@@ -73,13 +73,11 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
   // Resolve cycle from param
   const publishedCycles = await getPublishedCycles();
   const activeCycle = cycleParam
-    ? publishedCycles.find((c) => c.cycleIdentifier === cycleParam) ?? publishedCycles[0]
+    ? (publishedCycles.find((c) => c.cycleIdentifier === cycleParam) ?? publishedCycles[0])
     : publishedCycles[0];
   const resolvedCycleId = activeCycle?.id;
 
-  const detail = resolvedCycleId
-    ? await getToolDetail(slug, resolvedCycleId)
-    : null;
+  const detail = resolvedCycleId ? await getToolDetail(slug, resolvedCycleId) : null;
 
   const scores = detail?.scores ?? [];
   const compositeScore = detail?.compositeScore ?? null;
@@ -122,16 +120,14 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
         <div>
           <Link
             href="/leaderboard"
-            className="text-sm text-arena-slate-light hover:text-arena-slate"
+            className="text-arena-slate-light hover:text-arena-slate text-sm"
           >
             &larr; Back to Leaderboard
           </Link>
           <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
-                {tool.name}
-              </h1>
-              <p className="mt-1 text-sm text-arena-slate-light">
+              <h1 className="text-arena-slate text-3xl font-bold tracking-tight">{tool.name}</h1>
+              <p className="text-arena-slate-light mt-1 text-sm">
                 by{" "}
                 {tool.vendor ? (
                   <Link
@@ -158,30 +154,26 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
                   </>
                 )}
               </p>
-              <p className="mt-2 max-w-2xl text-sm text-arena-slate-light">
-                {tool.description}
-              </p>
+              <p className="text-arena-slate-light mt-2 max-w-2xl text-sm">{tool.description}</p>
               <Link
                 href={`/compare?tools=${tool.slug}`}
-                className="mt-2 inline-block text-sm text-mastery-blue hover:underline"
+                className="text-mastery-blue mt-2 inline-block text-sm hover:underline"
               >
                 Compare with other tools &rarr;
               </Link>
             </div>
             {compositeScore && (
               <Card className="min-w-[140px] text-center">
-                <CardHeader className="pb-1 pt-4">
-                  <CardTitle className="text-sm font-normal text-arena-slate-light">
+                <CardHeader className="pt-4 pb-1">
+                  <CardTitle className="text-arena-slate-light text-sm font-normal">
                     Composite Score
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pb-4">
-                  <div className="text-3xl font-bold text-arena-slate">
+                  <div className="text-arena-slate text-3xl font-bold">
                     {Number(compositeScore.value).toFixed(1)}
                   </div>
-                  <div className="text-xs text-arena-slate-light">
-                    Rank #{compositeScore.rank}
-                  </div>
+                  <div className="text-arena-slate-light text-xs">Rank #{compositeScore.rank}</div>
                   <Badge
                     variant="outline"
                     className={`mt-1 ${confidenceColor(compositeScore.confidenceTag)}`}
@@ -198,11 +190,7 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
         {badges.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
             {badges.map((b) => (
-              <TierBadge
-                key={b.id}
-                tier={b.tier as "Gold" | "Silver" | "Bronze"}
-                label={b.label}
-              />
+              <TierBadge key={b.id} tier={b.tier as "Gold" | "Silver" | "Bronze"} label={b.label} />
             ))}
           </div>
         )}
@@ -220,10 +208,9 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
 
         {/* Pre-launch state */}
         {!cycle && (
-          <div className="mt-8 rounded-lg border border-border bg-pale-grey p-8 text-center">
+          <div className="border-border bg-pale-grey mt-8 rounded-lg border p-8 text-center">
             <p className="text-arena-slate">
-              Benchmark scores will be available after the first evaluation cycle
-              is published.
+              Benchmark scores will be available after the first evaluation cycle is published.
             </p>
           </div>
         )}
@@ -232,7 +219,7 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
         {cycle && scores.length > 0 && (
           <div className="mt-8 space-y-6">
             <div className="flex items-baseline justify-between">
-              <h2 className="text-xl font-semibold text-arena-slate">
+              <h2 className="text-arena-slate text-xl font-semibold">
                 Dimension Scores — {cycle.displayName}
               </h2>
               {publishedCycles.length > 1 && (
@@ -249,44 +236,35 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
 
             {[...scoresByCategory.entries()].map(([category, catScores]) => (
               <div key={category}>
-                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-arena-slate-light">
+                <h3 className="text-arena-slate-light mb-2 text-sm font-semibold tracking-wider uppercase">
                   {category}
                 </h3>
-                <div className="overflow-x-auto rounded-lg border border-border">
+                <div className="border-border overflow-x-auto rounded-lg border">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-pale-grey">
                         <TableHead>Dimension</TableHead>
-                        <TableHead className="w-20 text-center">
-                          Score
-                        </TableHead>
-                        <TableHead className="w-28 text-center">
-                          Confidence
-                        </TableHead>
-                        <TableHead className="w-24 text-center">
-                          Models
-                        </TableHead>
+                        <TableHead className="w-20 text-center">Score</TableHead>
+                        <TableHead className="w-28 text-center">Confidence</TableHead>
+                        <TableHead className="w-24 text-center">Models</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {catScores.map((score) => (
                         <TableRow key={score.id}>
                           <TableCell>
-                            <span className="font-medium text-arena-slate">
+                            <span className="text-arena-slate font-medium">
                               {score.dimension.name}
                             </span>
                             {!score.isApplicable && (
-                              <Badge
-                                variant="outline"
-                                className="ml-2 text-xs text-neutral-grey"
-                              >
+                              <Badge variant="outline" className="text-neutral-grey ml-2 text-xs">
                                 N/A
                               </Badge>
                             )}
                           </TableCell>
                           <TableCell className="text-center">
                             {score.isApplicable ? (
-                              <span className="font-semibold text-arena-slate">
+                              <span className="text-arena-slate font-semibold">
                                 {Number(score.value).toFixed(1)}
                               </span>
                             ) : (
@@ -301,7 +279,7 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
                               {confidenceLabel(score.confidenceTag)}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-center text-sm text-arena-slate-light">
+                          <TableCell className="text-arena-slate-light text-center text-sm">
                             {score.synthesis
                               ? `${score.synthesis.modelsSucceeded}/${score.synthesis.modelsSucceeded + score.synthesis.modelsFailed}`
                               : "—"}
@@ -317,7 +295,7 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
         )}
 
         {cycle && scores.length === 0 && (
-          <div className="mt-8 rounded-lg border border-border bg-pale-grey p-8 text-center">
+          <div className="border-border bg-pale-grey mt-8 rounded-lg border p-8 text-center">
             <p className="text-arena-slate-light">
               No scores available for this tool in the current cycle.
             </p>
