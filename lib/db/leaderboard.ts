@@ -5,17 +5,13 @@ import { prisma } from "@/lib/db";
  * Returns ranked tools with composite scores.
  */
 export async function getLeaderboardData(cycleId: string, segmentId: string | null = null) {
-  const where: { cycleId: string; segmentId: string | null } = {
-    cycleId,
-    segmentId,
-  };
-
   return prisma.compositeScore.findMany({
-    where,
+    where: { cycleId, segmentId },
     include: {
       tool: {
         include: {
           vendor: true,
+          badges: { where: { cycleId } },
         },
       },
     },
@@ -89,7 +85,7 @@ export async function getToolDetail(toolSlug: string, cycleId?: string) {
   let targetCycleId = cycleId;
   if (!targetCycleId) {
     const latestCycle = await getLatestPublishedCycle();
-    if (!latestCycle) return { tool, scores: [], compositeScore: null, cycle: null };
+    if (!latestCycle) return { tool, scores: [], compositeScore: null, cycle: null, badges: [] };
     targetCycleId = latestCycle.id;
   }
 
@@ -120,7 +116,13 @@ export async function getToolDetail(toolSlug: string, cycleId?: string) {
     },
   });
 
-  return { tool, scores, compositeScore, cycle };
+  // Get badges for this tool in this cycle
+  const badges = await prisma.badge.findMany({
+    where: { toolId: tool.id, cycleId: targetCycleId },
+    orderBy: [{ tier: "asc" }, { badgeType: "asc" }],
+  });
+
+  return { tool, scores, compositeScore, cycle, badges };
 }
 
 /**
@@ -203,6 +205,29 @@ export async function getAllToolsForSelector() {
     slug: t.slug,
     name: t.name,
     vendorName: t.vendor?.companyName ?? "",
+  }));
+}
+
+/**
+ * Get all published cycles with tool counts and methodology versions.
+ */
+export async function getPublishedCyclesWithStats() {
+  const cycles = await prisma.benchmarkCycle.findMany({
+    where: { state: "Completed" },
+    include: {
+      methodologyVersion: { select: { versionNumber: true } },
+      _count: { select: { compositeScores: { where: { segmentId: null } } } },
+    },
+    orderBy: { publishedAt: "desc" },
+  });
+
+  return cycles.map((c) => ({
+    id: c.id,
+    cycleIdentifier: c.cycleIdentifier,
+    displayName: c.displayName,
+    publishedAt: c.publishedAt,
+    methodologyVersion: c.methodologyVersion?.versionNumber ?? null,
+    toolCount: c._count.compositeScores,
   }));
 }
 
