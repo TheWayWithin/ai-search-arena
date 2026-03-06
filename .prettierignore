@@ -14,3 +14,5 @@ stack-profiles
 mcp
 docs
 .context
+.mcp.json
+.mcp-profiles
