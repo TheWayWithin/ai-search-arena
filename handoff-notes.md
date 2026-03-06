@@ -1,121 +1,109 @@
 # Handoff Notes - AISearchArena.com
 
-**Last Updated**: 2026-03-02 14:00
+**Last Updated**: 2026-03-05
 
 ## Current State
 
-- **Phase**: Sprint 1 — GEO Benchmark Framework (COMPLETE)
-- **Status**: Live at https://aisearcharena.com (MVP deployed)
+- **Phase**: Post-Launch — Admin Auth Complete
+- **Status**: Live at https://aisearcharena.com with published rankings + admin panel
+- **Benchmark**: Cycle 2026-03 COMPLETE (32 tools, 9,792 evaluations, 1,632 scores)
+- **Leaderboard**: Live with 7 market segment filters
+- **Admin**: `/admin` routes protected with JWT auth, login at `/admin/login`
 - **Framework Repo**: https://github.com/TheWayWithin/geo-benchmark-framework (public)
-- **Sprint Plan**: `/sprints/Sprint-1-GEO-Benchmark-Framework.md`
 
-### Sprint 1 Deliverables
-- **geo-benchmark-framework** repo: 7 files (dimensions.yaml, models.yaml, geo-platform.yaml, overview.md, README.md, CHANGELOG.md, LICENSE)
-- **Framework loader**: `prisma/load-framework.ts` — loads YAML from GitHub or local, upserts to DB
-- **npm scripts**: `framework:load`, `framework:load:local`, `framework:dry-run`
-- **Validation**: Dry-run passes, live load produces 51 dims + 51 prompt sets + 6 models, weights 1.0000
-- **Dependency**: Added `yaml` npm package for reliable YAML parsing
+### What Just Happened (2026-03-05)
+
+1. **F-025 Admin Authentication implemented** — Full auth gate for `/admin/*` routes.
+   - `bcryptjs` (pure-JS bcrypt) + `jose` (Edge-compatible JWT)
+   - `AdminLoginAttempt` Prisma model for DB-backed brute-force lockout (5 attempts → 15min)
+   - `lib/auth.ts` — JWT sign/verify (24h HS256), bcrypt + timingSafeEqual, lockout, session helpers
+   - `middleware.ts` — Edge Runtime JWT verification, redirects to `/admin/login?from=<path>`
+   - Login page with `useActionState`, server actions for login/logout
+   - Authenticated layout with admin nav (Dashboard, Cycles, Tools, Models, Vendors, Methodology)
+   - 5 stub pages so nav links don't 404
+   - Password hash stored as base64-encoded bcrypt (avoids `$` escaping with Next.js dotenv-expand)
+   - All admin pages: `robots: { index: false, follow: false }`
+
+### Previous (2026-03-03)
+
+1. **First benchmark cycle completed** — 32 tools evaluated across 51 dimensions by 6 AI models. 280.9 minutes, ~3.7M tokens, 100% success rate.
+2. **Leaderboard live with data** — BrightEdge #1 (7.6), Semrush #2 (7.5), seoClarity #3 (7.4). All 32 tools ranked.
+3. **Market segment filters added** — 7 segments with per-segment composite scores and dense ranking. Server-side pill filter UI.
+4. **Critical fixes deployed** — segmentId null consistency, publishedAt on cycle, createMany type error (unblocked 3 failed Vercel deploys).
+5. **llms.txt published** — `public/llms.txt` for AI discoverability.
+6. **Daily report + blog** — Marketing physics angle blog post: "We Just Scored 32 AI SEO Tools With 9,792 Tests"
+
+### Key Decisions Made
+
+- **Bcrypt hash as base64 in .env** — Next.js dotenv-expand mangles `$` in bcrypt hashes (`$2b$12$...`). Storing as base64 avoids all escaping issues. `lib/auth.ts` decodes with `Buffer.from(hash, "base64")`.
+- **Middleware only imports `jose`** — bcryptjs and Prisma aren't Edge-compatible. Middleware does JWT-only verification; `lib/auth.ts` (Node runtime) handles bcrypt/DB.
+- **Defense-in-depth** — Middleware blocks unauthenticated access AND `(authenticated)/layout.tsx` re-checks session server-side.
+- **Single-row lockout table** — `AdminLoginAttempt` with `identifier: "admin"` (unique). Serverless-compatible, no in-memory state.
+- `segmentId: null` = overall scores (not `"overall"` string). All 6 files fixed. `run-cycle.ts` was already correct.
+- Prisma nullable compound unique can't use `upsert` — must use `findFirst` + conditional `create`/`update` pattern.
+- `publishedAt` now set on both BenchmarkReport AND BenchmarkCycle during Publication → Completed transition.
+- Per-segment scoring reuses same score data as overall — filters by tool-segment mappings, ranks independently within segment.
+- Segment filter UI is pure server-side (Next.js searchParams + Link components) — zero client JS.
 
 ## What Was Built
 
-### Phase 1: Foundation & Data Model
+### Phase 1-4: MVP (2026-03-01)
 - Next.js 15.5.12, TypeScript strict, Tailwind v4, shadcn/ui, Prisma
 - 24-entity schema with 8 enums
-- 51 scoring dimensions, 28 vendor/tool records
-- Data access: ai-models, methodology, vendors, prompt-sets
-
-### Phase 2: Evaluation Pipeline
-- 10-state cycle state machine with guards and side effects
-- Tool enrollment with track validation
-- OpenRouter 6-model parallel evaluation with retry
-- Evidence storage via R2 with graceful degradation
-
-### Phase 3: Scoring, Review & Publication
+- 10-state cycle state machine
+- 6-model AI evaluation pipeline via OpenRouter
 - Median-based deterministic score synthesis
-- Weighted composite scoring with N/A renormalization
-- Dense ranking (tied scores share rank)
-- Vendor review workflow (5 business day windows)
-- Report generation + audit packages (SHA-256)
+- Weighted composite scoring with dense ranking
+- Vendor review workflow + audit packages (SHA-256)
+- 6 public pages with JSON-LD structured data
+- Production: Vercel + Neon + OpenRouter + R2 + Resend + Plausible + Sentry
 
-### Phase 4: Public Interface & Launch
-- Homepage with pre-launch/published dual states
-- Leaderboard with ranked tools table
-- Tool detail page with dimension scores by category
-- Methodology page (data-driven from DB)
-- Header/footer navigation
-- robots.txt, sitemap.xml, OG/Twitter meta, JSON-LD on all pages
-- Plausible analytics + Sentry error tracking
+### Sprint 1: GEO Benchmark Framework (2026-03-02)
+- Public methodology repo with 51 dimensions, 128 prompts, 6 models
+- Framework loader: YAML → DB with git SHA pinning
+
+### Post-Launch (2026-03-02 — 2026-03-03)
+- Model panel v1.3 (frontier, cost-optimized)
+- AI Search Mastery vendor + 4 products enrolled (32 total tools)
+- First benchmark cycle complete and published
+- Market segment filters on leaderboard (7 segments, 79 segment scores)
+- llms.txt for AI discoverability
+- Connection pool fixes, nullable FK fixes, build pipeline fixes
 
 ## Production Services (ALL LIVE)
 
 | Service | Status | Details |
 |---------|--------|---------|
-| **Neon** | Live | `ai-search-arena` project, AWS US East 1, Postgres 17, migrated + seeded |
-| **Vercel** | Live | `aisearchareana` project, auto-deploy from GitHub, custom domain |
-| **Domain** | Live | aisearcharena.com → Vercel (A record + CNAME www) |
-| **OpenRouter** | Configured | API key in Vercel env vars |
-| **Cloudflare R2** | Configured | Bucket: `aisearcharena-evidence`, API token scoped to bucket |
-| **Resend** | Configured | API key set, domain DNS records added (DKIM, SPF, DMARC) |
-| **Plausible** | Verified | Custom script URL with init(), tracking active |
-| **Sentry** | Configured | DSN set in Vercel env vars |
+| **Neon** | Live | 25 tables, 32 tools, 9,792 evals, 1,632 scores, 111 composites |
+| **Vercel** | Live | aisearcharena.com, auto-deploy from GitHub |
+| **OpenRouter** | Configured | 6-model panel v1.3 |
+| **Cloudflare R2** | Configured | Evidence artifact storage |
+| **Resend** | Configured | Email (domain DNS pending verification) |
+| **Plausible** | Verified | Analytics tracking active |
+| **Sentry** | Configured | Error tracking |
 
-## Environment Variables (Vercel)
+## Known Issues / Warnings
 
-| Variable | Environments | Sensitive |
-|----------|-------------|-----------|
-| DATABASE_URL | Production, Preview | Yes |
-| OPENROUTER_API_KEY | Production, Preview | Yes |
-| R2_ACCOUNT_ID | Production, Preview | Yes |
-| R2_ACCESS_KEY_ID | Production, Preview | Yes |
-| R2_SECRET_ACCESS_KEY | Production, Preview | Yes |
-| R2_BUCKET_NAME | Production, Preview | Yes |
-| RESEND_API_KEY | Production, Preview | Yes |
-| NEXT_PUBLIC_PLAUSIBLE_SCRIPT_URL | All | No |
-| NEXT_PUBLIC_SENTRY_DSN | All | No |
-
-## Git History
-
-| Commit | Description |
-|--------|-------------|
-| `fc6b2ac` | feat: complete AISearchArena.com MVP (all 4 phases) — 67 files, 24,280 lines |
-| `9609888` | fix: update Plausible analytics to use custom script URL |
-| `ff2f77e` | fix: add Plausible init script for verification |
-
-## Files Created (Key Modules)
-
-| Category | Files |
-|----------|-------|
-| Schema | `prisma/schema.prisma`, `prisma/seed.ts`, `prisma/migrations/` |
-| State Machine | `lib/state-machine/cycle.ts` |
-| Database Layer | `lib/db/index.ts`, `cycles.ts`, `enrollments.ts`, `ai-models.ts`, `methodology.ts`, `vendors.ts`, `prompt-sets.ts`, `vendor-reviews.ts`, `reports.ts`, `audit-packages.ts`, `leaderboard.ts` |
-| Evaluation | `lib/evaluation/openrouter.ts`, `pipeline.ts`, `evidence.ts` |
-| Scoring | `lib/synthesis/median.ts`, `lib/scoring/composite.ts` |
-| Pages | `app/(public)/page.tsx`, `leaderboard/page.tsx`, `tools/[slug]/page.tsx`, `methodology/page.tsx`, `about/page.tsx`, `disclosure/page.tsx` |
-| Components | `components/site-header.tsx`, `site-footer.tsx`, `ui/` (button, card, badge, table) |
-| Config | `app/robots.ts`, `app/sitemap.ts`, `.env.example`, `.github/workflows/ci.yml` |
-| Tests | `tests/unit/` (example, schema, state-machine, synthesis) — 43 tests |
-
-## Verification Status
-
-- Typecheck: PASSES (zero errors)
-- Tests: 43/43 passing
-- Build: 9 routes (4 static + 5 dynamic)
-- Production: Live at aisearcharena.com
+- All confidence tags are "Low" — expected for first cycle; will increase with more data over monthly cycles.
+- Cycle selector (AC-002-03) deferred — data layer ready, UI not yet built (needs multiple published cycles).
+- Historical score trends on tool detail (AC-003-02) deferred — requires multiple cycles.
+- Email notifications via Resend not yet implemented — deferred.
+- Lighthouse audit TODO — site is live, can run now.
 
 ## What's Next
 
-### Immediate (ready to execute)
-- Run first benchmark cycle: create cycle, enroll tools, execute evaluations
-- Requires: visiting admin routes or running via scripts/API
+### Immediate
+- Deploy F-025 to production (commit + push)
+- Set `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` (base64), `JWT_SECRET` in Vercel env vars
+- Run `prisma migrate deploy` against production Neon to add `admin_login_attempts` table
 
-### P1 Backlog (post-launch)
-- F-025: Admin Authentication
+### P1 Backlog
 - F-004: Tool Comparison View
 - F-019: Badge Awarding & Display
 - F-020: Cycle Archive & Historical Access
 - F-021: Vendor Directory & Profile Pages
 
 ### Deferred UI Features
-- Market segment filter on leaderboard (data layer ready)
-- Cycle selector for historical rankings (data layer ready)
-- Historical score trend on tool detail (requires multiple cycles)
+- Cycle selector for historical rankings
+- Historical score trend on tool detail
+- Newsletter signup integration (Buttondown)

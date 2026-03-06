@@ -544,6 +544,17 @@ model VendorReview {
 // CONTENT DOMAIN
 // ═══════════════════════════════════════════════════════════════
 
+model AdminLoginAttempt {
+  id          String    @id @default(uuid())
+  identifier  String    @unique // always "admin"
+  failedCount Int       @default(0) @map("failed_count")
+  lockedUntil DateTime? @map("locked_until")
+  lastAttempt DateTime? @map("last_attempt")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("admin_login_attempts")
+}
+
 model ContentBlock {
   id           String    @id @default(uuid())
   slug         String    @unique

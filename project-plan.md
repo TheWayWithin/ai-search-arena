@@ -18,7 +18,7 @@ generated_from:
 | **Owner** | Jamie Watters / AI Search Mastery |
 | **Repository** | TBD |
 | **Created** | 2026-03-01 |
-| **Last Updated** | 2026-03-01 |
+| **Last Updated** | 2026-03-03 |
 | **Target Launch** | March 2026, Week 4 |
 | **Brand Essence** | Rigor |
 
@@ -459,7 +459,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 - **Acceptance Criteria**:
   - [x] All non-withdrawn tools ranked by descending composite score with dense ranking (AC-002-01)
   - [x] Displays: rank, tool name (linked), vendor, composite score, confidence badge
-  - [ ] Market segment filter re-renders with segment-specific rankings (AC-002-02) — data layer ready, UI filter deferred
+  - [x] Market segment filter re-renders with segment-specific rankings (AC-002-02) — implemented 2026-03-03: 7 segment pill filters, per-segment composite scores, server-side URL params
   - [ ] Cycle selector shows historical rankings (AC-002-03) — data layer ready, UI selector deferred
   - [x] Tied scores display same rank (AC-002-04)
   - [x] Dynamic rendering with JSON-LD structured data (Dataset schema)
@@ -529,7 +529,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] Sentry error tracking: NEXT_PUBLIC_SENTRY_DSN configured 2026-03-01
   - [x] Plausible analytics: custom script URL with init() verified 2026-03-01
   - [x] GitHub Actions: CI pipeline configured (.github/workflows/ci.yml)
-  - [ ] Admin routes protected (F-025 deferred per PRD)
+  - [x] Admin routes protected (F-025) — middleware + JWT sessions + bcrypt + lockout — 2026-03-05
   - [x] Environment variables secured: API keys in .env.example, not in client bundle
   - [ ] Lighthouse audit (TODO - site is live, can run now)
   - [x] Robots.txt: app/robots.ts with sitemap reference
@@ -569,11 +569,54 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 
 ---
 
+## Post-Launch Milestones
+
+### First Benchmark Cycle (2026-03-03)
+- [x] Cycle 2026-03 created, 32 tools enrolled (28 competitors + 4 AI Search Mastery)
+- [x] Model panel upgraded to v1.3 (frontier models, cost-optimized)
+- [x] 9,792 model evaluations completed (100% success rate)
+- [x] 1,632 scores synthesized via median aggregation
+- [x] 32 tools ranked with composite scores and dense ranking
+- [x] Audit package sealed (SHA-256: 76a2d4fbf824...)
+- [x] Report generated and published
+- [x] Cycle published (publishedAt set on cycle)
+- [x] Leaderboard live with real data at aisearcharena.com/leaderboard
+- [x] Homepage showing top 5 tools from published cycle
+
+### Market Segment Filters (2026-03-03)
+- [x] Fixed segmentId "overall" → null consistency across 6 files
+- [x] Fixed Prisma upsert → findFirst/create/update for nullable compound unique
+- [x] Refactored leaderboard page from inline Prisma to data layer
+- [x] Added 7 segment filter pills (server-side, zero client JS)
+- [x] Per-segment composite scoring in run-cycle.ts
+- [x] 79 segment-specific composite scores generated
+- [x] Segment filter live and working on production
+
+### llms.txt (2026-03-03)
+- [x] Published public/llms.txt for AI discoverability (37 pages, ~14,936 words)
+
+### Admin Authentication F-025 (2026-03-05)
+- [x] `bcryptjs` + `jose` dependencies installed
+- [x] `AdminLoginAttempt` Prisma model + migration applied
+- [x] `lib/auth.ts` — JWT sign/verify (24h, HS256), bcrypt credentials with timingSafeEqual, DB-backed lockout (5 attempts → 15min), session cookie helpers
+- [x] `middleware.ts` — Edge-compatible JWT gate on `/admin/*`, skips `/admin/login`, redirects with `?from=` param
+- [x] Login page + server actions (`loginAction`, `logoutAction`) using `useActionState`
+- [x] Authenticated admin layout with nav (Dashboard, Cycles, Tools, Models, Vendors, Methodology) + logout
+- [x] 5 stub pages for admin sections
+- [x] Password hash stored as base64-encoded bcrypt to avoid `$` escaping issues in `.env`
+- [x] All admin pages have `robots: { index: false, follow: false }`
+- [x] `npm run build` passes — 10 admin routes registered, middleware 39.9 kB
+
+### Build Pipeline Fixes (2026-03-03)
+- [x] Fixed ModelEvaluation createMany type error (blocked 3 Vercel deploys)
+- [x] Fixed missing publishedAt on cycle (set on report but not cycle)
+- [x] Added publishedAt stamp to Publication → Completed transition
+
 ## P1 Backlog (Post-Launch)
 
 | ID | Feature | Dependencies | FP Estimate |
 |----|---------|--------------|-------------|
-| F-025 | Admin Authentication | none | ~20 FP |
+| F-025 | Admin Authentication | none | ~20 FP | **COMPLETE** — 2026-03-05 |
 | F-004 | Tool Comparison View | F-003 | ~35 FP |
 | F-019 | Badge Awarding & Display | F-012 | ~25 FP |
 | F-020 | Cycle Archive & Historical Access | F-014 | ~22 FP |
