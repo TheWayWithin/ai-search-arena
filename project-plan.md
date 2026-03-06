@@ -553,7 +553,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
   - [x] GitHub Actions: CI pipeline configured (.github/workflows/ci.yml)
   - [x] Admin routes protected (F-025) — middleware + JWT sessions + bcrypt + lockout — 2026-03-05
   - [x] Environment variables secured: API keys in .env.example, not in client bundle
-  - [ ] Lighthouse audit (TODO - site is live, can run now)
+  - [x] Lighthouse audit — Performance 100, Accessibility 100, Best Practices 100, SEO 100 — 2026-03-06
   - [x] Robots.txt: app/robots.ts with sitemap reference
   - [x] Sitemap.xml: app/sitemap.ts with static + dynamic tool pages
   - [x] Open Graph + Twitter meta tags on root layout
@@ -563,7 +563,7 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 - [x] `npm run build` passes (9 routes: 4 static, 5 dynamic) - verified 2026-03-01 01:21
 - [x] `npm test` passes (43 tests, 4 test files) - verified 2026-03-01 01:21
 - [x] `npm run typecheck` passes (zero errors) - verified 2026-03-01 01:21
-- [ ] Lighthouse audit (requires deployed site with database)
+- [x] Lighthouse audit — all 100s (Performance, Accessibility, Best Practices, SEO) — 2026-03-06
 - [ ] All public pages render with test data (requires database)
 - [x] Pre-launch state: all data-dependent pages handle missing cycle gracefully
 - [x] JSON-LD: WebSite (home), Dataset (leaderboard), WebPage (methodology), SoftwareApplication (tool detail), Organization (about)
