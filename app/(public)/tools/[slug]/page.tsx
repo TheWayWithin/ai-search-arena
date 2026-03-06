@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { getPublishedCycles, getToolDetail } from "@/lib/db/leaderboard";
 import { Badge } from "@/components/ui/badge";
+import { TierBadge } from "@/components/tier-badge";
+import { CycleSelector } from "@/components/cycle-selector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -15,6 +18,7 @@ import {
 
 type Props = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ cycle?: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -51,8 +55,9 @@ function confidenceLabel(tag: string) {
   return tag === "InsufficientData" ? "Insufficient" : tag;
 }
 
-export default async function ToolDetailPage({ params }: Props) {
+export default async function ToolDetailPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const { cycle: cycleParam } = await searchParams;
 
   const tool = await prisma.tool.findUnique({
     where: { slug },
@@ -65,38 +70,21 @@ export default async function ToolDetailPage({ params }: Props) {
 
   if (!tool) notFound();
 
-  // Get latest published cycle
-  const latestCycle = await prisma.benchmarkCycle.findFirst({
-    where: { publishedAt: { not: null } },
-    include: { methodologyVersion: true },
-    orderBy: { publishedAt: "desc" },
-  });
+  // Resolve cycle from param
+  const publishedCycles = await getPublishedCycles();
+  const activeCycle = cycleParam
+    ? publishedCycles.find((c) => c.cycleIdentifier === cycleParam) ?? publishedCycles[0]
+    : publishedCycles[0];
+  const resolvedCycleId = activeCycle?.id;
 
-  const scoresQuery = latestCycle
-    ? await prisma.score.findMany({
-        where: { toolId: tool.id, cycleId: latestCycle.id },
-        include: {
-          dimension: true,
-          synthesis: true,
-        },
-        orderBy: [
-          { dimension: { category: "asc" } },
-          { dimension: { name: "asc" } },
-        ],
-      })
-    : [];
-
-  const scores = scoresQuery;
-
-  const compositeScore = latestCycle
-    ? await prisma.compositeScore.findFirst({
-        where: {
-          toolId: tool.id,
-          cycleId: latestCycle.id,
-          segmentId: null,
-        },
-      })
+  const detail = resolvedCycleId
+    ? await getToolDetail(slug, resolvedCycleId)
     : null;
+
+  const scores = detail?.scores ?? [];
+  const compositeScore = detail?.compositeScore ?? null;
+  const cycle = detail?.cycle ?? null;
+  const badges = detail?.badges ?? [];
 
   // Group scores by category
   const scoresByCategory = new Map<string, typeof scores>();
@@ -143,7 +131,17 @@ export default async function ToolDetailPage({ params }: Props) {
               {tool.name}
             </h1>
             <p className="mt-1 text-sm text-arena-slate-light">
-              by {tool.vendor?.companyName}
+              by{" "}
+              {tool.vendor ? (
+                <Link
+                  href={`/vendors/${tool.vendor.slug}`}
+                  className="text-mastery-blue hover:underline"
+                >
+                  {tool.vendor.companyName}
+                </Link>
+              ) : (
+                "Unknown"
+              )}
               {tool.websiteUrl && (
                 <>
                   {" "}
@@ -194,6 +192,19 @@ export default async function ToolDetailPage({ params }: Props) {
           )}
         </div>
 
+        {/* Badges */}
+        {badges.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {badges.map((b) => (
+              <TierBadge
+                key={b.id}
+                tier={b.tier as "Gold" | "Silver" | "Bronze"}
+                label={b.label}
+              />
+            ))}
+          </div>
+        )}
+
         {/* Segments */}
         {tool.segmentMappings.length > 0 && (
           <div className="mt-4 flex gap-2">
@@ -206,7 +217,7 @@ export default async function ToolDetailPage({ params }: Props) {
         )}
 
         {/* Pre-launch state */}
-        {!latestCycle && (
+        {!cycle && (
           <div className="mt-8 rounded-lg border border-border bg-pale-grey p-8 text-center">
             <p className="text-arena-slate">
               Benchmark scores will be available after the first evaluation cycle
@@ -216,11 +227,23 @@ export default async function ToolDetailPage({ params }: Props) {
         )}
 
         {/* Dimension Scores by Category */}
-        {latestCycle && scores.length > 0 && (
+        {cycle && scores.length > 0 && (
           <div className="mt-8 space-y-6">
-            <h2 className="text-xl font-semibold text-arena-slate">
-              Dimension Scores — {latestCycle.displayName}
-            </h2>
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-xl font-semibold text-arena-slate">
+                Dimension Scores — {cycle.displayName}
+              </h2>
+              {publishedCycles.length > 1 && (
+                <CycleSelector
+                  cycles={publishedCycles.map((c) => ({
+                    id: c.id,
+                    cycleIdentifier: c.cycleIdentifier,
+                    displayName: c.displayName,
+                  }))}
+                  currentCycleId={activeCycle.id}
+                />
+              )}
+            </div>
 
             {[...scoresByCategory.entries()].map(([category, catScores]) => (
               <div key={category}>
@@ -291,7 +314,7 @@ export default async function ToolDetailPage({ params }: Props) {
           </div>
         )}
 
-        {latestCycle && scores.length === 0 && (
+        {cycle && scores.length === 0 && (
           <div className="mt-8 rounded-lg border border-border bg-pale-grey p-8 text-center">
             <p className="text-arena-slate-light">
               No scores available for this tool in the current cycle.

@@ -2,23 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   getComparisonData,
   getAllToolsForSelector,
+  getPublishedCycles,
 } from "@/lib/db/leaderboard";
 import { ToolCompareSelector } from "@/components/tool-compare-selector";
+import { CycleSelector } from "@/components/cycle-selector";
 
 export const dynamic = "force-dynamic";
 
 type Props = {
-  searchParams: Promise<{ tools?: string }>;
+  searchParams: Promise<{ tools?: string; cycle?: string }>;
 };
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
@@ -32,7 +26,6 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     };
   }
 
-  // Fetch tool names for the title
   const data = await getComparisonData(slugs);
   const toolNames = data.tools.map((t) => t.name);
 
@@ -62,9 +55,16 @@ function confidenceLabel(tag: string) {
 }
 
 export default async function ComparePage({ searchParams }: Props) {
-  const { tools: toolsParam } = await searchParams;
+  const { tools: toolsParam, cycle: cycleParam } = await searchParams;
   const slugs = toolsParam?.split(",").filter(Boolean) ?? [];
   const allTools = await getAllToolsForSelector();
+
+  // Resolve cycle
+  const publishedCycles = await getPublishedCycles();
+  const activeCycle = cycleParam
+    ? publishedCycles.find((c) => c.cycleIdentifier === cycleParam) ?? publishedCycles[0]
+    : publishedCycles[0];
+  const resolvedCycleId = activeCycle?.id;
 
   // Empty state - no tools selected
   if (slugs.length === 0) {
@@ -92,7 +92,7 @@ export default async function ComparePage({ searchParams }: Props) {
     );
   }
 
-  const data = await getComparisonData(slugs);
+  const data = await getComparisonData(slugs, resolvedCycleId);
   const { cycle, tools, scores, compositeScores } = data;
 
   // Build available tools for selector (exclude already-selected)
@@ -196,9 +196,21 @@ export default async function ComparePage({ searchParams }: Props) {
         >
           &larr; Back to Leaderboard
         </Link>
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-arena-slate">
-          Compare Tools
-        </h1>
+        <div className="mt-4 flex items-baseline justify-between">
+          <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
+            Compare Tools
+          </h1>
+          {publishedCycles.length > 1 && activeCycle && (
+            <CycleSelector
+              cycles={publishedCycles.map((c) => ({
+                id: c.id,
+                cycleIdentifier: c.cycleIdentifier,
+                displayName: c.displayName,
+              }))}
+              currentCycleId={activeCycle.id}
+            />
+          )}
+        </div>
         {cycle && (
           <p className="mt-1 text-sm text-arena-slate-light">
             {cycle.displayName} &middot; Methodology v
@@ -227,9 +239,14 @@ export default async function ComparePage({ searchParams }: Props) {
                           >
                             {tool.name}
                           </Link>
-                          <div className="text-xs font-normal text-arena-slate-light">
-                            {tool.vendor?.companyName}
-                          </div>
+                          {tool.vendor && (
+                            <Link
+                              href={`/vendors/${tool.vendor.slug}`}
+                              className="text-xs font-normal text-arena-slate-light hover:text-mastery-blue hover:underline"
+                            >
+                              {tool.vendor.companyName}
+                            </Link>
+                          )}
                           {cs && (
                             <div className="mt-1">
                               <span className="text-lg font-bold text-arena-slate">

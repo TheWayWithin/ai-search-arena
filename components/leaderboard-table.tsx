@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { TierBadge } from "@/components/tier-badge";
 import {
   Table,
   TableBody,
@@ -13,6 +14,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+type BadgeData = {
+  tier: "Gold" | "Silver" | "Bronze";
+  label: string;
+};
+
 type CompositeScoreRow = {
   id: string;
   rank: number;
@@ -21,7 +27,8 @@ type CompositeScoreRow = {
   tool: {
     slug: string;
     name: string;
-    vendor: { companyName: string } | null;
+    vendor: { companyName: string; slug: string } | null;
+    badges: BadgeData[];
   };
 };
 
@@ -105,15 +112,27 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
                   {cs.rank}
                 </TableCell>
                 <TableCell>
-                  <Link
-                    href={`/tools/${cs.tool.slug}`}
-                    className="font-medium text-arena-slate hover:text-mastery-blue hover:underline"
-                  >
-                    {cs.tool.name}
-                  </Link>
+                  <div className="flex items-center gap-1.5">
+                    <Link
+                      href={`/tools/${cs.tool.slug}`}
+                      className="font-medium text-arena-slate hover:text-mastery-blue hover:underline"
+                    >
+                      {cs.tool.name}
+                    </Link>
+                    {cs.tool.badges.map((b) => (
+                      <TierBadge key={b.label} tier={b.tier} label={b.label} />
+                    ))}
+                  </div>
                 </TableCell>
                 <TableCell className="text-arena-slate-light">
-                  {cs.tool.vendor?.companyName}
+                  {cs.tool.vendor ? (
+                    <Link
+                      href={`/vendors/${cs.tool.vendor.slug}`}
+                      className="hover:text-mastery-blue hover:underline"
+                    >
+                      {cs.tool.vendor.companyName}
+                    </Link>
+                  ) : null}
                 </TableCell>
                 <TableCell className="text-center">
                   <span className="text-lg font-bold text-arena-slate">

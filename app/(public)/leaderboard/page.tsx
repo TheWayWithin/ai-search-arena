@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  getLatestPublishedCycle,
   getLeaderboardData,
   getMarketSegments,
+  getPublishedCycles,
 } from "@/lib/db/leaderboard";
 import { LeaderboardTable } from "@/components/leaderboard-table";
+import { CycleSelector } from "@/components/cycle-selector";
 
 export const dynamic = "force-dynamic";
 
@@ -16,16 +17,16 @@ export const metadata: Metadata = {
 };
 
 type Props = {
-  searchParams: Promise<{ segment?: string }>;
+  searchParams: Promise<{ segment?: string; cycle?: string }>;
 };
 
 export default async function LeaderboardPage({ searchParams }: Props) {
-  const { segment } = await searchParams;
+  const { segment, cycle: cycleParam } = await searchParams;
 
-  const latestCycle = await getLatestPublishedCycle();
+  const publishedCycles = await getPublishedCycles();
 
   // Pre-launch state: no published cycle yet
-  if (!latestCycle) {
+  if (publishedCycles.length === 0) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <h1 className="text-3xl font-bold tracking-tight text-arena-slate">
@@ -50,6 +51,12 @@ export default async function LeaderboardPage({ searchParams }: Props) {
     );
   }
 
+  // Resolve active cycle from ?cycle= param or default to latest
+  const activeCycle = cycleParam
+    ? publishedCycles.find((c) => c.cycleIdentifier === cycleParam) ??
+      publishedCycles[0]
+    : publishedCycles[0];
+
   // Fetch segments and resolve the active segment ID
   const segments = await getMarketSegments();
   const activeSegment = segment
@@ -57,7 +64,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
     : null;
   const segmentId = activeSegment?.id ?? null;
 
-  const compositeScores = await getLeaderboardData(latestCycle.id, segmentId);
+  const compositeScores = await getLeaderboardData(activeCycle.id, segmentId);
 
   // Serialize for client component (Decimal -> string)
   const serializedScores = compositeScores.map((cs) => ({
@@ -69,22 +76,35 @@ export default async function LeaderboardPage({ searchParams }: Props) {
       slug: cs.tool.slug,
       name: cs.tool.name,
       vendor: cs.tool.vendor
-        ? { companyName: cs.tool.vendor.companyName }
+        ? { companyName: cs.tool.vendor.companyName, slug: cs.tool.vendor.slug }
         : null,
+      badges: cs.tool.badges.map((b) => ({
+        tier: b.tier as "Gold" | "Silver" | "Bronze",
+        label: b.label,
+      })),
     },
   }));
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Dataset",
-    name: `AI Search Arena — ${latestCycle.displayName} Rankings`,
+    name: `AI Search Arena — ${activeCycle.displayName} Rankings`,
     description: `Independent benchmark rankings for ${compositeScores.length} AI search optimization tools.`,
     url: "https://aisearcharena.com/leaderboard",
     creator: {
       "@type": "Organization",
       name: "AI Search Arena",
     },
-    datePublished: latestCycle.publishedAt?.toISOString(),
+    datePublished: activeCycle.publishedAt?.toISOString(),
+  };
+
+  // Build segment link helper that preserves cycle param
+  const segmentHref = (segSlug?: string) => {
+    const params = new URLSearchParams();
+    if (segSlug) params.set("segment", segSlug);
+    if (cycleParam) params.set("cycle", cycleParam);
+    const qs = params.toString();
+    return `/leaderboard${qs ? `?${qs}` : ""}`;
   };
 
   return (
@@ -100,18 +120,25 @@ export default async function LeaderboardPage({ searchParams }: Props) {
               Leaderboard
             </h1>
             <p className="mt-1 text-sm text-arena-slate-light">
-              {latestCycle.displayName} &middot;{" "}
-              {compositeScores.length} tools evaluated &middot; Methodology v
-              {latestCycle.methodologyVersion?.versionNumber}
+              {activeCycle.displayName} &middot;{" "}
+              {compositeScores.length} tools evaluated
             </p>
           </div>
+          <CycleSelector
+            cycles={publishedCycles.map((c) => ({
+              id: c.id,
+              cycleIdentifier: c.cycleIdentifier,
+              displayName: c.displayName,
+            }))}
+            currentCycleId={activeCycle.id}
+          />
         </div>
 
         {/* Segment filter pills */}
         {segments.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-2">
             <Link
-              href="/leaderboard"
+              href={segmentHref()}
               className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
                 !activeSegment
                   ? "border-arena-slate bg-arena-slate text-white"
@@ -123,7 +150,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
             {segments.map((seg) => (
               <Link
                 key={seg.id}
-                href={`/leaderboard?segment=${seg.slug}`}
+                href={segmentHref(seg.slug)}
                 className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors ${
                   activeSegment?.id === seg.id
                     ? "border-arena-slate bg-arena-slate text-white"

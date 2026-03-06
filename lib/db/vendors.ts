@@ -82,6 +82,102 @@ export async function createTool(data: {
 }
 
 /**
+ * Get all vendors that have at least one non-archived tool, with tool counts.
+ */
+export async function getVendorsWithToolCounts() {
+  const vendors = await prisma.vendor.findMany({
+    where: {
+      tools: { some: { isArchived: false } },
+    },
+    include: {
+      _count: { select: { tools: { where: { isArchived: false } } } },
+    },
+    orderBy: { companyName: "asc" },
+  });
+
+  return vendors.map((v) => ({
+    id: v.id,
+    companyName: v.companyName,
+    slug: v.slug,
+    description: v.description,
+    websiteUrl: v.websiteUrl,
+    toolCount: v._count.tools,
+  }));
+}
+
+/**
+ * Get vendor with their tools' composite scores and badges for a cycle.
+ */
+export async function getVendorWithScores(slug: string, cycleId?: string) {
+  const vendor = await prisma.vendor.findUnique({
+    where: { slug },
+    include: {
+      tools: {
+        where: { isArchived: false },
+        orderBy: { name: "asc" },
+      },
+    },
+  });
+
+  if (!vendor) return null;
+
+  // Resolve cycle
+  let targetCycleId = cycleId;
+  if (!targetCycleId) {
+    const latestCycle = await prisma.benchmarkCycle.findFirst({
+      where: { state: "Completed" },
+      orderBy: { publishedAt: "desc" },
+      select: { id: true },
+    });
+    targetCycleId = latestCycle?.id;
+  }
+
+  if (!targetCycleId) {
+    return { vendor, tools: vendor.tools.map((t) => ({ ...t, compositeScore: null, badges: [] })), cycle: null };
+  }
+
+  const cycle = await prisma.benchmarkCycle.findUnique({
+    where: { id: targetCycleId },
+    select: { id: true, displayName: true, cycleIdentifier: true },
+  });
+
+  const toolIds = vendor.tools.map((t) => t.id);
+
+  // Batch fetch composite scores (overall) for all vendor tools
+  const compositeScores = await prisma.compositeScore.findMany({
+    where: {
+      cycleId: targetCycleId,
+      toolId: { in: toolIds },
+      segmentId: null,
+    },
+  });
+  const csMap = new Map(compositeScores.map((cs) => [cs.toolId, cs]));
+
+  // Batch fetch badges for all vendor tools
+  const badges = await prisma.badge.findMany({
+    where: {
+      cycleId: targetCycleId,
+      toolId: { in: toolIds },
+    },
+    orderBy: [{ tier: "asc" }, { badgeType: "asc" }],
+  });
+  const badgeMap = new Map<string, typeof badges>();
+  for (const b of badges) {
+    const arr = badgeMap.get(b.toolId) ?? [];
+    arr.push(b);
+    badgeMap.set(b.toolId, arr);
+  }
+
+  const toolsWithScores = vendor.tools.map((t) => ({
+    ...t,
+    compositeScore: csMap.get(t.id) ?? null,
+    badges: badgeMap.get(t.id) ?? [],
+  }));
+
+  return { vendor, tools: toolsWithScores, cycle };
+}
+
+/**
  * Archive a tool (soft delete, AC-010-03).
  * Tools with published evaluations cannot be hard-deleted.
  */

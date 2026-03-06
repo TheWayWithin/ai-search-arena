@@ -17,6 +17,18 @@ export function SiteHeader() {
             Leaderboard
           </Link>
           <Link
+            href="/cycles"
+            className="text-arena-slate-light transition-colors hover:text-arena-slate"
+          >
+            Cycles
+          </Link>
+          <Link
+            href="/vendors"
+            className="text-arena-slate-light transition-colors hover:text-arena-slate"
+          >
+            Vendors
+          </Link>
+          <Link
             href="/methodology"
             className="text-arena-slate-light transition-colors hover:text-arena-slate"
           >
