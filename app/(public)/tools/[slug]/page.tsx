@@ -132,7 +132,7 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
                 {tool.vendor ? (
                   <Link
                     href={`/vendors/${tool.vendor.slug}`}
-                    className="text-mastery-blue hover:underline"
+                    className="text-mastery-blue underline underline-offset-2"
                   >
                     {tool.vendor.companyName}
                   </Link>
@@ -147,7 +147,7 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
                       href={tool.websiteUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-mastery-blue hover:underline"
+                      className="text-mastery-blue underline underline-offset-2"
                     >
                       Website
                     </a>

@@ -21,7 +21,7 @@ export function SiteFooter() {
               href="https://aisearchmastery.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-mastery-blue hover:underline"
+              className="text-mastery-blue underline underline-offset-2"
             >
               AI Search Mastery
             </a>{" "}

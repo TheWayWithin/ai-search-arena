@@ -15,13 +15,13 @@
 
   /* Functional: Confidence indicators */
   --color-confidence-green: #059669;
-  --color-caution-amber: #d97706;
+  --color-caution-amber: #b45309;
   --color-insufficient-red: #dc2626;
-  --color-neutral-grey: #9ca3af;
+  --color-neutral-grey: #6b7280;
 
   /* Badge tiers */
   --color-badge-gold: #d97706;
-  --color-badge-silver: #6b7280;
+  --color-badge-silver: #4b5563;
   --color-badge-bronze: #92400e;
 
   /* Neutrals */
