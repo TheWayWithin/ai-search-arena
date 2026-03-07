@@ -6,9 +6,17 @@
  * re-running will skip tools that already have evaluations.
  *
  * Usage:
- *   npx tsx scripts/run-cycle.ts                 # Full run (all 28 tools)
- *   npx tsx scripts/run-cycle.ts --dry-run       # Create cycle + enroll, stop before evals
- *   npx tsx scripts/run-cycle.ts --limit 2       # Evaluate only first 2 tools
+ *   npx tsx scripts/run-cycle.ts --id 2026-04                    # New cycle with identifier
+ *   npx tsx scripts/run-cycle.ts --id 2026-04 --name "April 2026 Benchmark"
+ *   npx tsx scripts/run-cycle.ts                                  # Resume existing non-terminal cycle
+ *   npx tsx scripts/run-cycle.ts --dry-run --id 2026-04           # Create + enroll, stop before evals
+ *   npx tsx scripts/run-cycle.ts --limit 2                        # Evaluate only first 2 tools
+ *
+ * Arguments:
+ *   --id <identifier>   Cycle identifier (e.g., "2026-04"). Required for new cycles.
+ *   --name <name>       Display name (defaults to "<Month> <Year> Benchmark" from --id)
+ *   --dry-run           Create cycle + enroll, stop before evaluations
+ *   --limit <n>         Evaluate only the first n tools
  *
  * Stages:
  *   1. Create cycle (March 2026, Draft)
@@ -53,6 +61,23 @@ const LIMIT = limitIdx !== -1 ? parseInt(args[limitIdx + 1], 10) : Infinity;
 if (limitIdx !== -1 && isNaN(LIMIT)) {
   console.error("--limit requires a numeric argument");
   process.exit(1);
+}
+
+const idIdx = args.indexOf("--id");
+const CYCLE_ID_ARG = idIdx !== -1 ? args[idIdx + 1] : undefined;
+
+const nameIdx = args.indexOf("--name");
+const CYCLE_NAME_ARG = nameIdx !== -1 ? args[nameIdx + 1] : undefined;
+
+function deriveCycleName(identifier: string): string {
+  // Parse "YYYY-MM" into "Month YYYY Benchmark"
+  const match = identifier.match(/^(\d{4})-(\d{2})$/);
+  if (match) {
+    const date = new Date(parseInt(match[1]), parseInt(match[2]) - 1);
+    const month = date.toLocaleString("en-US", { month: "long" });
+    return `${month} ${match[1]} Benchmark`;
+  }
+  return `${identifier} Benchmark`;
 }
 
 // ── Helpers ─────────────────────────────────────────────────────
@@ -334,21 +359,31 @@ async function main() {
     cycle = existingCycle;
     log("CYCLE", `Resuming cycle "${cycle.cycleIdentifier}" (state: ${cycle.state})`);
   } else {
+    if (!CYCLE_ID_ARG) {
+      console.error("No active cycle found. Use --id <identifier> to create one.");
+      console.error("  Example: npx tsx scripts/run-cycle.ts --id 2026-04");
+      process.exit(1);
+    }
+
     const methodology = await prisma.methodologyVersion.findFirst({
-      where: { versionNumber: "1.0.0" },
+      where: { isLocked: true },
+      orderBy: { createdAt: "desc" },
     });
-    if (!methodology) throw new Error("Methodology v1.0.0 not found — run db:seed first");
+    if (!methodology) throw new Error("No locked methodology version found — run db:seed first");
+
+    const cycleIdentifier = CYCLE_ID_ARG;
+    const displayName = CYCLE_NAME_ARG ?? deriveCycleName(cycleIdentifier);
 
     cycle = await prisma.benchmarkCycle.create({
       data: {
-        cycleIdentifier: "2026-03",
-        displayName: "March 2026 Benchmark",
-        startDate: new Date("2026-03-01"),
+        cycleIdentifier,
+        displayName,
+        startDate: new Date(),
         methodologyVersionId: methodology.id,
         state: CycleState.Draft,
       },
     });
-    log("CYCLE", `Created cycle "${cycle.cycleIdentifier}" (id: ${cycle.id})`);
+    log("CYCLE", `Created cycle "${cycle.cycleIdentifier}" — ${displayName} (id: ${cycle.id})`);
   }
 
   const cycleId = cycle.id;
@@ -1055,19 +1090,22 @@ Provide your score and rationale.`;
       generatedAt: new Date().toISOString(),
     };
 
+    const reportTitle = `${cycleData.displayName} — AI Search Arena Benchmark`;
+    const reportSlug = cycleData.cycleIdentifier.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
     const report = await prisma.benchmarkReport.upsert({
       where: { cycleId },
       update: {
-        title: "March 2026 AI Search Arena Benchmark",
-        slug: "march-2026",
-        executiveSummary: `First benchmark cycle evaluating ${compositeScores.length} GEO/AEO tools across 51 dimensions using 6 AI models.`,
+        title: reportTitle,
+        slug: reportSlug,
+        executiveSummary: `Benchmark cycle evaluating ${compositeScores.length} GEO/AEO tools across ${scoreCount} dimension-scores using ${(await prisma.aIModel.count({ where: { isActive: true } }))} AI models.`,
         content: reportContent,
       },
       create: {
         cycleId,
-        title: "March 2026 AI Search Arena Benchmark",
-        slug: "march-2026",
-        executiveSummary: `First benchmark cycle evaluating ${compositeScores.length} GEO/AEO tools across 51 dimensions using 6 AI models.`,
+        title: reportTitle,
+        slug: reportSlug,
+        executiveSummary: `Benchmark cycle evaluating ${compositeScores.length} GEO/AEO tools across ${scoreCount} dimension-scores using ${(await prisma.aIModel.count({ where: { isActive: true } }))} AI models.`,
         content: reportContent,
       },
     });
