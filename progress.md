@@ -761,3 +761,57 @@ Fix: Replaced custom parser with `yaml` npm package (`yaml@^2.8.2`). The 5KB dep
 - Env vars set on Vercel: `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` (base64), `JWT_SECRET`
 - Production deploy successful, admin login verified at aisearcharena.com/admin
 - Commits: `cccbfae` (feat), `776ff68` (build fix)
+
+---
+
+## Sprint 2: Admin Panel — Operator Console
+
+### 2026-03-07 - Sprint 2 Complete
+
+**Objective:** Wire all admin backend logic (lib/db/, lib/state-machine/) to functional UI pages so the operator can create and run a full benchmark cycle from the admin panel.
+
+**Shared Components Created:**
+
+- `components/admin/state-badge.tsx` — Color-coded CycleState badge (10 states mapped)
+- `components/admin/confirm-dialog.tsx` — Native `<dialog>` modal with showModal()/close()
+- `components/admin/data-table.tsx` — Generic typed table wrapper with shadcn/ui Table
+
+**Server Actions Created (7 files):**
+
+- `app/actions/admin/cycles.ts` — createCycleAction (with redirect handling)
+- `app/actions/admin/cycle-transitions.ts` — transitionCycleAction
+- `app/actions/admin/enrollments.ts` — enrollToolAction, withdrawToolAction, enrollAllInTrackAction
+- `app/actions/admin/vendors.ts` — createVendorAction (auto-generates slug)
+- `app/actions/admin/tools.ts` — createToolAction (multi-select tracks/segments), archiveToolAction
+- `app/actions/admin/models.ts` — toggleModelActiveAction, updateModelTimeoutAction
+- `app/actions/admin/methodology.ts` — lockMethodologyAction
+
+**Admin Pages Created/Replaced:**
+
+- T1: `app/(admin)/admin/(authenticated)/page.tsx` — Dashboard with active cycle, quick stats, recent cycles
+- T2: `app/(admin)/admin/(authenticated)/cycles/page.tsx` + `create-cycle-form.tsx` — Cycles list with create form
+- T3: `app/(admin)/admin/(authenticated)/cycles/[id]/page.tsx` + `transition-controls.tsx` — Cycle detail with state machine controls, enrollment summary
+- T4: `app/(admin)/admin/(authenticated)/cycles/[id]/enrollment/page.tsx` + `enrollment-list.tsx` — Tool enrollment management with per-track grouping, enroll/withdraw/enroll-all
+- T5: `app/(admin)/admin/(authenticated)/vendors/page.tsx` + `add-vendor-form.tsx` — Vendors table with add form
+- T5: `app/(admin)/admin/(authenticated)/tools/page.tsx` + `add-tool-form.tsx` + `archive-tool-button.tsx` — Tools table with add form and archive
+- T6: `app/(admin)/admin/(authenticated)/models/page.tsx` + `model-row-actions.tsx` — Models table with inline status toggle and timeout editor
+- T7: `app/(admin)/admin/(authenticated)/methodology/page.tsx` + `lock-button.tsx` — Methodology viewer with dimension tables and lock button
+
+**Issues Fixed:**
+
+1. **AIModel schema field mismatch** — Agent-generated code used `modelName` but Prisma schema has `displayName`. Fixed in models page and model-row-actions component.
+
+**Build Verification:**
+
+- `npx tsc --noEmit` — PASSES (zero type errors)
+- `npm run build` — PASSES (15 static + 10 dynamic routes, zero errors)
+- All 8 admin routes verified in build output: /admin, /admin/cycles, /admin/cycles/[id], /admin/cycles/[id]/enrollment, /admin/methodology, /admin/models, /admin/tools, /admin/vendors
+
+**Patterns Used:**
+
+- Server Components (async) for all pages — data fetched at top level
+- Client Components ("use client") for interactive elements
+- Server Actions ("use server") returning `{ ok: boolean, message: string }`
+- `useActionState` hook (React 19) for form state management
+- Next.js 15 Promise-based params: `params: Promise<{ id: string }>`
+- Separate `<form>` + `requestSubmit()` pattern for ConfirmDialog integration

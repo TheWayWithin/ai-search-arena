@@ -642,6 +642,40 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 - [x] Fixed missing publishedAt on cycle (set on report but not cycle)
 - [x] Added publishedAt stamp to Publication → Completed transition
 
+## Sprint 2: Admin Panel — Operator Console
+
+**Status**: complete
+**Objective**: Wire backend logic to functional admin UI pages so the operator can create and run a full benchmark cycle entirely from the admin panel.
+
+### Sprint 2 Tasks
+
+- [x] Shared components: state-badge, confirm-dialog, data-table — 2026-03-07
+- [x] T1: Admin Dashboard page — 2026-03-07
+- [x] T2: Cycles List + Create Cycle — 2026-03-07
+- [x] T3: Cycle Detail + State Transitions — 2026-03-07
+- [x] T4: Tool Enrollment Dashboard — 2026-03-07
+- [x] T5: Vendors & Tools Management — 2026-03-07
+- [x] T6: AI Models Management — 2026-03-07
+- [x] T7: Methodology Viewer — 2026-03-07
+- [x] Build verification (tsc + next build) — 2026-03-07
+
+### Sprint 2 Quality Gates
+
+- [x] `npx tsc --noEmit` passes (zero type errors) — 2026-03-07
+- [x] `npm run build` passes (15 static + 10 dynamic routes) — 2026-03-07
+- [x] All 8 admin routes compile: /admin, /admin/cycles, /admin/cycles/[id], /admin/cycles/[id]/enrollment, /admin/methodology, /admin/models, /admin/tools, /admin/vendors
+
+### Sprint 2 Summary
+
+| Metric | Value |
+| --- | --- |
+| Tickets | 7 (T1-T7) + 3 shared components |
+| Server Actions | 7 files, 10 actions total |
+| Pages Created | 8 routes (15 files: pages + client components) |
+| Key Patterns | Server Components, useActionState, state machine UI |
+
+---
+
 ## P1 Backlog (Post-Launch)
 
 | ID        | Feature                           | Dependencies | FP Estimate |
