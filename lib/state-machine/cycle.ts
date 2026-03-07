@@ -1,5 +1,6 @@
 import { CycleState } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { openReviewWindow } from "@/lib/db/vendor-reviews";
 
 /**
  * Valid state transitions for the BenchmarkCycle state machine.
@@ -98,6 +99,11 @@ const TRANSITION_SIDE_EFFECTS: Record<string, TransitionSideEffect> = {
         data: { isLocked: true, lockedAt: new Date() },
       });
     }
+  },
+
+  "Review->VendorReview": async (cycleId) => {
+    // F-015: Open vendor review window and send notification emails
+    await openReviewWindow(cycleId);
   },
 };
 

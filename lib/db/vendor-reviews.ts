@@ -1,6 +1,12 @@
+import { randomBytes } from "crypto";
 import { ReviewStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@prisma/client";
+import {
+  sendReviewWindowOpenedEmail,
+  sendCorrectionAcceptedEmail,
+  sendCorrectionRejectedEmail,
+} from "@/lib/email/vendor-review-emails";
 
 /**
  * Open vendor review window for a cycle.
@@ -14,6 +20,11 @@ export async function openReviewWindow(cycleId: string) {
     include: {
       tool: { include: { vendor: true } },
     },
+  });
+
+  const cycle = await prisma.benchmarkCycle.findUniqueOrThrow({
+    where: { id: cycleId },
+    select: { displayName: true },
   });
 
   const reviews = [];
@@ -37,13 +48,30 @@ export async function openReviewWindow(cycleId: string) {
         status: ReviewStatus.Pending,
         windowOpensAt,
         windowClosesAt,
+        accessToken: randomBytes(32).toString("hex"),
       },
     });
 
     reviews.push(review);
   }
 
-  return { reviews, windowClosesAt };
+  // Send notification emails to vendors with contact emails
+  const emailResults: { vendorId: string; success: boolean; error?: string }[] = [];
+  for (const enrollment of enrollments) {
+    const vendor = enrollment.tool.vendor;
+    if (!vendor?.contactEmail) continue;
+
+    const review = reviews.find((r) => r.vendorId === vendor.id);
+    if (!review) continue;
+
+    const result = await sendReviewWindowOpenedEmail(vendor, {
+      ...review,
+      cycle,
+    });
+    emailResults.push({ vendorId: vendor.id, ...result });
+  }
+
+  return { reviews, windowClosesAt, emailResults };
 }
 
 /**
@@ -97,14 +125,24 @@ export async function submitCorrection(data: {
  * Status transitions to Completed with acceptance notes.
  */
 export async function acceptCorrection(vendorReviewId: string, operatorNotes: string) {
-  return prisma.vendorReview.update({
+  const review = await prisma.vendorReview.update({
     where: { id: vendorReviewId },
     data: {
       status: ReviewStatus.Completed,
       operatorNotes: `ACCEPTED: ${operatorNotes}`,
       completedAt: new Date(),
     },
+    include: {
+      vendor: true,
+      cycle: { select: { displayName: true } },
+    },
   });
+
+  if (review.vendor.contactEmail) {
+    await sendCorrectionAcceptedEmail(review.vendor, review);
+  }
+
+  return review;
 }
 
 /**
@@ -117,14 +155,24 @@ export async function rejectCorrection(vendorReviewId: string, operatorNotes: st
     throw new Error("Rejection reason is required");
   }
 
-  return prisma.vendorReview.update({
+  const review = await prisma.vendorReview.update({
     where: { id: vendorReviewId },
     data: {
       status: ReviewStatus.Completed,
       operatorNotes: `REJECTED: ${operatorNotes}`,
       completedAt: new Date(),
     },
+    include: {
+      vendor: true,
+      cycle: { select: { displayName: true } },
+    },
   });
+
+  if (review.vendor.contactEmail) {
+    await sendCorrectionRejectedEmail(review.vendor, review);
+  }
+
+  return review;
 }
 
 /**
