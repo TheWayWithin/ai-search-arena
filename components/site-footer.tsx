@@ -37,6 +37,9 @@ export function SiteFooter() {
             <Link href="/about" className="hover:text-arena-slate">
               About
             </Link>
+            <Link href="/contact" className="hover:text-arena-slate">
+              Contact
+            </Link>
           </nav>
         </div>
       </div>
