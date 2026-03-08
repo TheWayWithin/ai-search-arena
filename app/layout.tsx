@@ -20,15 +20,25 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "AI Search Arena",
-    title: "AI Search Arena - Independent AI Search Tool Benchmarks",
+    title: "AI Search Arena - Independent AI SEO Tool Rankings",
     description:
-      "Monthly independent benchmarks evaluating 27+ AI search optimization tools against 50+ standardized metrics.",
+      "Weekly benchmark cycles evaluating 32 AI SEO tools across 51 dimensions with 6 independent AI judges. See current rankings.",
     url: "https://aisearcharena.com",
+    images: [
+      {
+        url: "https://aisearcharena.com/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AI Search Arena - Top Evaluated Tools leaderboard showing BrightEdge, Semrush, Conductor, seoClarity rankings",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Search Arena",
-    description: "Independent monthly benchmarks for AI search optimization tools.",
+    title: "AI Search Arena - Independent AI SEO Tool Rankings",
+    description:
+      "Weekly benchmark cycles evaluating 32 AI SEO tools. See current rankings.",
+    images: ["https://aisearcharena.com/og-image.png"],
   },
   alternates: {
     canonical: "https://aisearcharena.com",
