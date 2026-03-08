@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getLeaderboardData, getMarketSegments, getPublishedCycles } from "@/lib/db/leaderboard";
+import {
+  getLeaderboardData,
+  getMarketSegments,
+  getPublishedCycles,
+  getRankMovement,
+} from "@/lib/db/leaderboard";
 import { LeaderboardTable } from "@/components/leaderboard-table";
 import { CycleSelector } from "@/components/cycle-selector";
 
@@ -55,26 +60,39 @@ export default async function LeaderboardPage({ searchParams }: Props) {
   const activeSegment = segment ? (segments.find((s) => s.slug === segment) ?? null) : null;
   const segmentId = activeSegment?.id ?? null;
 
-  const compositeScores = await getLeaderboardData(activeCycle.id, segmentId);
+  const [compositeScores, trendMap] = await Promise.all([
+    getLeaderboardData(activeCycle.id, segmentId),
+    getRankMovement(activeCycle.id, segmentId),
+  ]);
 
   // Serialize for client component (Decimal -> string)
-  const serializedScores = compositeScores.map((cs) => ({
-    id: cs.id,
-    rank: cs.rank,
-    value: cs.value.toString(),
-    confidenceTag: cs.confidenceTag,
-    tool: {
-      slug: cs.tool.slug,
-      name: cs.tool.name,
-      vendor: cs.tool.vendor
-        ? { companyName: cs.tool.vendor.companyName, slug: cs.tool.vendor.slug }
+  const serializedScores = compositeScores.map((cs) => {
+    const trend = trendMap.get(cs.tool.id) ?? null;
+    return {
+      id: cs.id,
+      rank: cs.rank,
+      value: cs.value.toString(),
+      confidenceTag: cs.confidenceTag,
+      trend: trend
+        ? {
+            previousRank: trend.previousRank,
+            rankDelta: trend.rankDelta,
+            isNew: trend.isNew,
+          }
         : null,
-      badges: cs.tool.badges.map((b) => ({
-        tier: b.tier as "Gold" | "Silver" | "Bronze",
-        label: b.label,
-      })),
-    },
-  }));
+      tool: {
+        slug: cs.tool.slug,
+        name: cs.tool.name,
+        vendor: cs.tool.vendor
+          ? { companyName: cs.tool.vendor.companyName, slug: cs.tool.vendor.slug }
+          : null,
+        badges: cs.tool.badges.map((b) => ({
+          tier: b.tier as "Gold" | "Silver" | "Bronze",
+          label: b.label,
+        })),
+      },
+    };
+  });
 
   const jsonLd = {
     "@context": "https://schema.org",

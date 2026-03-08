@@ -1,5 +1,6 @@
 import { BadgeTier } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { getMostImproved, getPreviousCycle } from "@/lib/db/leaderboard";
 
 /**
  * Award badges for a completed benchmark cycle.
@@ -125,6 +126,83 @@ export async function awardCycleBadges(cycleId: string): Promise<number> {
       },
     });
     badgeCount++;
+  }
+
+  // ── Most Improved badge ────────────────────────────────────────
+  const mostImproved = await getMostImproved(cycleId);
+  if (mostImproved) {
+    const toolComposite = overallScores.find((s) => s.toolId === mostImproved.toolId);
+    await prisma.badge.upsert({
+      where: {
+        cycleId_toolId_badgeType: {
+          cycleId,
+          toolId: mostImproved.toolId,
+          badgeType: "Most Improved",
+        },
+      },
+      update: {
+        tier: BadgeTier.Gold,
+        label: "Most Improved",
+        description: `Improved by +${mostImproved.delta.toFixed(1)} points from previous cycle`,
+        compositeScoreId: toolComposite?.id ?? null,
+      },
+      create: {
+        cycleId,
+        toolId: mostImproved.toolId,
+        compositeScoreId: toolComposite?.id ?? null,
+        tier: BadgeTier.Gold,
+        badgeType: "Most Improved",
+        label: "Most Improved",
+        description: `Improved by +${mostImproved.delta.toFixed(1)} points from previous cycle`,
+      },
+    });
+    badgeCount++;
+  }
+
+  // ── New to Arena badges ──────────────────────────────────────────
+  const previousCycle = await getPreviousCycle(cycleId);
+  if (previousCycle) {
+    // Only award "New to Arena" when there IS a previous cycle
+    const previousToolIds = await prisma.compositeScore.findMany({
+      where: { cycleId: previousCycle.id, segmentId: null },
+      select: { toolId: true },
+    });
+    const prevToolSet = new Set(previousToolIds.map((s) => s.toolId));
+
+    const currentScores = await prisma.compositeScore.findMany({
+      where: { cycleId, segmentId: null },
+      include: { tool: true },
+    });
+
+    for (const cs of currentScores) {
+      if (prevToolSet.has(cs.toolId)) continue;
+
+      await prisma.badge.upsert({
+        where: {
+          cycleId_toolId_badgeType: {
+            cycleId,
+            toolId: cs.toolId,
+            badgeType: "New to Arena",
+          },
+        },
+        update: {
+          tier: BadgeTier.Bronze,
+          label: "New to Arena",
+          description: `First appearance in the benchmark`,
+          compositeScoreId: cs.id,
+        },
+        create: {
+          cycleId,
+          toolId: cs.toolId,
+          compositeScoreId: cs.id,
+          tier: BadgeTier.Bronze,
+          badgeType: "New to Arena",
+          label: "New to Arena",
+          description: `First appearance in the benchmark`,
+        },
+      });
+      badgeCount++;
+    }
   }
 
   return badgeCount;

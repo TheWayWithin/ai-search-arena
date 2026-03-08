@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { getPublishedCycles, getToolDetail } from "@/lib/db/leaderboard";
+import { getPublishedCycles, getToolDetail, getToolScoreHistory } from "@/lib/db/leaderboard";
 import { Badge } from "@/components/ui/badge";
 import { TierBadge } from "@/components/tier-badge";
 import { CycleSelector } from "@/components/cycle-selector";
+import { ScoreHistoryChart } from "@/components/score-history-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -83,6 +84,9 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
   const compositeScore = detail?.compositeScore ?? null;
   const cycle = detail?.cycle ?? null;
   const badges = detail?.badges ?? [];
+
+  // Fetch score history for chart (all cycles)
+  const scoreHistory = await getToolScoreHistory(slug);
 
   // Group scores by category
   const scoresByCategory = new Map<string, typeof scores>();
@@ -204,6 +208,20 @@ export default async function ToolDetailPage({ params, searchParams }: Props) {
               </Badge>
             ))}
           </div>
+        )}
+
+        {/* Score History Chart */}
+        {scoreHistory.length >= 2 && (
+          <Card className="mt-6">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-arena-slate text-lg font-semibold">
+                Score History
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScoreHistoryChart data={scoreHistory} />
+            </CardContent>
+          </Card>
         )}
 
         {/* Pre-launch state */}

@@ -228,6 +228,168 @@ export async function getPublishedCyclesWithStats() {
   }));
 }
 
+/**
+ * Get the previous published cycle before a given cycle.
+ */
+export async function getPreviousCycle(currentCycleId: string) {
+  const currentCycle = await prisma.benchmarkCycle.findUnique({
+    where: { id: currentCycleId },
+    select: { publishedAt: true },
+  });
+  if (!currentCycle?.publishedAt) return null;
+
+  return prisma.benchmarkCycle.findFirst({
+    where: {
+      state: "Completed",
+      publishedAt: { lt: currentCycle.publishedAt },
+    },
+    select: { id: true, cycleIdentifier: true, displayName: true },
+    orderBy: { publishedAt: "desc" },
+  });
+}
+
+/**
+ * Get rank movement data for all tools between current and previous cycle.
+ * Returns a map of toolId -> { previousRank, currentRank, rankDelta, isNew }.
+ */
+export async function getRankMovement(
+  currentCycleId: string,
+  segmentId: string | null = null
+): Promise<
+  Map<
+    string,
+    { previousRank: number | null; currentRank: number; rankDelta: number | null; isNew: boolean }
+  >
+> {
+  const previousCycle = await getPreviousCycle(currentCycleId);
+  const result = new Map<
+    string,
+    { previousRank: number | null; currentRank: number; rankDelta: number | null; isNew: boolean }
+  >();
+
+  // Get current cycle ranks
+  const currentScores = await prisma.compositeScore.findMany({
+    where: { cycleId: currentCycleId, segmentId },
+    select: { toolId: true, rank: true },
+  });
+
+  if (!previousCycle) {
+    // No previous cycle — all tools are "new" (first cycle)
+    for (const cs of currentScores) {
+      result.set(cs.toolId, {
+        previousRank: null,
+        currentRank: cs.rank,
+        rankDelta: null,
+        isNew: true,
+      });
+    }
+    return result;
+  }
+
+  // Get previous cycle ranks
+  const previousScores = await prisma.compositeScore.findMany({
+    where: { cycleId: previousCycle.id, segmentId },
+    select: { toolId: true, rank: true },
+  });
+
+  const prevRankMap = new Map(previousScores.map((s) => [s.toolId, s.rank]));
+
+  for (const cs of currentScores) {
+    const prevRank = prevRankMap.get(cs.toolId) ?? null;
+    result.set(cs.toolId, {
+      previousRank: prevRank,
+      currentRank: cs.rank,
+      // Positive delta = improved (moved up), negative = declined
+      rankDelta: prevRank !== null ? prevRank - cs.rank : null,
+      isNew: prevRank === null,
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Get composite score history for a tool across published cycles.
+ * Returns scores ordered oldest → newest for chart rendering.
+ */
+export async function getToolScoreHistory(toolSlug: string, limit: number = 12) {
+  const tool = await prisma.tool.findUnique({
+    where: { slug: toolSlug },
+    select: { id: true },
+  });
+  if (!tool) return [];
+
+  const scores = await prisma.compositeScore.findMany({
+    where: {
+      toolId: tool.id,
+      segmentId: null,
+      cycle: { state: "Completed" },
+    },
+    include: {
+      cycle: {
+        select: {
+          cycleIdentifier: true,
+          displayName: true,
+          publishedAt: true,
+        },
+      },
+    },
+    orderBy: { cycle: { publishedAt: "desc" } },
+    take: limit,
+  });
+
+  // Return oldest first for chart x-axis
+  return scores.reverse().map((s) => ({
+    cycleIdentifier: s.cycle.cycleIdentifier,
+    displayName: s.cycle.displayName,
+    score: Number(s.value),
+    rank: s.rank,
+    publishedAt: s.cycle.publishedAt,
+  }));
+}
+
+/**
+ * Get the "most improved" tool between two cycles (largest positive composite score delta).
+ */
+export async function getMostImproved(currentCycleId: string) {
+  const previousCycle = await getPreviousCycle(currentCycleId);
+  if (!previousCycle) return null;
+
+  const currentScores = await prisma.compositeScore.findMany({
+    where: { cycleId: currentCycleId, segmentId: null },
+    include: { tool: true },
+  });
+
+  const previousScores = await prisma.compositeScore.findMany({
+    where: { cycleId: previousCycle.id, segmentId: null },
+    select: { toolId: true, value: true },
+  });
+
+  const prevScoreMap = new Map(previousScores.map((s) => [s.toolId, Number(s.value)]));
+
+  let bestDelta = -Infinity;
+  let bestTool: { toolId: string; toolName: string; delta: number; currentScore: number } | null =
+    null;
+
+  for (const cs of currentScores) {
+    const prevScore = prevScoreMap.get(cs.toolId);
+    if (prevScore === undefined) continue; // Skip new tools
+
+    const delta = Number(cs.value) - prevScore;
+    if (delta > bestDelta && delta > 0) {
+      bestDelta = delta;
+      bestTool = {
+        toolId: cs.toolId,
+        toolName: cs.tool.name,
+        delta,
+        currentScore: Number(cs.value),
+      };
+    }
+  }
+
+  return bestTool;
+}
+
 export async function getMethodologyData() {
   const methodology = await prisma.methodologyVersion.findFirst({
     where: { isLocked: true },

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { TierBadge } from "@/components/tier-badge";
+import { TrendIndicator } from "@/components/trend-indicator";
 import {
   Table,
   TableBody,
@@ -19,11 +20,18 @@ type BadgeData = {
   label: string;
 };
 
+type TrendData = {
+  previousRank: number | null;
+  rankDelta: number | null;
+  isNew: boolean;
+};
+
 type CompositeScoreRow = {
   id: string;
   rank: number;
   value: string;
   confidenceTag: string;
+  trend: TrendData | null;
   tool: {
     slug: string;
     name: string;
@@ -89,6 +97,7 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
               <TableHead className="w-10 text-center sm:w-16">Rank</TableHead>
               <TableHead>Tool</TableHead>
               <TableHead className="hidden md:table-cell">Vendor</TableHead>
+              <TableHead className="hidden w-16 text-center sm:table-cell">Trend</TableHead>
               <TableHead className="w-20 text-center sm:w-28">Score</TableHead>
               <TableHead className="hidden w-28 text-center sm:table-cell">Confidence</TableHead>
             </TableRow>
@@ -139,6 +148,9 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
                     </Link>
                   ) : null}
                 </TableCell>
+                <TableCell className="hidden text-center sm:table-cell">
+                  <TrendIndicator trend={cs.trend} />
+                </TableCell>
                 <TableCell className="text-center">
                   <span className="text-arena-slate text-lg font-bold">
                     {Number(cs.value).toFixed(1)}
@@ -154,7 +166,7 @@ export function LeaderboardTable({ compositeScores, emptyMessage }: Props) {
             ))}
             {compositeScores.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="text-arena-slate-light py-8 text-center">
+                <TableCell colSpan={7} className="text-arena-slate-light py-8 text-center">
                   {emptyMessage}
                 </TableCell>
               </TableRow>
