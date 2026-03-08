@@ -669,104 +669,117 @@ Provide your score and rationale.`;
   // ── Stage 7: Synthesize scores ──────────────────────────────────
 
   if (cycle.state === CycleState.Synthesis) {
-    log("SYNTH", "Synthesizing scores (median aggregation)...");
-
-    const evaluations = await prisma.modelEvaluation.findMany({
+    // Check if synthesis already completed (resumability)
+    const existingSynthCount = await prisma.synthesisRecord.count({
+      where: { score: { cycleId } },
+    });
+    const expectedGroups = await prisma.modelEvaluation.groupBy({
+      by: ["toolId", "dimensionId"],
       where: { cycleId },
     });
 
-    // Group by (toolId, dimensionId)
-    const groups = new Map<
-      string,
-      { modelId: string; parsedScore: number | null; status: string; id: string }[]
-    >();
-    for (const e of evaluations) {
-      const key = `${e.toolId}:${e.dimensionId}`;
-      const group = groups.get(key) ?? [];
-      group.push({
-        modelId: e.modelId,
-        parsedScore: e.parsedScore ? Number(e.parsedScore) : null,
-        status: e.status,
-        id: e.id,
+    if (existingSynthCount >= expectedGroups.length) {
+      log("SYNTH", `Synthesis already complete (${existingSynthCount} records), skipping to composites...`);
+    } else {
+      log("SYNTH", "Synthesizing scores (median aggregation)...");
+
+      const evaluations = await prisma.modelEvaluation.findMany({
+        where: { cycleId },
       });
-      groups.set(key, group);
-    }
 
-    let scoreCount = 0;
-    const groupEntries = Array.from(groups.entries());
-    for (const [key, groupEvals] of groupEntries) {
-      const [toolId, dimensionId] = key.split(":");
-
-      const successfulScores = groupEvals
-        .filter((e) => e.status === "Success" && e.parsedScore !== null)
-        .map((e) => e.parsedScore as number);
-
-      const modelsSucceeded = successfulScores.length;
-      const modelsFailed = groupEvals.length - modelsSucceeded;
-
-      let medianValue = 0;
-      let confidenceTag: ConfidenceTag = ConfidenceTag.InsufficientData;
-      let agreementMetric = 0;
-
-      if (modelsSucceeded > 0) {
-        medianValue = roundHalfUp(computeMedian(successfulScores));
-
-        // Standard deviation for confidence
-        const mean = successfulScores.reduce((a, b) => a + b, 0) / successfulScores.length;
-        const variance =
-          successfulScores.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) /
-          successfulScores.length;
-        const stdDev = Math.sqrt(variance);
-
-        if (modelsSucceeded < 4) {
-          confidenceTag = ConfidenceTag.InsufficientData;
-        } else if (stdDev <= 0.5) {
-          confidenceTag = ConfidenceTag.High;
-        } else if (stdDev <= 1.5) {
-          confidenceTag = ConfidenceTag.Medium;
-        } else {
-          confidenceTag = ConfidenceTag.Low;
-        }
-
-        agreementMetric = roundHalfUp(Math.max(0, 1 - stdDev / 5));
+      // Group by (toolId, dimensionId)
+      const groups = new Map<
+        string,
+        { modelId: string; parsedScore: number | null; status: string; id: string }[]
+      >();
+      for (const e of evaluations) {
+        const key = `${e.toolId}:${e.dimensionId}`;
+        const group = groups.get(key) ?? [];
+        group.push({
+          modelId: e.modelId,
+          parsedScore: e.parsedScore ? Number(e.parsedScore) : null,
+          status: e.status,
+          id: e.id,
+        });
+        groups.set(key, group);
       }
 
-      // Upsert Score
-      const score = await prisma.score.upsert({
-        where: {
-          cycleId_toolId_dimensionId: { cycleId, toolId, dimensionId },
-        },
-        update: { value: medianValue, confidenceTag },
-        create: { cycleId, toolId, dimensionId, value: medianValue, confidenceTag },
-      });
+      let scoreCount = 0;
+      const groupEntries = Array.from(groups.entries());
+      for (const [key, groupEvals] of groupEntries) {
+        const [toolId, dimensionId] = key.split(":");
 
-      // Upsert SynthesisRecord
-      await prisma.synthesisRecord.upsert({
-        where: { scoreId: score.id },
-        update: {
-          modelsSucceeded,
-          modelsFailed,
-          medianValue,
-          agreementMetric,
-          confidenceTag,
-          sourceModelIds: groupEvals.map((e) => e.id),
-        },
-        create: {
-          scoreId: score.id,
-          dimensionId,
-          modelsSucceeded,
-          modelsFailed,
-          medianValue,
-          agreementMetric,
-          confidenceTag,
-          sourceModelIds: groupEvals.map((e) => e.id),
-        },
-      });
+        const successfulScores = groupEvals
+          .filter((e) => e.status === "Success" && e.parsedScore !== null)
+          .map((e) => e.parsedScore as number);
 
-      scoreCount++;
+        const modelsSucceeded = successfulScores.length;
+        const modelsFailed = groupEvals.length - modelsSucceeded;
+
+        let medianValue = 0;
+        let confidenceTag: ConfidenceTag = ConfidenceTag.InsufficientData;
+        let agreementMetric = 0;
+
+        if (modelsSucceeded > 0) {
+          medianValue = roundHalfUp(computeMedian(successfulScores));
+
+          // Standard deviation for confidence
+          const mean = successfulScores.reduce((a, b) => a + b, 0) / successfulScores.length;
+          const variance =
+            successfulScores.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) /
+            successfulScores.length;
+          const stdDev = Math.sqrt(variance);
+
+          if (modelsSucceeded < 4) {
+            confidenceTag = ConfidenceTag.InsufficientData;
+          } else if (stdDev <= 0.5) {
+            confidenceTag = ConfidenceTag.High;
+          } else if (stdDev <= 1.5) {
+            confidenceTag = ConfidenceTag.Medium;
+          } else {
+            confidenceTag = ConfidenceTag.Low;
+          }
+
+          agreementMetric = roundHalfUp(Math.max(0, 1 - stdDev / 5));
+        }
+
+        // Upsert Score
+        const score = await prisma.score.upsert({
+          where: {
+            cycleId_toolId_dimensionId: { cycleId, toolId, dimensionId },
+          },
+          update: { value: medianValue, confidenceTag },
+          create: { cycleId, toolId, dimensionId, value: medianValue, confidenceTag },
+        });
+
+        // Upsert SynthesisRecord
+        await prisma.synthesisRecord.upsert({
+          where: { scoreId: score.id },
+          update: {
+            modelsSucceeded,
+            modelsFailed,
+            medianValue,
+            agreementMetric,
+            confidenceTag,
+            sourceModelIds: groupEvals.map((e) => e.id),
+          },
+          create: {
+            scoreId: score.id,
+            dimensionId,
+            modelsSucceeded,
+            modelsFailed,
+            medianValue,
+            agreementMetric,
+            confidenceTag,
+            sourceModelIds: groupEvals.map((e) => e.id),
+          },
+        });
+
+        scoreCount++;
+      }
+
+      log("SYNTH", `✓ ${scoreCount} scores synthesized`);
     }
-
-    log("SYNTH", `✓ ${scoreCount} scores synthesized`);
 
     // ── Stage 8: Composite scores + rankings ──────────────────────
 
