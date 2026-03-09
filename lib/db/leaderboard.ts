@@ -230,7 +230,10 @@ export async function getPublishedCyclesWithStats() {
 
 /**
  * Get the previous published cycle before a given cycle.
+ * Skips partial/test cycles (fewer than MIN_TOOLS_FOR_FULL_CYCLE overall composite scores).
  */
+const MIN_TOOLS_FOR_FULL_CYCLE = 5;
+
 export async function getPreviousCycle(currentCycleId: string) {
   const currentCycle = await prisma.benchmarkCycle.findUnique({
     where: { id: currentCycleId },
@@ -238,14 +241,30 @@ export async function getPreviousCycle(currentCycleId: string) {
   });
   if (!currentCycle?.publishedAt) return null;
 
-  return prisma.benchmarkCycle.findFirst({
+  // Find completed cycles before this one, ordered newest first
+  const candidates = await prisma.benchmarkCycle.findMany({
     where: {
       state: "Completed",
       publishedAt: { lt: currentCycle.publishedAt },
     },
-    select: { id: true, cycleIdentifier: true, displayName: true },
+    select: {
+      id: true,
+      cycleIdentifier: true,
+      displayName: true,
+      _count: { select: { compositeScores: { where: { segmentId: null } } } },
+    },
     orderBy: { publishedAt: "desc" },
   });
+
+  // Return the first cycle with enough tools (skip partial/test runs)
+  const fullCycle = candidates.find((c) => c._count.compositeScores >= MIN_TOOLS_FOR_FULL_CYCLE);
+  if (!fullCycle) return null;
+
+  return {
+    id: fullCycle.id,
+    cycleIdentifier: fullCycle.cycleIdentifier,
+    displayName: fullCycle.displayName,
+  };
 }
 
 /**
@@ -309,8 +328,8 @@ export async function getRankMovement(
 }
 
 /**
- * Get composite score history for a tool across published cycles.
- * Returns scores ordered oldest → newest for chart rendering.
+ * Get composite score history for a tool across published full cycles.
+ * Skips partial/test cycles. Returns scores ordered oldest → newest for chart rendering.
  */
 export async function getToolScoreHistory(toolSlug: string, limit: number = 12) {
   const tool = await prisma.tool.findUnique({
@@ -319,11 +338,14 @@ export async function getToolScoreHistory(toolSlug: string, limit: number = 12) 
   });
   if (!tool) return [];
 
+  // Get IDs of full cycles (those with enough tools scored)
+  const fullCycleIds = await getFullCycleIds();
+
   const scores = await prisma.compositeScore.findMany({
     where: {
       toolId: tool.id,
       segmentId: null,
-      cycle: { state: "Completed" },
+      cycleId: { in: fullCycleIds },
     },
     include: {
       cycle: {
@@ -346,6 +368,23 @@ export async function getToolScoreHistory(toolSlug: string, limit: number = 12) 
     rank: s.rank,
     publishedAt: s.cycle.publishedAt,
   }));
+}
+
+/**
+ * Get IDs of all completed cycles that have enough tools to be considered "full" cycles.
+ * Used to filter out partial/test runs from trend features.
+ */
+async function getFullCycleIds(): Promise<string[]> {
+  const cycles = await prisma.benchmarkCycle.findMany({
+    where: { state: "Completed" },
+    select: {
+      id: true,
+      _count: { select: { compositeScores: { where: { segmentId: null } } } },
+    },
+  });
+  return cycles
+    .filter((c) => c._count.compositeScores >= MIN_TOOLS_FOR_FULL_CYCLE)
+    .map((c) => c.id);
 }
 
 /**
