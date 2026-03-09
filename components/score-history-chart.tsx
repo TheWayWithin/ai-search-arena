@@ -11,6 +11,14 @@ type ScoreHistoryChartProps = {
   data: DataPoint[];
 };
 
+function shortLabel(displayName: string): string {
+  // "March 2026 Benchmark" → "Mar 2026", "April 2026 Benchmark (Full)" → "Apr 2026"
+  const match = displayName.match(/^(\w+)\s+(\d{4})/);
+  if (!match) return displayName;
+  const month = match[1].slice(0, 3);
+  return `${month} ${match[2]}`;
+}
+
 export function ScoreHistoryChart({ data }: ScoreHistoryChartProps) {
   if (data.length < 2) return null;
 
@@ -19,18 +27,19 @@ export function ScoreHistoryChart({ data }: ScoreHistoryChartProps) {
   const maxScore = Math.ceil(Math.max(...scores) + 0.5);
   const range = maxScore - minScore || 1;
 
-  // Chart dimensions
-  const width = 100; // percentage-based viewBox
-  const height = 50;
-  const padX = 8;
-  const padTop = 6;
-  const padBottom = 14;
-  const chartW = width - padX * 2;
+  // Chart dimensions — viewBox units (not pixels)
+  const width = 100;
+  const height = 60;
+  const padLeft = 10;
+  const padRight = 10;
+  const padTop = 8;
+  const padBottom = 16;
+  const chartW = width - padLeft - padRight;
   const chartH = height - padTop - padBottom;
 
   // Map data to coordinates
   const points = data.map((d, i) => ({
-    x: padX + (i / (data.length - 1)) * chartW,
+    x: padLeft + (i / (data.length - 1)) * chartW,
     y: padTop + chartH - ((d.score - minScore) / range) * chartH,
     ...d,
   }));
@@ -50,21 +59,25 @@ export function ScoreHistoryChart({ data }: ScoreHistoryChartProps) {
 
   return (
     <div className="w-full">
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full" preserveAspectRatio="xMidYMid meet">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="w-full"
+        preserveAspectRatio="xMidYMid meet"
+      >
         {/* Grid lines */}
         {gridLines.map((g) => (
           <g key={g.label}>
             <line
-              x1={padX}
+              x1={padLeft}
               y1={g.y}
-              x2={width - padX}
+              x2={width - padRight}
               y2={g.y}
               stroke="currentColor"
               strokeWidth="0.15"
               className="text-border"
             />
             <text
-              x={padX - 1}
+              x={padLeft - 1.5}
               y={g.y + 0.8}
               textAnchor="end"
               className="text-arena-slate-light fill-current"
@@ -94,7 +107,7 @@ export function ScoreHistoryChart({ data }: ScoreHistoryChartProps) {
             <circle cx={p.x} cy={p.y} r="1.2" className="fill-mastery-blue" />
             <text
               x={p.x}
-              y={p.y - 2}
+              y={p.y - 2.5}
               textAnchor="middle"
               className="text-arena-slate fill-current font-semibold"
               fontSize="2.8"
@@ -103,19 +116,19 @@ export function ScoreHistoryChart({ data }: ScoreHistoryChartProps) {
             </text>
             <text
               x={p.x}
-              y={padTop + chartH + 4}
+              y={padTop + chartH + 5}
               textAnchor="middle"
               className="text-arena-slate-light fill-current"
-              fontSize="2.2"
+              fontSize="2.4"
             >
-              {p.displayName}
+              {shortLabel(p.displayName)}
             </text>
             <text
               x={p.x}
-              y={padTop + chartH + 7}
+              y={padTop + chartH + 8.5}
               textAnchor="middle"
               className="text-arena-slate-light fill-current"
-              fontSize="1.8"
+              fontSize="2"
             >
               #{p.rank}
             </text>
