@@ -26,6 +26,11 @@ const jsonLd = {
     "@type": "Organization",
     name: "AI Search Mastery",
     url: "https://aisearchmastery.com",
+    sameAs: [
+      "https://aisearcharena.com",
+      "https://llmtxtmastery.com",
+      "https://aimpactscanner.com",
+    ],
   },
 };
 

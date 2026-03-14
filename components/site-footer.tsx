@@ -15,17 +15,47 @@ export function SiteFooter() {
         <div className="border-border my-6 border-t" />
 
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="text-arena-slate-light text-sm">
-            &copy; {new Date().getFullYear()} AI Search Arena. An{" "}
-            <a
-              href="https://aisearchmastery.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-mastery-blue underline underline-offset-2"
-            >
-              AI Search Mastery
-            </a>{" "}
-            project.
+          <div className="text-arena-slate-light space-y-1 text-sm">
+            <p>
+              &copy; {new Date().getFullYear()} AI Search Arena. An{" "}
+              <a
+                href="https://aisearchmastery.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-mastery-blue underline underline-offset-2"
+              >
+                AI Search Mastery
+              </a>{" "}
+              project.
+            </p>
+            <p>
+              <a
+                href="https://aisearchmastery.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-mastery-blue underline underline-offset-2"
+              >
+                AI Search Mastery
+              </a>
+              {" · "}
+              <a
+                href="https://llmtxtmastery.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-mastery-blue underline underline-offset-2"
+              >
+                LLM.txt Mastery
+              </a>
+              {" · "}
+              <a
+                href="https://aimpactscanner.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-mastery-blue underline underline-offset-2"
+              >
+                AImpact Scanner
+              </a>
+            </p>
           </div>
           <nav className="text-arena-slate-light flex gap-4 text-sm">
             <Link href="/methodology" className="hover:text-arena-slate">
