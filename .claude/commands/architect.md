@@ -29,7 +29,6 @@ model: opus
 Generate a comprehensive `architecture.md` document that captures all system design decisions before project planning begins. This bridges the gap between "what to build" (PRD) and "how to build it" (project-plan.md).
 
 **Why This Matters**: PRDs define features but often hand-wave technical decisions. Architecture documentation ensures:
-
 - Tech stack decisions are explicit and justified
 - Integration patterns are defined before coding
 - Data models are designed before implementation
@@ -61,7 +60,6 @@ Before running `/architect`, ensure:
    - Key integrations identified
 
 **Context Sources Used:**
-
 - `prd.yaml` → Features, tech stack preferences, integrations
 - `vision.yaml` → Hedgehog concept, value proposition (informs architectural priorities)
 - `roadmap.yaml` → Keystone products, implementation framework (informs build sequence)
@@ -124,7 +122,6 @@ When you run `/architect` without flags, this is what the user sees:
 ```
 
 **Skip mode selection**: Use `--mode` flag:
-
 ```bash
 /architect --mode auto       # Use PRD defaults
 /architect --mode engaged    # Interactive design session
@@ -187,7 +184,6 @@ Before presenting any decisions, extract and display key context from the PRD:
 ```
 
 **Store this extracted data** - it will be used for:
-
 - Displaying context in each decision
 - Validation pass after decisions complete
 - Schema completeness checking
@@ -197,7 +193,6 @@ Before presenting any decisions, extract and display key context from the PRD:
 ### Decision Flow Example
 
 For each decision, use AskUserQuestion like this:
-
 ```
 question: "Decision 1/8: Application Architecture - Your PRD indicates [features]. Which architecture pattern?"
 header: "Architecture"
@@ -577,7 +572,10 @@ async function runJobWithAdvisoryLock(jobName: string, fn: () => Promise<void>) 
   const lockId = hashStringToInt(jobName); // Stable integer from job name
 
   // Try to acquire advisory lock (non-blocking)
-  const lockResult = await db.query(`SELECT pg_try_advisory_lock($1) as acquired`, [lockId]);
+  const lockResult = await db.query(
+    `SELECT pg_try_advisory_lock($1) as acquired`,
+    [lockId]
+  );
 
   if (!lockResult.rows[0].acquired) {
     console.log(`Job ${jobName} already running on another instance`);
@@ -614,8 +612,8 @@ async function runJobWithAdvisoryLock(jobName: string, fn: () => Promise<void>) 
 }
 
 // UPSTASH RATE LIMITING (Production-safe for distributed)
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
@@ -624,10 +622,10 @@ const redis = new Redis({
 
 // Tier-based rate limits
 const tierLimits = {
-  free: Ratelimit.slidingWindow(10, "1 h"),
-  solo: Ratelimit.slidingWindow(100, "1 h"),
-  growth: Ratelimit.slidingWindow(500, "1 h"),
-  pro: Ratelimit.slidingWindow(2000, "1 h"),
+  free: Ratelimit.slidingWindow(10, '1 h'),
+  solo: Ratelimit.slidingWindow(100, '1 h'),
+  growth: Ratelimit.slidingWindow(500, '1 h'),
+  pro: Ratelimit.slidingWindow(2000, '1 h'),
 };
 
 async function checkRateLimit(userId: string, tier: string): Promise<boolean> {
@@ -644,10 +642,13 @@ async function checkRateLimit(userId: string, tier: string): Promise<boolean> {
 // WEBHOOK IDEMPOTENCY (Prevents duplicate processing)
 async function processWebhook(eventId: string, handler: () => Promise<void>) {
   // Check if already processed
-  const existing = await db.query(`SELECT id FROM webhook_events WHERE id = $1`, [eventId]);
+  const existing = await db.query(
+    `SELECT id FROM webhook_events WHERE id = $1`,
+    [eventId]
+  );
 
   if (existing.rows.length > 0) {
-    return { status: "already_processed" };
+    return { status: 'already_processed' };
   }
 
   // Mark as processing BEFORE handling (prevents race)
@@ -665,10 +666,10 @@ async function processWebhook(eventId: string, handler: () => Promise<void>) {
       [eventId]
     );
   } catch (error) {
-    await db.query(`UPDATE webhook_events SET status = 'failed', error = $2 WHERE id = $1`, [
-      eventId,
-      error.message,
-    ]);
+    await db.query(
+      `UPDATE webhook_events SET status = 'failed', error = $2 WHERE id = $1`,
+      [eventId, error.message]
+    );
     throw error;
   }
 }
@@ -731,7 +732,6 @@ async function processWebhook(eventId: string, handler: () => Promise<void>) {
 ## AUTO MODE
 
 Auto Mode generates architecture.md using:
-
 1. Tech stack from PRD extraction
 2. Sensible defaults for unspecified decisions
 3. Common patterns for the detected project type
@@ -739,7 +739,6 @@ Auto Mode generates architecture.md using:
 **Best for**: Experienced developers who know what they want, or when regenerating after minor PRD changes.
 
 **Defaults Applied**:
-
 - Next.js 14 with App Router (if Next.js mentioned)
 - SSR + Client Components rendering
 - Tailwind CSS + shadcn/ui
@@ -751,7 +750,6 @@ Auto Mode generates architecture.md using:
 - **Production patterns**: Advisory locks, Upstash rate limiting, webhook idempotency
 
 **Auto Mode ALSO runs**:
-
 - PRD Cross-Reference Validation Pass
 - Schema Completeness Check
 - State Machine Extraction
@@ -765,7 +763,6 @@ Auto Mode generates architecture.md using:
 ### Purpose
 
 Prevents architecture-PRD mismatches by validating:
-
 - Terminology consistency (tier names, state names)
 - Entity coverage (all PRD entities have tables)
 - State machine completeness (all states represented)
@@ -778,8 +775,8 @@ Parse from `.context/structured/prd.yaml`:
 
 ```yaml
 # Extract from PRD
-TIER_NAMES: [free, solo, growth, pro] # from pricing.tiers keys
-ENTITIES: [User, Product, Function, ...] # from data_model.entities
+TIER_NAMES: [free, solo, growth, pro]  # from pricing.tiers keys
+ENTITIES: [User, Product, Function, ...]  # from data_model.entities
 STATE_MACHINES:
   - name: Subscription
     states: [trial, trial_cancelled, active, past_due, cancelled, free]
@@ -960,12 +957,12 @@ ALTER TABLE user_profiles
 ```typescript
 // Valid transitions map (from PRD state machine)
 const VALID_TRANSITIONS: Record<SubscriptionStatus, SubscriptionStatus[]> = {
-  trial: ["active", "trial_cancelled", "free"],
-  trial_cancelled: ["free"],
-  active: ["past_due", "cancelled"],
-  past_due: ["active", "free"],
-  cancelled: ["free"],
-  free: ["trial"],
+  'trial': ['active', 'trial_cancelled', 'free'],
+  'trial_cancelled': ['free'],
+  'active': ['past_due', 'cancelled'],
+  'past_due': ['active', 'free'],
+  'cancelled': ['free'],
+  'free': ['trial'],
 };
 
 function canTransition(from: SubscriptionStatus, to: SubscriptionStatus): boolean {
@@ -1202,7 +1199,6 @@ The generated architecture.md follows the template in `templates/architecture.md
 ```
 
 **Output**:
-
 ```
 🏛️ Architect: System Design
 ============================
@@ -1243,7 +1239,6 @@ Next Steps:
 ```
 
 **Output**:
-
 ```
 🏛️ Architect: Auto Mode
 ========================
@@ -1366,11 +1361,10 @@ Select [1/2/3/4]:
 ### Validation Gate
 
 **Architecture generation will STOP if validation fails:**
-
 - Missing entities must be addressed
 - Terminology mismatches must be fixed
 - Incomplete state machines must be completed
 
 ---
 
-_Good architecture is invisible when it works and obvious when it doesn't. PRD validation ensures you don't miss anything._
+*Good architecture is invisible when it works and obvious when it doesn't. PRD validation ensures you don't miss anything.*

@@ -20,7 +20,6 @@ You are executing the `/skills` command to help the user discover and manage ava
 ### 1. Discover Available Skills
 
 **Search for skills in these locations** (in order):
-
 1. `project/skills/*/SKILL.md` - Library skills (deployed with AGENT-11)
 2. `skills/*/SKILL.md` - User/project-specific skills
 
@@ -32,7 +31,6 @@ find . -name "SKILL.md" -type f 2>/dev/null | head -20
 ### 2. Parse Skill Frontmatter
 
 For each SKILL.md found, extract:
-
 - `name` - Skill identifier
 - `version` - Skill version
 - `category` - Category (authentication, payments, database, etc.)
@@ -47,22 +45,20 @@ For each SKILL.md found, extract:
 #### `/skills` (List All)
 
 Output format:
-
 ```markdown
 ## Available SaaS Skills
 
-| Skill             | Category       | Specialist | Triggers             | Tokens |
-| ----------------- | -------------- | ---------- | -------------------- | ------ |
-| saas-auth         | authentication | @developer | auth, login, oauth   | ~3800  |
-| saas-payments     | payments       | @developer | stripe, checkout     | ~4200  |
-| saas-multitenancy | database       | @architect | tenant, org, rls     | ~4100  |
-| saas-billing      | payments       | @developer | billing, plan, quota | ~3900  |
-| saas-email        | communication  | @developer | email, resend        | ~3200  |
-| saas-onboarding   | infrastructure | @developer | onboarding, wizard   | ~3500  |
-| saas-analytics    | analytics      | @analyst   | analytics, tracking  | ~3600  |
+| Skill | Category | Specialist | Triggers | Tokens |
+|-------|----------|------------|----------|--------|
+| saas-auth | authentication | @developer | auth, login, oauth | ~3800 |
+| saas-payments | payments | @developer | stripe, checkout | ~4200 |
+| saas-multitenancy | database | @architect | tenant, org, rls | ~4100 |
+| saas-billing | payments | @developer | billing, plan, quota | ~3900 |
+| saas-email | communication | @developer | email, resend | ~3200 |
+| saas-onboarding | infrastructure | @developer | onboarding, wizard | ~3500 |
+| saas-analytics | analytics | @analyst | analytics, tracking | ~3600 |
 
 **Usage**:
-
 - Skills auto-load when coordinator detects trigger keywords in task descriptions
 - Use `/skills [name]` for detailed skill info
 - Use `/skills match "your task"` to find relevant skills
@@ -71,7 +67,6 @@ Output format:
 #### `/skills [skill-name]` (Skill Details)
 
 Read the full SKILL.md and output:
-
 ```markdown
 ## Skill: saas-auth
 
@@ -82,19 +77,15 @@ Read the full SKILL.md and output:
 **Estimated Tokens**: ~3800
 
 ### Triggers
-
 auth, authentication, login, signup, sign up, sign in, password, session, jwt, oauth, social login, google login, github login, email verification, password reset, magic link
 
 ### Dependencies
-
 None
 
 ### Capability
-
 [Brief capability description from SKILL.md]
 
 ### Key Patterns
-
 - Email/Password Authentication
 - OAuth/Social Login
 - Session Management
@@ -102,21 +93,18 @@ None
 - Rate Limiting
 
 ### Quality Checklist Items
-
 - [ ] Password hashed with bcrypt (cost factor 12+)
 - [ ] Email verification before full access
 - [ ] Session uses httpOnly, secure, sameSite cookies
 - [ ] Rate limiting on auth endpoints
-      ... [truncated for display]
+... [truncated for display]
 
 ### Use This Skill
-
 The coordinator will automatically load this skill when your task includes trigger keywords.
 
 Example:
-
 > "Implement user authentication with Google OAuth"
-> → saas-auth skill auto-loaded for @developer
+→ saas-auth skill auto-loaded for @developer
 ```
 
 #### `/skills match [task]` (Find Matching Skills)
@@ -141,15 +129,12 @@ Parse the task description and match against skill triggers:
    - Specialist: @developer
 
 ### Recommended Loading
-
 For this task, coordinator should load: `saas-auth` + `saas-payments`
 Total token budget: ~8000 tokens
 
 ### Trigger Command
 ```
-
 /coord build "Set up user login with Stripe billing"
-
 ```
 The coordinator will auto-load matched skills when delegating.
 ```
@@ -158,46 +143,39 @@ The coordinator will auto-load matched skills when delegating.
 
 Check for stack profile and show compatibility:
 
-````markdown
+```markdown
 ## Current Stack Profile
 
 **Profile**: nextjs-supabase (v1.0.0)
 **Location**: ./stack-profile.yaml
 
 ### Stack Configuration
-
-| Category | Choice        |
-| -------- | ------------- |
-| Frontend | Next.js 14    |
-| Database | Supabase      |
-| Auth     | Supabase Auth |
-| Payments | Stripe        |
-| Email    | Resend        |
+| Category | Choice |
+|----------|--------|
+| Frontend | Next.js 14 |
+| Database | Supabase |
+| Auth | Supabase Auth |
+| Payments | Stripe |
+| Email | Resend |
 
 ### Skill Compatibility
-
 All 7 SaaS skills support this stack profile.
 
 Skills will use these interpolations:
-
 - `{{stack.frontend.framework}}` → nextjs
 - `{{stack.backend.database}}` → supabase
 - `{{stack.backend.auth_provider}}` → supabase_auth
 
 ### Available Profiles
-
 - nextjs-supabase (current)
 - remix-railway
 - sveltekit-supabase
 
 To switch profiles:
-
 ```bash
 cp templates/stack-profiles/remix-railway.yaml stack-profile.yaml
 ```
-````
-
-````
+```
 
 If no stack profile exists:
 ```markdown
@@ -214,13 +192,12 @@ No `stack-profile.yaml` found in project root.
 2. Copy to project root:
    ```bash
    cp templates/stack-profiles/nextjs-supabase.yaml stack-profile.yaml
-````
+   ```
 
 3. Customize interpolation values in `stack-profile.yaml`
 
 Skills will work without a stack profile, but won't have stack-specific implementations.
-
-````
+```
 
 ## Error Handling
 
@@ -239,9 +216,8 @@ This may mean:
 To install AGENT-11 skills:
 ```bash
 ./install.sh
-````
-
-````
+```
+```
 
 **Invalid skill name**:
 ```markdown
@@ -259,4 +235,4 @@ Available skills:
 - saas-analytics
 
 Use `/skills` to list all available skills.
-````
+```

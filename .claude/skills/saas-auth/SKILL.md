@@ -1,5 +1,6 @@
 ---
 name: saas-auth
+description: Implement production-ready authentication for SaaS applications — email/password, OAuth social login (Google, GitHub), session management, JWT handling, password reset, email verification, and magic links. Use when building signup, sign-in, login, signup, password reset, or any auth-related feature.
 version: 1.0.0
 category: authentication
 triggers:
@@ -58,7 +59,7 @@ async function register(email: string, password: string) {
 
   // 2. Check if user exists
   const existing = await findUserByEmail(email);
-  if (existing) throw new Error("Email already registered");
+  if (existing) throw new Error('Email already registered');
 
   // 3. Hash password with bcrypt (cost factor 12)
   const passwordHash = await bcrypt.hash(password, 12);
@@ -68,7 +69,7 @@ async function register(email: string, password: string) {
     email,
     passwordHash,
     emailVerified: false,
-    createdAt: new Date(),
+    createdAt: new Date()
   });
 
   // 5. Generate verification token (expires in 24h)
@@ -78,7 +79,7 @@ async function register(email: string, password: string) {
   // 6. Send verification email
   await sendVerificationEmail(email, token);
 
-  return { success: true, message: "Check email for verification link" };
+  return { success: true, message: 'Check email for verification link' };
 }
 ```
 
@@ -113,7 +114,7 @@ async function handleOAuthCallback(provider: string, code: string) {
         name: profile.name,
         avatar: profile.avatar,
         emailVerified: true, // OAuth emails are pre-verified
-        oauthAccounts: [{ provider, providerId: profile.id }],
+        oauthAccounts: [{ provider, providerId: profile.id }]
       });
     }
   }
@@ -133,7 +134,7 @@ async function handleOAuthCallback(provider: string, code: string) {
 // Session creation with secure cookies
 async function createSession(userId: string) {
   // Generate cryptographically secure session ID
-  const sessionId = crypto.randomBytes(32).toString("hex");
+  const sessionId = crypto.randomBytes(32).toString('hex');
 
   // Store session in database with expiry
   await storeSession({
@@ -141,29 +142,29 @@ async function createSession(userId: string) {
     userId,
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     createdAt: new Date(),
-    userAgent: request.headers["user-agent"],
-    ip: request.ip,
+    userAgent: request.headers['user-agent'],
+    ip: request.ip
   });
 
   // Set httpOnly cookie (never accessible to JavaScript)
   return {
     cookie: {
-      name: "session",
+      name: 'session',
       value: sessionId,
       options: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-        path: "/",
-      },
-    },
+        path: '/'
+      }
+    }
   };
 }
 
 // Session validation middleware
 async function validateSession(request: Request) {
-  const sessionId = request.cookies.get("session");
+  const sessionId = request.cookies.get('session');
   if (!sessionId) return null;
 
   const session = await getSession(sessionId);
@@ -193,30 +194,30 @@ async function requestPasswordReset(email: string) {
 
   // Always return success to prevent email enumeration
   if (!user) {
-    return { success: true, message: "If email exists, reset link sent" };
+    return { success: true, message: 'If email exists, reset link sent' };
   }
 
   // Rate limit: max 3 reset requests per hour
   const recentRequests = await countResetRequests(email, 60 * 60);
   if (recentRequests >= 3) {
-    return { success: true, message: "If email exists, reset link sent" };
+    return { success: true, message: 'If email exists, reset link sent' };
   }
 
   // Generate secure token (expires in 1 hour)
-  const token = crypto.randomBytes(32).toString("hex");
+  const token = crypto.randomBytes(32).toString('hex');
   const tokenHash = await bcrypt.hash(token, 10);
 
   await storePasswordResetToken({
     userId: user.id,
     tokenHash,
     expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
-    createdAt: new Date(),
+    createdAt: new Date()
   });
 
   // Send email with reset link (token in URL, not hash)
   await sendPasswordResetEmail(email, token);
 
-  return { success: true, message: "If email exists, reset link sent" };
+  return { success: true, message: 'If email exists, reset link sent' };
 }
 
 // Complete password reset
@@ -233,7 +234,7 @@ async function resetPassword(token: string, newPassword: string) {
   }
 
   if (!validToken || validToken.expiresAt < new Date()) {
-    throw new Error("Invalid or expired reset token");
+    throw new Error('Invalid or expired reset token');
   }
 
   // Validate new password strength
@@ -262,9 +263,9 @@ async function resetPassword(token: string, newPassword: string) {
 ```typescript
 // Rate limiter for auth endpoints
 const rateLimits = {
-  login: { window: 15 * 60, max: 5 }, // 5 attempts per 15 min
-  register: { window: 60 * 60, max: 3 }, // 3 signups per hour per IP
-  passwordReset: { window: 60 * 60, max: 3 }, // 3 resets per hour
+  login: { window: 15 * 60, max: 5 },      // 5 attempts per 15 min
+  register: { window: 60 * 60, max: 3 },   // 3 signups per hour per IP
+  passwordReset: { window: 60 * 60, max: 3 } // 3 resets per hour
 };
 
 async function checkRateLimit(type: string, identifier: string) {
@@ -287,19 +288,19 @@ async function checkRateLimit(type: string, identifier: string) {
 // Login with rate limiting
 async function login(email: string, password: string, ip: string) {
   // Rate limit by IP and email separately
-  await checkRateLimit("login", ip);
-  await checkRateLimit("login", email.toLowerCase());
+  await checkRateLimit('login', ip);
+  await checkRateLimit('login', email.toLowerCase());
 
   const user = await findUserByEmail(email);
   if (!user) {
     // Use constant-time comparison to prevent timing attacks
-    await bcrypt.compare(password, "$2b$12$dummy.hash.for.timing");
-    throw new AuthError("Invalid credentials");
+    await bcrypt.compare(password, '$2b$12$dummy.hash.for.timing');
+    throw new AuthError('Invalid credentials');
   }
 
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) {
-    throw new AuthError("Invalid credentials");
+    throw new AuthError('Invalid credentials');
   }
 
   // Clear rate limit on success
@@ -322,8 +323,8 @@ npm install @supabase/supabase-js @supabase/ssr
 
 ```typescript
 // lib/supabase/server.ts
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -337,7 +338,9 @@ export async function createClient() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          );
         },
       },
     }
@@ -347,8 +350,8 @@ export async function createClient() {
 
 ```typescript
 // app/auth/signup/route.ts
-import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
@@ -372,13 +375,13 @@ export async function POST(request: Request) {
 
 ```typescript
 // app/auth/callback/route.ts
-import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  const code = searchParams.get('code');
+  const next = searchParams.get('next') ?? '/';
 
   if (code) {
     const supabase = await createClient();
@@ -394,8 +397,8 @@ export async function GET(request: Request) {
 
 ```typescript
 // middleware.ts
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -409,7 +412,9 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
           response = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
@@ -419,20 +424,18 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith("/dashboard") && !user) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/:path*"],
+  matcher: ['/dashboard/:path*', '/api/:path*'],
 };
 ```
 
@@ -443,7 +446,7 @@ export const config = {
 async function signInWithGoogle() {
   const supabase = createBrowserClient();
   await supabase.auth.signInWithOAuth({
-    provider: "google",
+    provider: 'google',
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
     },
@@ -463,21 +466,21 @@ npm install -D @types/pg
 
 ```typescript
 // app/lib/auth.server.ts
-import { Lucia } from "lucia";
-import { PostgresJsAdapter } from "@lucia-auth/adapter-postgresql";
-import postgres from "postgres";
+import { Lucia } from 'lucia';
+import { PostgresJsAdapter } from '@lucia-auth/adapter-postgresql';
+import postgres from 'postgres';
 
 const sql = postgres(process.env.DATABASE_URL!);
 
 const adapter = new PostgresJsAdapter(sql, {
-  user: "users",
-  session: "sessions",
+  user: 'users',
+  session: 'sessions',
 });
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === 'production',
     },
   },
   getUserAttributes: (attributes) => {
@@ -488,7 +491,7 @@ export const lucia = new Lucia(adapter, {
   },
 });
 
-declare module "lucia" {
+declare module 'lucia' {
   interface Register {
     Lucia: typeof lucia;
     DatabaseUserAttributes: {
@@ -501,20 +504,20 @@ declare module "lucia" {
 
 ```typescript
 // app/routes/auth.signup.tsx
-import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { lucia } from "~/lib/auth.server";
-import { generateId } from "lucia";
-import { Argon2id } from "oslo/password";
-import { db } from "~/lib/db.server";
+import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
+import { lucia } from '~/lib/auth.server';
+import { generateId } from 'lucia';
+import { Argon2id } from 'oslo/password';
+import { db } from '~/lib/db.server';
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
 
   // Validate
   if (!email || !password || password.length < 8) {
-    return json({ error: "Invalid input" }, { status: 400 });
+    return json({ error: 'Invalid input' }, { status: 400 });
   }
 
   const hashedPassword = await new Argon2id().hash(password);
@@ -533,26 +536,26 @@ export async function action({ request }: ActionFunctionArgs) {
     const session = await lucia.createSession(userId, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
 
-    return redirect("/verify-email", {
+    return redirect('/verify-email', {
       headers: {
-        "Set-Cookie": sessionCookie.serialize(),
+        'Set-Cookie': sessionCookie.serialize(),
       },
     });
   } catch (e) {
-    return json({ error: "Email already exists" }, { status: 400 });
+    return json({ error: 'Email already exists' }, { status: 400 });
   }
 }
 ```
 
 ```typescript
 // app/lib/session.server.ts
-import { lucia } from "./auth.server";
-import type { Session, User } from "lucia";
+import { lucia } from './auth.server';
+import type { Session, User } from 'lucia';
 
 export async function getSession(
   request: Request
 ): Promise<{ user: User; session: Session } | { user: null; session: null }> {
-  const sessionId = lucia.readSessionCookie(request.headers.get("Cookie") ?? "");
+  const sessionId = lucia.readSessionCookie(request.headers.get('Cookie') ?? '');
 
   if (!sessionId) {
     return { user: null, session: null };
@@ -566,7 +569,7 @@ export async function requireAuth(request: Request) {
   const { user, session } = await getSession(request);
 
   if (!user) {
-    throw redirect("/login");
+    throw redirect('/login');
   }
 
   return { user, session };

@@ -73,7 +73,6 @@ options:
 ## MODE SELECTION REFERENCE
 
 **Skip mode selection**: Use `--mode` flag to go directly to a mode:
-
 ```bash
 /bootstrap --mode auto      # Immediate generation
 /bootstrap --mode engaged   # Interactive consultation
@@ -90,7 +89,7 @@ Before running `/bootstrap`, ensure:
 
 2. **Required YAML extracts are present**:
    - `.context/structured/prd.yaml` (REQUIRED)
-   - `.context/structured/vision.yaml` (REQUIRED for saas-\* types)
+   - `.context/structured/vision.yaml` (REQUIRED for saas-* types)
    - `.context/structured/roadmap.yaml` (optional, enhances phase planning)
    - `.context/structured/icp.yaml` (optional, enhances user story quality)
 
@@ -113,7 +112,6 @@ Before running `/bootstrap`, ensure:
 ## ENGAGED MODE (Interactive Consultation)
 
 Engaged Mode walks you through your PRD assumptions before generating a plan. This is recommended for:
-
 - First-time AGENT-11 users
 - Complex projects with many features
 - PRDs that haven't been validated
@@ -270,13 +268,11 @@ Engaged Mode walks you through your PRD assumptions before generating a plan. Th
 ## AUTO MODE (Immediate Generation)
 
 Auto Mode generates the plan immediately without consultation. Use this when:
-
 - Your PRD has been thoroughly reviewed
 - You've used `/bootstrap` before and know what to expect
 - You're regenerating after minor PRD updates
 
 **What happens**:
-
 1. Validates prerequisites
 2. Loads foundation YAML extracts
 3. Infers project type
@@ -290,7 +286,6 @@ Auto Mode generates the plan immediately without consultation. Use this when:
 ## PREVIEW MODE (Dry Run)
 
 Preview Mode shows exactly what would be generated without writing any files. Use this to:
-
 - Review the plan structure before committing
 - Compare what would change after PRD updates
 - Validate that extraction worked correctly
@@ -324,7 +319,6 @@ validation_checks:
 ### Phase 2: Context Loading
 
 **Load Foundation YAML Extracts**:
-
 ```
 Read .context/structured/prd.yaml
 Read .context/structured/vision.yaml
@@ -335,7 +329,6 @@ Read handoff-manifest.yaml for checksums
 
 **YAML Extract Structure**:
 Each YAML extract provides machine-readable structured data:
-
 ```yaml
 # Example: prd.yaml structure
 metadata:
@@ -352,8 +345,8 @@ features:
   p1_should_have: [...]
 
 tech_stack:
-  frontend: { ... }
-  backend: { ... }
+  frontend: {...}
+  backend: {...}
 ```
 
 ### Phase 3: Project Type Inference
@@ -386,7 +379,6 @@ type_inference_rules:
 ```
 
 **Inference Prompt**:
-
 ```
 Based on the PRD YAML extract, determine the project type:
 
@@ -409,14 +401,12 @@ Return:
 ### Phase 4: Plan Generation
 
 **Rolling Wave Planning Principle**:
-
 - **Phase 1**: Fully detailed (tasks, acceptance criteria, dependencies)
 - **Phase 2**: Outlined (key milestones, known dependencies)
 - **Phase 3+**: High-level (objectives and rough scope)
 
 **Generation Prompt**:
-
-````
+```
 Generate a project plan following this schema and rolling wave principle.
 
 FOUNDATION CONTEXT:
@@ -508,17 +498,15 @@ phases:
     objectives:
       - [High-level objective]
     # Tasks defined when phase approaches
-````
+```
 
 CRITICAL REQUIREMENTS:
-
 1. Phase 1 MUST have 5-10 detailed tasks with acceptance criteria
 2. All task IDs must be unique and follow pattern: task-{phase}.{seq}
 3. Agent assignments must be valid: architect, developer, designer, tester, operator, strategist, analyst
 4. Priority must be: p0 (critical), p1 (high), p2 (medium), p3 (low)
 5. Quality gates must match project type defaults
 6. Objectives must be derived from foundation documents, not invented
-
 ```
 
 ### Phase 5: Phase Context Generation
@@ -527,14 +515,12 @@ Generate detailed context file for Phase 1:
 
 **Context Generation Prompt**:
 ```
-
 Generate phase-1-context.yaml for the first phase.
 
 PHASE 1 FROM PLAN:
 {phase_1_content}
 
 PROJECT CONTEXT:
-
 - Type: {project_type}
 - Name: {project_name}
 
@@ -564,20 +550,19 @@ context:
     internal: [Internal dependencies]
 
 current_focus:
-  active_task: null # Set when phase begins
+  active_task: null  # Set when phase begins
   blocked_tasks: []
   completed_tasks: []
 
 handoff_notes:
-  from_previous_phase: null # First phase
-  for_next_phase: [] # Populated during execution
+  from_previous_phase: null  # First phase
+  for_next_phase: []  # Populated during execution
 
 quality_requirements:
-  gates: { quality_gates }
+  gates: {quality_gates}
   acceptance_bar: [What "done" means for this phase]
 ```
-
-````
+```
 
 ### Phase 6: Output Generation
 
@@ -597,7 +582,7 @@ generated_plans:
       - vision.yaml
       - roadmap.yaml
     project_type: saas-mvp
-````
+```
 
 ## ERROR HANDLING
 
@@ -675,7 +660,6 @@ Retrying generation with explicit constraints...
 ```
 
 **Output**:
-
 ```
 🏗️ Bootstrap: Project Plan Generation
 ======================================
@@ -702,7 +686,6 @@ Select mode [1/2/3]:
 ```
 
 **Output** (abbreviated - see ENGAGED MODE section for full checkpoints):
-
 ```
 🏗️ Bootstrap: Engaged Mode
 ===========================
@@ -751,7 +734,6 @@ Next: Run /coord continue to start building
 ```
 
 **Output**:
-
 ```
 🏗️ Bootstrap: Auto Mode
 ========================
@@ -786,7 +768,6 @@ Files Created:
 ```
 
 **Output**:
-
 ```
 Bootstrap: Dry Run (no files written)
 =====================================
@@ -819,7 +800,6 @@ To generate these files, run:
 ```
 
 **Output**:
-
 ```
 Bootstrap: Project Plan Generation
 ==================================
@@ -859,11 +839,9 @@ Cached summary will be updated after successful generation.
 ## SCHEMA COMPLIANCE
 
 The generated `project-plan.md` MUST comply with:
-
 - `project/schemas/project-plan.schema.yaml`
 
 The generated `.context/phase-1-context.yaml` MUST comply with:
-
 - `project/schemas/phase-context.schema.yaml`
 
 **Validation is automatic** - if generation fails validation, the command will retry with stricter constraints before failing.
@@ -871,7 +849,6 @@ The generated `.context/phase-1-context.yaml` MUST comply with:
 ## QUALITY GATE TEMPLATES
 
 ### saas-mvp (minimal)
-
 ```yaml
 quality_gates:
   - gate: build
@@ -887,7 +864,6 @@ quality_gates:
 ```
 
 ### saas-full (comprehensive)
-
 ```yaml
 quality_gates:
   - gate: build
@@ -906,7 +882,6 @@ quality_gates:
 ```
 
 ### api (contract-focused)
-
 ```yaml
 quality_gates:
   - gate: build
@@ -949,4 +924,4 @@ To regenerate plan after foundation updates:
 
 ---
 
-_Bootstrap transforms strategy into structure. A good plan is the difference between building and wandering._
+*Bootstrap transforms strategy into structure. A good plan is the difference between building and wandering.*

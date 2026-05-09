@@ -1,5 +1,6 @@
 ---
 name: saas-email
+description: Implement transactional email for SaaS applications using Resend or Postmark — welcome emails, password resets, email verification, notifications, and plain-text/HTML templates. Use when building email, transactional email, email-sending, notification, or messaging features.
 version: 1.0.0
 category: communication
 triggers:
@@ -71,22 +72,22 @@ class ResendEmailService implements EmailService {
     const html = await renderTemplate(options.template, options.data);
 
     const result = await this.client.emails.send({
-      from: "Your App <noreply@yourapp.com>",
+      from: 'Your App <noreply@yourapp.com>',
       to: Array.isArray(options.to) ? options.to : [options.to],
       subject: options.subject,
       html,
       reply_to: options.replyTo,
-      tags: options.tags?.map((t) => ({ name: t, value: "true" })),
+      tags: options.tags?.map(t => ({ name: t, value: 'true' }))
     });
 
     return {
       id: result.id,
-      success: true,
+      success: true
     };
   }
 
   async sendBatch(emails: SendEmailOptions[]): Promise<EmailResult[]> {
-    return Promise.all(emails.map((e) => this.send(e)));
+    return Promise.all(emails.map(e => this.send(e)));
   }
 }
 
@@ -94,10 +95,10 @@ class ResendEmailService implements EmailService {
 const emailService = new ResendEmailService(process.env.RESEND_API_KEY);
 
 await emailService.send({
-  to: "user@example.com",
-  subject: "Welcome to Our App",
-  template: "welcome",
-  data: { userName: "John", appName: "MyApp" },
+  to: 'user@example.com',
+  subject: 'Welcome to Our App',
+  template: 'welcome',
+  data: { userName: 'John', appName: 'MyApp' }
 });
 ```
 
@@ -118,8 +119,8 @@ import {
   Html,
   Preview,
   Section,
-  Text,
-} from "@react-email/components";
+  Text
+} from '@react-email/components';
 
 interface WelcomeEmailProps {
   userName: string;
@@ -127,7 +128,11 @@ interface WelcomeEmailProps {
   dashboardUrl: string;
 }
 
-export default function WelcomeEmail({ userName, appName, dashboardUrl }: WelcomeEmailProps) {
+export default function WelcomeEmail({
+  userName,
+  appName,
+  dashboardUrl
+}: WelcomeEmailProps) {
   return (
     <Html>
       <Head />
@@ -135,42 +140,41 @@ export default function WelcomeEmail({ userName, appName, dashboardUrl }: Welcom
       <Body style={main}>
         <Container style={container}>
           <Heading style={h1}>Welcome, {userName}!</Heading>
-          <Text style={text}>Thanks for signing up for {appName}. We're excited to have you!</Text>
+          <Text style={text}>
+            Thanks for signing up for {appName}. We're excited to have you!
+          </Text>
           <Section style={buttonContainer}>
             <Button style={button} href={dashboardUrl}>
               Go to Dashboard
             </Button>
           </Section>
-          <Text style={footer}>If you didn't create this account, please ignore this email.</Text>
+          <Text style={footer}>
+            If you didn't create this account, please ignore this email.
+          </Text>
         </Container>
       </Body>
     </Html>
   );
 }
 
-const main = { backgroundColor: "#f6f9fc", padding: "40px 0" };
-const container = { backgroundColor: "#ffffff", padding: "40px", borderRadius: "8px" };
-const h1 = { color: "#1a1a1a", fontSize: "24px" };
-const text = { color: "#4a4a4a", fontSize: "16px", lineHeight: "24px" };
-const buttonContainer = { textAlign: "center" as const, margin: "32px 0" };
-const button = {
-  backgroundColor: "#5469d4",
-  color: "#fff",
-  padding: "12px 24px",
-  borderRadius: "6px",
-};
-const footer = { color: "#8898aa", fontSize: "12px" };
+const main = { backgroundColor: '#f6f9fc', padding: '40px 0' };
+const container = { backgroundColor: '#ffffff', padding: '40px', borderRadius: '8px' };
+const h1 = { color: '#1a1a1a', fontSize: '24px' };
+const text = { color: '#4a4a4a', fontSize: '16px', lineHeight: '24px' };
+const buttonContainer = { textAlign: 'center' as const, margin: '32px 0' };
+const button = { backgroundColor: '#5469d4', color: '#fff', padding: '12px 24px', borderRadius: '6px' };
+const footer = { color: '#8898aa', fontSize: '12px' };
 
 // Render template
-import { render } from "@react-email/render";
-import WelcomeEmail from "./emails/welcome";
+import { render } from '@react-email/render';
+import WelcomeEmail from './emails/welcome';
 
 async function renderTemplate(template: string, data: Record<string, unknown>) {
   const templates = {
     welcome: WelcomeEmail,
     verification: VerificationEmail,
     passwordReset: PasswordResetEmail,
-    invitation: InvitationEmail,
+    invitation: InvitationEmail
   };
 
   const Component = templates[template];
@@ -186,64 +190,60 @@ async function renderTemplate(template: string, data: Record<string, unknown>) {
 
 ```typescript
 // Email job processor
-import { Queue, Worker } from "bullmq";
+import { Queue, Worker } from 'bullmq';
 
-const emailQueue = new Queue("emails", {
+const emailQueue = new Queue('emails', {
   connection: redis,
   defaultJobOptions: {
     attempts: 3,
     backoff: {
-      type: "exponential",
-      delay: 1000, // 1s, 2s, 4s
+      type: 'exponential',
+      delay: 1000 // 1s, 2s, 4s
     },
     removeOnComplete: 100,
-    removeOnFail: 1000,
-  },
+    removeOnFail: 1000
+  }
 });
 
 // Add email to queue
 async function queueEmail(options: SendEmailOptions) {
-  await emailQueue.add("send", options, {
-    priority: getEmailPriority(options.template),
+  await emailQueue.add('send', options, {
+    priority: getEmailPriority(options.template)
   });
 }
 
 // Email priorities
 function getEmailPriority(template: string): number {
   const priorities = {
-    passwordReset: 1, // Highest
+    passwordReset: 1,   // Highest
     verification: 2,
     invitation: 3,
     notification: 5,
-    digest: 10, // Lowest
+    digest: 10          // Lowest
   };
   return priorities[template] ?? 5;
 }
 
 // Worker to process queue
-const emailWorker = new Worker(
-  "emails",
-  async (job) => {
-    const { to, subject, template, data } = job.data;
+const emailWorker = new Worker('emails', async (job) => {
+  const { to, subject, template, data } = job.data;
 
-    try {
-      const result = await emailService.send({ to, subject, template, data });
+  try {
+    const result = await emailService.send({ to, subject, template, data });
 
-      // Log success
-      await logEmailEvent(result.id, "sent", { to, template });
+    // Log success
+    await logEmailEvent(result.id, 'sent', { to, template });
 
-      return result;
-    } catch (error) {
-      // Log failure
-      await logEmailEvent(null, "failed", { to, template, error: error.message });
-      throw error; // Trigger retry
-    }
-  },
-  { connection: redis }
-);
+    return result;
+  } catch (error) {
+    // Log failure
+    await logEmailEvent(null, 'failed', { to, template, error: error.message });
+    throw error; // Trigger retry
+  }
+}, { connection: redis });
 
 // Handle final failure
-emailWorker.on("failed", async (job, error) => {
+emailWorker.on('failed', async (job, error) => {
   if (job.attemptsMade >= job.opts.attempts) {
     await alertOnEmailFailure(job.data, error);
   }
@@ -260,38 +260,38 @@ const emails = {
   async sendWelcome(user: User) {
     await queueEmail({
       to: user.email,
-      subject: "Welcome to MyApp!",
-      template: "welcome",
+      subject: 'Welcome to MyApp!',
+      template: 'welcome',
       data: {
         userName: user.name,
-        appName: "MyApp",
-        dashboardUrl: `${APP_URL}/dashboard`,
-      },
+        appName: 'MyApp',
+        dashboardUrl: `${APP_URL}/dashboard`
+      }
     });
   },
 
   async sendVerification(user: User, token: string) {
     await queueEmail({
       to: user.email,
-      subject: "Verify your email",
-      template: "verification",
+      subject: 'Verify your email',
+      template: 'verification',
       data: {
         userName: user.name,
-        verifyUrl: `${APP_URL}/verify?token=${token}`,
-      },
+        verifyUrl: `${APP_URL}/verify?token=${token}`
+      }
     });
   },
 
   async sendPasswordReset(user: User, token: string) {
     await queueEmail({
       to: user.email,
-      subject: "Reset your password",
-      template: "passwordReset",
+      subject: 'Reset your password',
+      template: 'passwordReset',
       data: {
         userName: user.name,
         resetUrl: `${APP_URL}/reset-password?token=${token}`,
-        expiresIn: "1 hour",
-      },
+        expiresIn: '1 hour'
+      }
     });
   },
 
@@ -299,14 +299,14 @@ const emails = {
     await queueEmail({
       to: invitation.email,
       subject: `${inviter.name} invited you to join ${invitation.orgName}`,
-      template: "invitation",
+      template: 'invitation',
       data: {
         inviterName: inviter.name,
         orgName: invitation.orgName,
-        acceptUrl: `${APP_URL}/accept-invite?token=${invitation.token}`,
-      },
+        acceptUrl: `${APP_URL}/accept-invite?token=${invitation.token}`
+      }
     });
-  },
+  }
 };
 ```
 
@@ -315,23 +315,20 @@ const emails = {
 ### {{stack.services.email}} Integration
 
 **Resend (Recommended)**:
-
 ```typescript
-import { Resend } from "resend";
+import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 ```
 
 **SendGrid**:
-
 ```typescript
-import sgMail from "@sendgrid/mail";
+import sgMail from '@sendgrid/mail';
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 ```
 
 **Postmark**:
-
 ```typescript
-import { ServerClient } from "postmark";
+import { ServerClient } from 'postmark';
 const postmark = new ServerClient(process.env.POSTMARK_API_KEY);
 ```
 
@@ -351,7 +348,6 @@ const postmark = new ServerClient(process.env.POSTMARK_API_KEY);
 ## Anti-Patterns
 
 ### Sending Email Synchronously in Request
-
 ```typescript
 // WRONG: Blocks request, no retry on failure
 app.post('/signup', async (req, res) => {
@@ -369,11 +365,10 @@ app.post('/signup', async (req, res) => {
 ```
 
 ### Hardcoding Email Content
-
 ```typescript
 // WRONG: HTML in code, hard to maintain
 const html = `<h1>Welcome ${name}</h1><p>Thanks for signing up...</p>`;
 
 // RIGHT: Use template system
-const html = await renderTemplate("welcome", { name });
+const html = await renderTemplate('welcome', { name });
 ```

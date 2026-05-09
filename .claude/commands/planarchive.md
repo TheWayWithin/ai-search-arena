@@ -64,19 +64,19 @@ PlanArchive is an **intelligent content manager** that uses semantic analysis to
 
 ## OPTIONS
 
-| Option               | Description                                           | Default |
-| -------------------- | ----------------------------------------------------- | ------- |
-| `--analyze`          | Show what would be archived with reasoning and scores | false   |
-| `--aggressive`       | Archive ALL completed sprints regardless of age       | false   |
-| `--target-lines=N`   | Archive until reaching N lines in active file         | -       |
-| `--check-duplicates` | Identify and report duplicated content                | false   |
-| `--dry-run`          | Preview without making changes                        | false   |
-| `--days=N`           | Archive progress entries older than N days            | 14      |
-| `--force`            | Skip confirmation prompts                             | false   |
-| `--progress-only`    | Only archive progress.md                              | false   |
-| `--plan-only`        | Only archive project-plan.md                          | false   |
-| `--no-summaries`     | Keep full content instead of generating summaries     | false   |
-| `--monthly`          | Use monthly archive files                             | false   |
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--analyze` | Show what would be archived with reasoning and scores | false |
+| `--aggressive` | Archive ALL completed sprints regardless of age | false |
+| `--target-lines=N` | Archive until reaching N lines in active file | - |
+| `--check-duplicates` | Identify and report duplicated content | false |
+| `--dry-run` | Preview without making changes | false |
+| `--days=N` | Archive progress entries older than N days | 14 |
+| `--force` | Skip confirmation prompts | false |
+| `--progress-only` | Only archive progress.md | false |
+| `--plan-only` | Only archive project-plan.md | false |
+| `--no-summaries` | Keep full content instead of generating summaries | false |
+| `--monthly` | Use monthly archive files | false |
 
 ## ARCHIVE LOCATIONS
 
@@ -84,7 +84,6 @@ PlanArchive is an **intelligent content manager** that uses semantic analysis to
 - **progress-archive.md** - Archived progress entries and resolved issues
 
 Alternative (with `--monthly`):
-
 - **archives/project-plan-YYYY-MM.md** - Monthly rollups
 - **archives/progress-YYYY-MM.md** - Monthly rollups
 
@@ -95,16 +94,13 @@ Alternative (with `--monthly`):
 PlanArchive uses **5 smart triggers** to identify archivable content:
 
 #### 1. Completed Sprint Rule
-
 - **IF**: Section header contains "Sprint" AND status contains "COMPLETE" or "✅"
 - **AND**: Completion date > 7 days ago (or --aggressive ignores date)
 - **THEN**: Archive all subsections, keep 3-5 sentence summary
 
 **Example**:
-
 ```markdown
 ## Sprint 1: Alpha Arena Implementation ✅ COMPLETE
-
 **Completed**: 2025-11-19 to 2025-11-20
 [692 lines of detailed tasks]
 
@@ -113,22 +109,18 @@ PlanArchive uses **5 smart triggers** to identify archivable content:
 ```
 
 #### 2. Size-Based Rule
-
 - **IF**: Section > 500 lines AND marked complete
 - **THEN**: Archive detailed tasks, keep executive summary
 
 **Rationale**: Large completed sections bloat context unnecessarily
 
 #### 3. Dated Phase Rule
-
 - **IF**: Phase status = "COMPLETE" AND date < (today - 7 days)
 - **THEN**: Archive implementation details, keep status + outcomes
 
 **Example**:
-
 ```markdown
 ### Week 9: Deployment & Testnet Validation ✅ COMPLETE
-
 **Status**: Phase 3 COMPLETE - System deployed
 [400 lines of deployment logs]
 
@@ -137,16 +129,13 @@ PlanArchive uses **5 smart triggers** to identify archivable content:
 ```
 
 #### 4. Duplication Rule
-
 - **IF**: Content type = "environment variables" OR "config template"
 - **AND**: File exists in .env.example or config files
 - **THEN**: Replace with reference link
 
 **Example**:
-
 ```markdown
 ### Environment Setup
-
 [150 lines of .env template]
 
 → Removes from plan
@@ -154,16 +143,13 @@ PlanArchive uses **5 smart triggers** to identify archivable content:
 ```
 
 #### 5. Historical Detail Rule
-
 - **IF**: Section contains: code snippets, step-by-step guides, bug fixes
 - **AND**: Parent section marked complete
 - **THEN**: Archive to preserve history, replace with summary
 
 **Example**:
-
 ```markdown
 #### Task 1.1: Add Invalidation Level Tracking
-
 **Implementation**: [200 lines of code snippets and steps]
 
 → Archives detailed implementation
@@ -179,13 +165,11 @@ Archival Score = (age_days × 0.3) + (size_lines × 0.2) + (completion_status ×
 ```
 
 **Scoring Components**:
-
 - **Age**: 0-30 days → 0.0-1.0
 - **Size**: 0-1000 lines → 0.0-1.0
 - **Completion**: COMPLETE=1.0, PARTIAL=0.5, ACTIVE=0.0
 
 **Archival Thresholds**:
-
 - Score ≥ 0.8: High priority (archive immediately)
 - Score 0.5-0.8: Medium priority (archive if target not met)
 - Score < 0.5: Low priority (keep in active file)
@@ -233,7 +217,6 @@ Archival Score = (age_days × 0.3) + (size_lines × 0.2) + (completion_status ×
 PlanArchive performs **3 levels of analysis**:
 
 ### 1. Section Structure Parsing
-
 - Identify all `##` and `###` headers
 - Extract status markers: `✅ COMPLETE`, `📋 PLANNED`, `⏳ IN PROGRESS`
 - Extract dates: completion, start, last update
@@ -242,31 +225,26 @@ PlanArchive performs **3 levels of analysis**:
 ### 2. Content Type Classification
 
 **Executive Summary** (KEEP):
-
 - High-level goals, objectives, vision
 - Project overview
 - Success criteria
 
 **Active Work** (KEEP):
-
 - Sections with pending `[ ]` tasks
 - Status: IN PROGRESS or PLANNED
 - Recent updates (< 7 days)
 
 **Completed Work** (ARCHIVE):
-
 - All tasks marked `[x]`
 - Status: COMPLETE or ✅
 - Completion date > threshold
 
 **Configuration Templates** (MOVE/REMOVE):
-
 - Environment variable listings
 - Setup instructions duplicated elsewhere
 - Templates available in separate files
 
 **Implementation Details** (ARCHIVE):
-
 - Code snippets from completed work
 - Step-by-step implementation logs
 - Detailed bug fix descriptions
@@ -274,7 +252,6 @@ PlanArchive performs **3 levels of analysis**:
 ### 3. Cross-File Duplication Detection
 
 Checks for content duplicated in:
-
 - **progress.md**: Sprint completion logs
 - **.env.example**: Environment variables
 - **architecture.md**: Design decisions
@@ -286,7 +263,6 @@ Checks for content duplicated in:
 ### Interactive Mode (Default)
 
 1. **Analysis Phase**:
-
    ```
    🔍 Analyzing project-plan.md...
    - Parsed 15 sections, 2,845 lines
@@ -301,7 +277,6 @@ Checks for content duplicated in:
    ```
 
 2. **Summary Display**:
-
    ```
    📊 Archive Analysis Complete
 
@@ -325,13 +300,11 @@ Checks for content duplicated in:
    ```
 
 3. **Confirmation Prompt**:
-
    ```
    Archive this content? [y/n/details]:
    ```
 
 4. **Execution & Summary**:
-
    ```
    ✅ Archived to project-plan-archive.md (1,741 lines)
       - Sprint 1: 692 lines → 85 line summary
@@ -357,7 +330,6 @@ Shows **what would be archived with detailed reasoning**:
 ```
 
 Output:
-
 ```
 📊 Archival Analysis (DRY RUN)
 
@@ -405,7 +377,6 @@ Archives **ALL completed work** regardless of age:
 ```
 
 **Behavior**:
-
 - Ignores 7-day age threshold
 - Archives any section marked COMPLETE/✅
 - Useful after major milestones or before starting new phases
@@ -420,13 +391,11 @@ Archives until reaching specific line count:
 ```
 
 **Behavior**:
-
 - Prioritizes highest-scoring sections first
 - Stops when active file ≤ target lines
 - Reports sections archived and final size
 
 **Example**:
-
 ```
 🎯 Target: Reduce project-plan.md to ≤1200 lines (current: 2,845)
 
@@ -448,7 +417,6 @@ Identifies content duplicated across tracking files:
 ```
 
 **Output**:
-
 ```
 🔍 Duplication Analysis
 
@@ -492,7 +460,6 @@ When archiving completed sections, PlanArchive **automatically generates concise
 ### Summary Rules
 
 **For Completed Sprints**:
-
 1. **Status Line**: `## Sprint X: [Name] ✅ COMPLETE`
 2. **Completion Info** (2-3 sentences):
    - When completed (dates)
@@ -502,7 +469,6 @@ When archiving completed sections, PlanArchive **automatically generates concise
 4. **Key Stats** (1 line): Files created, lines written, tests passing, time spent
 
 **Example Generated Summary**:
-
 ```markdown
 ## Sprint 1: Alpha Arena Implementation ✅ COMPLETE
 
@@ -536,11 +502,11 @@ Use `--no-summaries` to keep full content in archive without generating summarie
 
 ## Archive Index
 
-| Date       | Source          | Description         | Lines | Score |
-| ---------- | --------------- | ------------------- | ----- | ----- |
-| 2025-11-21 | project-plan.md | Sprint 2 Phases 1-3 | 487   | 0.85  |
-| 2025-11-21 | project-plan.md | Sprint 1 Full       | 692   | 0.92  |
-| 2025-11-14 | progress.md     | Nov 1-14 entries    | 389   | 0.67  |
+| Date | Source | Description | Lines | Score |
+|------|--------|-------------|-------|-------|
+| 2025-11-21 | project-plan.md | Sprint 2 Phases 1-3 | 487 | 0.85 |
+| 2025-11-21 | project-plan.md | Sprint 1 Full | 692 | 0.92 |
+| 2025-11-14 | progress.md | Nov 1-14 entries | 389 | 0.67 |
 
 ---
 
@@ -552,12 +518,10 @@ Use `--no-summaries` to keep full content in archive without generating summarie
 **Status**: ✅ COMPLETE
 **Completed**: 2025-11-19 to 2025-11-20 (25 days ago)
 **Triggers**:
-
 - Completed Sprint Rule (status COMPLETE + date >7 days)
 - Size-Based Rule (692 lines > 500 line threshold)
 
 **Summary Kept in Active File**:
-
 > Implemented 3 monitors based on DeepSeek analysis. Expected +44% profit improvement. Completed Nov 19-20, 2025.
 
 **Full Content**:
@@ -586,20 +550,17 @@ Use `--no-summaries` to keep full content in archive without generating summarie
 PlanArchive tracks token usage and provides recommendations:
 
 **Token Budget Levels**:
-
 - **Optimal**: <15,000 tokens (excellent context efficiency)
 - **Acceptable**: 15,000-25,000 tokens (moderate overhead)
 - **Warning**: 25,000-35,000 tokens (inefficient, should archive)
 - **Critical**: >35,000 tokens (mandatory archival)
 
 **Line Count Targets**:
-
 - **Ideal**: 800-1,200 lines (core planning + 1 active phase)
 - **Acceptable**: 1,200-1,800 lines (multiple active phases)
 - **Needs Archival**: >2,000 lines
 
 **Section Size Limits**:
-
 - **Completed sprint**: Max 100 lines (summary only)
 - **Active sprint**: Max 400 lines (full detail for current work)
 - **Historical deployment**: Max 50 lines (outcome summary)
@@ -611,7 +572,6 @@ Estimated tokens = lines × 12 (average tokens per line for project plans)
 ```
 
 **Example**:
-
 ```
 project-plan.md: 2,845 lines × 12 = ~34,140 tokens (⚠️ WARNING LEVEL)
 After archival: 1,104 lines × 12 = ~13,248 tokens (✅ OPTIMAL)
@@ -632,14 +592,12 @@ After archival: 1,104 lines × 12 = ~13,248 tokens (✅ OPTIMAL)
 ### Validation Checks
 
 **Pre-Archival**:
-
 - [ ] Verify archive file is writable
 - [ ] Check for merge conflicts with existing archive
 - [ ] Confirm no active work in archival candidates
 - [ ] Validate section parsing (no orphaned content)
 
 **Post-Archival**:
-
 - [ ] Validate resulting files have required sections
 - [ ] Verify all pending tasks still present
 - [ ] Confirm archive references are correct
@@ -649,20 +607,17 @@ After archival: 1,104 lines × 12 = ~13,248 tokens (✅ OPTIMAL)
 ### Backup & Recovery
 
 **Automatic Backup**:
-
 - Creates timestamped backups before archival
 - Location: `.backups/project-plan-YYYYMMDD-HHMMSS.md`
 - Kept for 30 days
 
 **Rollback Process**:
-
 1. Locate backup: `ls .backups/ | grep project-plan`
 2. Copy content from archive back to source file
 3. Remove archive entry
 4. Log rollback in progress.md
 
 **Example Rollback**:
-
 ```bash
 # Restore from backup
 cp .backups/project-plan-20251121-143000.md project-plan.md
@@ -686,26 +641,22 @@ cp .backups/project-plan-20251121-143000.md project-plan.md
 ### Context Preservation
 
 When running in mission context:
-
 - Updates `agent-context.md` with archive summary (if exists)
-- Adds archive operation to `handoff-notes.md`
+- Adds archive operation to agent-context.md (Phase Handoff blocks accumulate)
 - Logs operation in `progress.md`
 
 ### Progress Tracking
 
 Logs archival operation:
-
 ```markdown
 ### [2025-11-21 14:30] Archive Operation
 
 **Command**: `/planarchive --aggressive`
 **Files Processed**:
-
 - project-plan.md: 2,845 → 1,104 lines (61% reduction, 1,741 archived)
 - progress.md: 1,890 → 660 lines (65% reduction, 1,230 archived)
 
 **Content Archived**:
-
 - Sprint 1: Alpha Arena (692 lines, score 0.92)
 - Sprint 2: Integration (487 lines, score 0.85)
 - Week 9: Deployment (412 lines, score 0.73)
@@ -722,7 +673,6 @@ Logs archival operation:
 ### Nothing to Archive
 
 If no content qualifies:
-
 ```
 ℹ️ No content qualifies for archival.
 
@@ -752,7 +702,6 @@ Initialize with:
 ### Large Archive File
 
 If archive exceeds 5000 lines:
-
 ```
 ⚠️ Archive file is large (6,200 lines).
 
@@ -765,7 +714,6 @@ Recommendations:
 ### All Content is Active
 
 If everything has pending tasks or recent updates:
-
 ```
 ℹ️ All content appears active (no archival candidates).
 
@@ -826,14 +774,12 @@ cat project-plan-archive.md | head -50  # Check archive format
 **Why Markdown (not JSON/YAML)?**
 
 Analysis shows Markdown remains optimal for tracking files:
-
 - ~10-20% fewer tokens than JSON for same content
 - Better human readability
 - Cleaner git diffs
 - Native LLM comprehension (Claude trained on Markdown)
 
 **Markdown Optimization Tips** (applied automatically):
-
 - Compress timestamps: `2025-01-15 14:30` not `### [2025-01-15 14:30:00 UTC]`
 - Flatten shallow nesting where possible
 - Remove redundant labels when context is clear
@@ -858,7 +804,6 @@ After `/planarchive` execution:
 ### Issue: "Too much was archived"
 
 **Solution**: Restore from backup
-
 ```bash
 cp .backups/project-plan-[timestamp].md project-plan.md
 ```
@@ -866,7 +811,6 @@ cp .backups/project-plan-[timestamp].md project-plan.md
 ### Issue: "Not enough was archived"
 
 **Solution**: Use aggressive mode
-
 ```bash
 /planarchive --aggressive --target-lines=1200
 ```
@@ -874,7 +818,6 @@ cp .backups/project-plan-[timestamp].md project-plan.md
 ### Issue: "Can't find archived content"
 
 **Solution**: Check archive index
-
 ```bash
 head -50 project-plan-archive.md  # Shows index with line numbers
 ```
@@ -882,11 +825,10 @@ head -50 project-plan-archive.md  # Shows index with line numbers
 ### Issue: "Archival scores seem wrong"
 
 **Solution**: Run analyze mode to see reasoning
-
 ```bash
 /planarchive --analyze
 ```
 
 ---
 
-_The /planarchive command uses semantic analysis, size-based triggers, and duplication detection to intelligently manage your tracking files. It understands completion status, generates summaries automatically, and provides multiple control modes for different use cases._
+*The /planarchive command uses semantic analysis, size-based triggers, and duplication detection to intelligently manage your tracking files. It understands completion status, generates summaries automatically, and provides multiple control modes for different use cases.*

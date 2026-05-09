@@ -15,19 +15,15 @@ Manage the handoff of BOS-AI foundation documents to AGENT-11. This command scan
 ## SUBCOMMANDS
 
 ### `/foundations init`
-
 Initialize the foundations system - scan documents, extract to structured YAML, generate manifest.
 
 ### `/foundations status`
-
 Show current state of all foundation documents with present/extracted/modified status.
 
 ### `/foundations refresh`
-
 Re-extract documents that have changed (checksum mismatch).
 
 ### `/foundations validate`
-
 Validate that required documents are present and extracted data is complete.
 
 ---
@@ -37,7 +33,6 @@ Validate that required documents are present and extracted data is complete.
 ### Step 1: Parse Subcommand
 
 Extract the subcommand from the user's input:
-
 - `init` - Full initialization with extraction
 - `status` - Show status table
 - `refresh` - Update changed documents
@@ -55,27 +50,25 @@ If no subcommand provided, default to `status`.
 
 **Document Category Matching** (case-insensitive, order of precedence):
 
-| Category        | Priority 1                    | Priority 2         | Priority 3              | Priority 4            | Priority 5 |
-| --------------- | ----------------------------- | ------------------ | ----------------------- | --------------------- | ---------- |
-| **prd**         | prd.md                        | requirements.md    | product-requirements.md | _-prd-_.md            | prd-\*.md  |
-| **vision**      | vision-mission.md             | vision.md          | strategic-plan.md       | vision-and-mission.md |            |
-| **roadmap**     | strategic-roadmap.md          | roadmap.md         | development-plan.md     |                       |            |
-| **icp**         | client-success-blueprint.md   | icp.md             | personas.md             | customer-success.md   |            |
-| **research**    | market-and-client-research.md | market-research.md | competitive-analysis.md | research.md           |            |
-| **brand**       | brand-style-guidelines.md     | brand.md           | style-guide.md          | brand-style-guide.md  |            |
-| **positioning** | positioning-statement.md      | positioning.md     | market-positioning.md   |                       |            |
-| **marketing**   | marketing-bible.md            | marketing.md       | go-to-market.md         | gtm.md                |            |
-| **pricing**     | pricing-strategy.md           | pricing.md         | pricing-tiers.md        |                       |            |
+| Category | Priority 1 | Priority 2 | Priority 3 | Priority 4 | Priority 5 |
+|----------|------------|------------|------------|------------|------------|
+| **prd** | prd.md | requirements.md | product-requirements.md | *-prd-*.md | prd-*.md |
+| **vision** | vision-mission.md | vision.md | strategic-plan.md | vision-and-mission.md | |
+| **roadmap** | strategic-roadmap.md | roadmap.md | development-plan.md | | |
+| **icp** | client-success-blueprint.md | icp.md | personas.md | customer-success.md | |
+| **research** | market-and-client-research.md | market-research.md | competitive-analysis.md | research.md | |
+| **brand** | brand-style-guidelines.md | brand.md | style-guide.md | brand-style-guide.md | |
+| **positioning** | positioning-statement.md | positioning.md | market-positioning.md | | |
+| **marketing** | marketing-bible.md | marketing.md | go-to-market.md | gtm.md | |
+| **pricing** | pricing-strategy.md | pricing.md | pricing-tiers.md | | |
 
 **Pattern Matching Notes**:
-
 - Patterns with `*` are glob patterns (e.g., `*-prd-*.md` matches `ModelOptix-Core-PRD-FINAL.md`)
 - Matching is case-insensitive
 - First match wins (Priority 1 before Priority 2, etc.)
 - Files in subdirectories (e.g., `prds/`) are also scanned
 
 **For each document found**:
-
 1. Read file content
 2. Calculate SHA256 checksum: `sha256sum <file>`
 3. Count words: `wc -w <file>`
@@ -84,7 +77,6 @@ If no subcommand provided, default to `status`.
 ### Phase 2: Generate Checksums
 
 For each categorized document:
-
 ```bash
 sha256sum documents/foundations/<filename> | cut -d' ' -f1
 ```
@@ -94,7 +86,6 @@ sha256sum documents/foundations/<filename> | cut -d' ' -f1
 **Create directory**: `.context/structured/`
 
 **Schema References** (in `project/schemas/`):
-
 - `foundation-prd.schema.yaml`
 - `foundation-vision.schema.yaml`
 - `foundation-roadmap.schema.yaml`
@@ -113,22 +104,21 @@ For each document category, extract ALL relevant data into the schema structure.
 
 Before extraction, classify the document type to apply appropriate rules:
 
-| Document    | Type          | Mode              |
-| ----------- | ------------- | ----------------- |
-| PRD         | SPECIFICATION | COMPLETENESS MODE |
-| Vision      | STRATEGIC     | SYNTHESIS MODE    |
-| Roadmap     | STRATEGIC     | SYNTHESIS MODE    |
-| ICP         | STRUCTURED    | MAPPING MODE      |
-| Research    | ANALYTICAL    | COMPLETENESS MODE |
-| Brand       | PRECISION     | EXACT MODE        |
-| Positioning | STRATEGIC     | SYNTHESIS MODE    |
-| Marketing   | STRATEGIC     | SYNTHESIS MODE    |
-| Pricing     | STRUCTURED    | MAPPING MODE      |
+| Document | Type | Mode |
+|----------|------|------|
+| PRD | SPECIFICATION | COMPLETENESS MODE |
+| Vision | STRATEGIC | SYNTHESIS MODE |
+| Roadmap | STRATEGIC | SYNTHESIS MODE |
+| ICP | STRUCTURED | MAPPING MODE |
+| Research | ANALYTICAL | COMPLETENESS MODE |
+| Brand | PRECISION | EXACT MODE |
+| Positioning | STRATEGIC | SYNTHESIS MODE |
+| Marketing | STRATEGIC | SYNTHESIS MODE |
+| Pricing | STRUCTURED | MAPPING MODE |
 
 ### Extraction Mode Rules
 
 **COMPLETENESS MODE** (PRD, Architecture):
-
 ```
 MANDATORY RULES:
 - Extract 100% of ALL list items - NEVER sample, truncate, or summarize lists
@@ -141,7 +131,6 @@ MANDATORY RULES:
 ```
 
 **EXACT MODE** (Brand, Style Guide):
-
 ```
 MANDATORY RULES:
 - Byte-level precision on ALL values
@@ -152,7 +141,6 @@ MANDATORY RULES:
 ```
 
 **MAPPING MODE** (ICP, Personas):
-
 ```
 MANDATORY RULES:
 - Map ALL personas with ALL fields
@@ -162,7 +150,6 @@ MANDATORY RULES:
 ```
 
 **SYNTHESIS MODE** (Vision, Marketing):
-
 ```
 MANDATORY RULES:
 - Capture strategic statements fully
@@ -174,7 +161,6 @@ MANDATORY RULES:
 ### Extraction Prompt Template
 
 **For PRD Documents** (COMPLETENESS MODE):
-
 ```
 Extract structured data from this PRD document into the schema format.
 
@@ -273,7 +259,6 @@ Schema reference: project/schemas/foundation-prd.schema.yaml
 ```
 
 **For Brand Documents** (EXACT MODE):
-
 ```
 Extract structured data from this Brand document into the schema format.
 
@@ -368,7 +353,6 @@ Schema reference: project/schemas/foundation-brand.schema.yaml
 ```
 
 **For Vision Documents** (SYNTHESIS MODE):
-
 ```
 Extract structured data from this Vision document into the schema format.
 
@@ -383,7 +367,6 @@ Schema reference: project/schemas/foundation-vision.schema.yaml
 ```
 
 **For ICP Documents** (MAPPING MODE):
-
 ```
 Extract structured data from this ICP document into the schema format.
 
@@ -399,7 +382,6 @@ Schema reference: project/schemas/foundation-icp.schema.yaml
 ```
 
 **For Positioning Documents** (SYNTHESIS MODE):
-
 ```
 Extract structured data from this Positioning document into the schema format.
 
@@ -455,7 +437,6 @@ Schema reference: project/schemas/foundation-positioning.schema.yaml
 ```
 
 **For Marketing Documents** (SYNTHESIS MODE):
-
 ```
 Extract structured data from this Marketing document into the schema format.
 
@@ -471,7 +452,6 @@ Schema reference: project/schemas/foundation-marketing.schema.yaml
 ```
 
 **For Roadmap Documents** (SYNTHESIS MODE):
-
 ```
 Extract structured data from this Roadmap document into the schema format.
 
@@ -652,7 +632,6 @@ Schema reference: project/schemas/foundation-roadmap.schema.yaml
 ```
 
 **For Pricing Documents** (MAPPING MODE):
-
 ```
 Extract structured data from this Pricing Strategy document into the schema format.
 
@@ -707,65 +686,55 @@ Schema reference: project/schemas/foundation-pricing.schema.yaml
 After extraction, perform these verification checks:
 
 **CRITICAL: Schema Validation (FAIL mode)**:
-
 - Parse output YAML against schema definition
 - FAIL extraction if required fields are missing
 - FAIL if field types don't match schema
 - Do NOT proceed with incomplete extractions
 
 **Numeric Preservation Check**:
-
 - Count numeric values in source document
 - Verify at least 95% are present in YAML
 - Flag any metrics without target values
 
 **List Completeness Check**:
-
 - For each major list in source, count items
 - Verify YAML has same count
 - Flag any truncated lists
 
 **Timeline Check**:
-
 - Verify all phase timelines are extracted
 - Verify all duration estimates are present
 - Verify all deadlines are captured
 
 **Technology Check**:
-
 - Verify version numbers are preserved
 - Verify all named technologies are listed
 - Verify feature variants are captured
 
 **Business Rules Check (PRD only)**:
-
 - Count BR-XXX patterns in source document
 - Verify same count in extracted business_rules array
 - Flag any missing rule IDs
 - Verify enforcement locations are populated
 
 **State Machine Check (PRD only)**:
-
 - Verify all entity states mentioned are captured
 - Verify all transitions have from/to/trigger
 - Flag orphan states (states not reachable via transitions)
 - Verify side effects are documented
 
 **Entity Cross-Reference Check (PRD only)**:
-
 - Build list of entities mentioned in features.touched_entities
 - Build list of entities in data_model.entities
 - FAIL if any touched entity is not in data_model
 - Report: "Entity 'X' referenced in feature 'Y' but missing from data_model"
 
 **Acceptance Criteria Check (PRD only)**:
-
 - Count features in p0_must_have, p1_should_have, p2_nice_to_have
 - Verify each feature has at least 1 acceptance criterion
 - Flag features with empty acceptance_criteria arrays
 
 **Completeness Metrics Report**:
-
 ```
 COMPLETENESS METRICS
 ====================
@@ -778,7 +747,6 @@ Integration Tests: {yaml_count} scenarios
 ```
 
 **Validation Output**:
-
 ```
 EXTRACTION VALIDATION REPORT
 ============================
@@ -808,7 +776,6 @@ Blocking Issues: [issues that MUST be fixed]
 ```
 
 **FAIL Conditions** (extraction marked incomplete):
-
 1. Schema required fields missing
 2. Less than 90% of business rules extracted
 3. Any entity referenced but not defined
@@ -830,7 +797,6 @@ After extraction, verify terminology is consistent across sections:
    - Dimension names in trust/scoring sections should be consistent
 
 3. **Consistency Report**:
-
 ```
 INTERNAL CONSISTENCY CHECK
 ==========================
@@ -853,7 +819,6 @@ Recommendation: Use "{canonical_term}" consistently (from {authoritative_section
 **Schema Reference**: `project/schemas/handoff-manifest.schema.yaml`
 
 **Manifest Structure**:
-
 ```yaml
 version: "2.0.0"
 generated_at: "<ISO 8601 timestamp>"
@@ -892,12 +857,10 @@ extraction:
 ### Phase 5: Validate Completeness
 
 **Required Documents** (must have):
-
 - prd (PRD, requirements, or product-requirements)
 - vision (vision-mission, vision, or strategic-plan)
 
 **Advisable Documents** (should have):
-
 - roadmap (strategic-roadmap, roadmap, or development-plan)
 - icp (client-success-blueprint, icp, or personas)
 - brand (brand-style-guidelines, brand, or style-guide)
@@ -907,13 +870,11 @@ extraction:
 
 **Extraction Validation**:
 For each extracted YAML, verify:
-
 - Required schema fields are populated
 - No placeholder or empty values
 - Actionable data exists for agents
 
 **Output Validation Report**:
-
 ```
 FOUNDATIONS INITIALIZATION COMPLETE
 ===================================
@@ -1013,7 +974,6 @@ fi
 ```
 
 **Output Format**:
-
 ```
 FOUNDATIONS STATUS
 ==================
@@ -1033,7 +993,6 @@ Last initialized: 2026-01-01T10:30:00Z
 ```
 
 **Modified Detection**:
-
 ```bash
 # For each document in manifest
 current_checksum=$(sha256sum "$source_path" | cut -d' ' -f1)
@@ -1049,14 +1008,12 @@ fi
 **Sync foundation documents - detect new, modified, and removed documents**
 
 This command performs a full sync between your `documents/foundations/` directory and the extracted YAML files. Use this after:
-
 - Editing any foundation document
 - Adding a new foundation document (e.g., adding `pricing-strategy.md`)
 - Removing a foundation document
 - Receiving updated documents from BOS-AI
 
 ### Step 1: Load Manifest
-
 ```bash
 if [ ! -f handoff-manifest.yaml ]; then
   echo "Error: No manifest found. Run '/foundations init' first."
@@ -1068,52 +1025,48 @@ fi
 
 **Scan `documents/foundations/`** using the same category matching as `init`:
 
-| Category        | Priority 1                    | Priority 2         | Priority 3              |
-| --------------- | ----------------------------- | ------------------ | ----------------------- |
-| **prd**         | prd.md                        | requirements.md    | product-requirements.md |
-| **vision**      | vision-mission.md             | vision.md          | strategic-plan.md       |
-| **roadmap**     | strategic-roadmap.md          | roadmap.md         | development-plan.md     |
-| **icp**         | client-success-blueprint.md   | icp.md             | personas.md             |
-| **research**    | market-and-client-research.md | market-research.md | research.md             |
-| **brand**       | brand-style-guidelines.md     | brand.md           | style-guide.md          |
-| **positioning** | positioning-statement.md      | positioning.md     | market-positioning.md   |
-| **marketing**   | marketing-bible.md            | marketing.md       | go-to-market.md         |
-| **pricing**     | pricing-strategy.md           | pricing.md         | pricing-tiers.md        |
+| Category | Priority 1 | Priority 2 | Priority 3 |
+|----------|------------|------------|------------|
+| **prd** | prd.md | requirements.md | product-requirements.md |
+| **vision** | vision-mission.md | vision.md | strategic-plan.md |
+| **roadmap** | strategic-roadmap.md | roadmap.md | development-plan.md |
+| **icp** | client-success-blueprint.md | icp.md | personas.md |
+| **research** | market-and-client-research.md | market-research.md | research.md |
+| **brand** | brand-style-guidelines.md | brand.md | style-guide.md |
+| **positioning** | positioning-statement.md | positioning.md | market-positioning.md |
+| **marketing** | marketing-bible.md | marketing.md | go-to-market.md |
+| **pricing** | pricing-strategy.md | pricing.md | pricing-tiers.md |
 
 ### Step 3: Compare and Classify
 
 For each document found in directory:
-
 1. Calculate current SHA256 checksum
 2. Compare to manifest entry (if exists)
 
 **Classification Logic**:
 
-| Condition                     | Classification | Action                           |
-| ----------------------------- | -------------- | -------------------------------- |
-| In manifest, checksum matches | **UNCHANGED**  | Skip (no action needed)          |
-| In manifest, checksum differs | **MODIFIED**   | Re-extract to YAML               |
-| In directory, NOT in manifest | **NEW**        | Extract to YAML, add to manifest |
-| In manifest, NOT in directory | **REMOVED**    | Warn user, mark in manifest      |
+| Condition | Classification | Action |
+|-----------|----------------|--------|
+| In manifest, checksum matches | **UNCHANGED** | Skip (no action needed) |
+| In manifest, checksum differs | **MODIFIED** | Re-extract to YAML |
+| In directory, NOT in manifest | **NEW** | Extract to YAML, add to manifest |
+| In manifest, NOT in directory | **REMOVED** | Warn user, mark in manifest |
 
 ### Step 4: Process Documents
 
 **For MODIFIED documents**:
-
 1. Re-extract using appropriate schema and extraction mode
 2. Overwrite existing `.context/structured/{category}.yaml`
 3. Update checksum in manifest
 4. Log extraction validation
 
 **For NEW documents**:
-
 1. Extract using appropriate schema and extraction mode
 2. Create new `.context/structured/{category}.yaml`
 3. Add entry to manifest with checksum
 4. Log extraction validation
 
 **For REMOVED documents**:
-
 1. Keep existing YAML (don't delete - user may have removed accidentally)
 2. Mark as `status: "source_removed"` in manifest
 3. Warn user in output
@@ -1121,7 +1074,6 @@ For each document found in directory:
 ### Step 5: Update Manifest
 
 Update `handoff-manifest.yaml`:
-
 - Update `generated_at` timestamp
 - Update checksums for modified documents
 - Add entries for new documents
@@ -1164,7 +1116,6 @@ Last sync: 2026-01-05T19:30:00Z
 ### Common Workflows
 
 **After editing a document**:
-
 ```bash
 # Edit your PRD
 vim documents/foundations/prd.md
@@ -1175,7 +1126,6 @@ vim documents/foundations/prd.md
 ```
 
 **After adding a new document**:
-
 ```bash
 # Add pricing strategy from BOS-AI
 cp ~/BOS-AI-output/pricing-strategy.md documents/foundations/
@@ -1186,7 +1136,6 @@ cp ~/BOS-AI-output/pricing-strategy.md documents/foundations/
 ```
 
 **After receiving updated documents from BOS-AI**:
-
 ```bash
 # Copy all updated documents
 cp ~/BOS-AI-output/*.md documents/foundations/
@@ -1205,12 +1154,10 @@ cp ~/BOS-AI-output/*.md documents/foundations/
 ### Validation Rules
 
 **Required Documents** (error if missing):
-
 - prd: Must have at least one of [prd.md, requirements.md, product-requirements.md]
 - vision: Must have at least one of [vision-mission.md, vision.md, strategic-plan.md]
 
 **Advisable Documents** (warning if missing):
-
 - roadmap: Should have at least one of [strategic-roadmap.md, roadmap.md, development-plan.md]
 - icp: Should have at least one of [client-success-blueprint.md, icp.md, personas.md]
 - research: Should have at least one of [market-and-client-research.md, market-research.md, research.md]
@@ -1221,14 +1168,12 @@ cp ~/BOS-AI-output/*.md documents/foundations/
 
 **Extraction Validation**:
 For each extracted YAML:
-
 1. Parse YAML and verify valid syntax
 2. Check required schema fields are populated
 3. Check for completeness (no empty values where data should exist)
 4. Verify data is actionable (can agent use this to make decisions?)
 
 **Output Format**:
-
 ```
 FOUNDATIONS VALIDATION
 ======================
@@ -1300,7 +1245,6 @@ project-root/
 ## ERROR HANDLING
 
 ### Directory Not Found
-
 ```
 Error: documents/foundations/ directory not found.
 
@@ -1318,7 +1262,6 @@ Advisable documents:
 ```
 
 ### Missing Required Documents
-
 ```
 Error: Missing required foundation documents.
 
@@ -1331,7 +1274,6 @@ Add the missing files and run '/foundations init' again.
 ```
 
 ### Extraction Validation Failed
-
 ```
 Error: Extraction validation failed for brand.yaml
 
@@ -1369,7 +1311,6 @@ context:
 ### Coordinator Integration
 
 The coordinator should:
-
 1. Check for `handoff-manifest.yaml` at mission start
 2. Load relevant YAML sections based on mission type and agent needs
 3. Pass structured data directly to agents (no parsing required)
@@ -1378,10 +1319,10 @@ The coordinator should:
 | Mission Type | Context Needed |
 |--------------|----------------|
 | build/mvp | prd.features, prd.tech_stack, brand.colors, brand.components, pricing.tiers |
-| design-review | brand._, icp.personas |
-| marketing | marketing._, vision.value_proposition, pricing.product_level_marketing_physics |
-| strategy | vision._, icp.pain_points, prd.success_metrics, pricing.philosophy |
-| payments | pricing._, prd.tech_stack.payments |
+| design-review | brand.*, icp.personas |
+| marketing | marketing.*, vision.value_proposition, pricing.product_level_marketing_physics |
+| strategy | vision.*, icp.pain_points, prd.success_metrics, pricing.philosophy |
+| payments | pricing.*, prd.tech_stack.payments |
 
 ### Agent Context Requirements
 
@@ -1396,7 +1337,7 @@ context_requirements:
   optional:
     - "brand.components"
   exclude:
-    - "marketing.*" # Not needed for this agent
+    - "marketing.*"  # Not needed for this agent
 ```
 
 ---
@@ -1431,7 +1372,6 @@ context_requirements:
 ## MIGRATION FROM v1.0
 
 If you have existing `.context/summaries/` from the token-budget approach:
-
 1. Run `/foundations init` to create new structured extractions
 2. The new system creates `.context/structured/`
 3. Old summaries can be archived or deleted

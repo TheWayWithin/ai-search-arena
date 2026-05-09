@@ -1,5 +1,6 @@
 ---
 name: saas-onboarding
+description: Build SaaS user onboarding flows — multi-step wizards, progress tracking, activation milestones, product tours, empty-state guidance, and time-to-value optimisation. Use when building onboarding, wizard, activation, product tour, or first-run experience features.
 version: 1.0.0
 category: infrastructure
 triggers:
@@ -46,38 +47,38 @@ Implement effective user onboarding flows that drive activation and reduce churn
 
 ```typescript
 // Onboarding state schema
-const onboardingStates = pgTable("onboarding_states", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
-    .references(() => users.id)
-    .unique(),
-  currentStep: text("current_step").notNull().default("welcome"),
-  completedSteps: jsonb("completed_steps").$type<string[]>().default([]),
-  stepData: jsonb("step_data").$type<Record<string, unknown>>().default({}),
-  startedAt: timestamp("started_at").defaultNow(),
-  completedAt: timestamp("completed_at"),
-  skippedAt: timestamp("skipped_at"),
+const onboardingStates = pgTable('onboarding_states', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id).unique(),
+  currentStep: text('current_step').notNull().default('welcome'),
+  completedSteps: jsonb('completed_steps').$type<string[]>().default([]),
+  stepData: jsonb('step_data').$type<Record<string, unknown>>().default({}),
+  startedAt: timestamp('started_at').defaultNow(),
+  completedAt: timestamp('completed_at'),
+  skippedAt: timestamp('skipped_at')
 });
 
 // Onboarding steps definition
 const ONBOARDING_STEPS = [
-  { id: "welcome", title: "Welcome", required: true },
-  { id: "profile", title: "Complete Profile", required: true },
-  { id: "create_project", title: "Create First Project", required: true },
-  { id: "invite_team", title: "Invite Team Members", required: false },
-  { id: "connect_integration", title: "Connect Integration", required: false },
-  { id: "explore_features", title: "Explore Features", required: false },
+  { id: 'welcome', title: 'Welcome', required: true },
+  { id: 'profile', title: 'Complete Profile', required: true },
+  { id: 'create_project', title: 'Create First Project', required: true },
+  { id: 'invite_team', title: 'Invite Team Members', required: false },
+  { id: 'connect_integration', title: 'Connect Integration', required: false },
+  { id: 'explore_features', title: 'Explore Features', required: false }
 ] as const;
 
 // Get onboarding status
 async function getOnboardingStatus(userId: string) {
   const state = await db.query.onboardingStates.findFirst({
-    where: eq(onboardingStates.userId, userId),
+    where: eq(onboardingStates.userId, userId)
   });
 
   if (!state) {
     // Initialize onboarding
-    const [newState] = await db.insert(onboardingStates).values({ userId }).returning();
+    const [newState] = await db.insert(onboardingStates)
+      .values({ userId })
+      .returning();
     return formatOnboardingStatus(newState);
   }
 
@@ -85,10 +86,10 @@ async function getOnboardingStatus(userId: string) {
 }
 
 function formatOnboardingStatus(state: OnboardingState) {
-  const totalRequired = ONBOARDING_STEPS.filter((s) => s.required).length;
-  const completedRequired = state.completedSteps.filter(
-    (stepId) => ONBOARDING_STEPS.find((s) => s.id === stepId)?.required
-  ).length;
+  const totalRequired = ONBOARDING_STEPS.filter(s => s.required).length;
+  const completedRequired = state.completedSteps
+    .filter(stepId => ONBOARDING_STEPS.find(s => s.id === stepId)?.required)
+    .length;
 
   return {
     currentStep: state.currentStep,
@@ -96,11 +97,11 @@ function formatOnboardingStatus(state: OnboardingState) {
     progress: Math.round((completedRequired / totalRequired) * 100),
     isComplete: state.completedAt !== null,
     isSkipped: state.skippedAt !== null,
-    steps: ONBOARDING_STEPS.map((step) => ({
+    steps: ONBOARDING_STEPS.map(step => ({
       ...step,
       completed: state.completedSteps.includes(step.id),
-      current: state.currentStep === step.id,
-    })),
+      current: state.currentStep === step.id
+    }))
   };
 }
 ```
@@ -113,9 +114,9 @@ function formatOnboardingStatus(state: OnboardingState) {
 
 ```tsx
 // Onboarding wizard component
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
 interface OnboardingWizardProps {
   initialStatus: OnboardingStatus;
@@ -126,18 +127,18 @@ export function OnboardingWizard({ initialStatus, onComplete }: OnboardingWizard
   const [status, setStatus] = useState(initialStatus);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const currentStepIndex = status.steps.findIndex((s) => s.current);
+  const currentStepIndex = status.steps.findIndex(s => s.current);
   const currentStep = status.steps[currentStepIndex];
 
   async function completeStep(stepData?: Record<string, unknown>) {
     setIsSubmitting(true);
 
-    const response = await fetch("/api/onboarding/complete-step", {
-      method: "POST",
+    const response = await fetch('/api/onboarding/complete-step', {
+      method: 'POST',
       body: JSON.stringify({
         stepId: currentStep.id,
-        data: stepData,
-      }),
+        data: stepData
+      })
     });
 
     const newStatus = await response.json();
@@ -150,38 +151,37 @@ export function OnboardingWizard({ initialStatus, onComplete }: OnboardingWizard
   }
 
   async function skipOnboarding() {
-    await fetch("/api/onboarding/skip", { method: "POST" });
+    await fetch('/api/onboarding/skip', { method: 'POST' });
     onComplete();
   }
 
   return (
-    <div className="mx-auto max-w-2xl p-8">
+    <div className="max-w-2xl mx-auto p-8">
       {/* Progress bar */}
       <div className="mb-8">
-        <div className="mb-2 flex justify-between">
+        <div className="flex justify-between mb-2">
           <span className="text-sm font-medium">Setup Progress</span>
           <span className="text-sm text-gray-500">{status.progress}%</span>
         </div>
-        <div className="h-2 rounded-full bg-gray-200">
+        <div className="h-2 bg-gray-200 rounded-full">
           <div
-            className="h-2 rounded-full bg-blue-600 transition-all"
+            className="h-2 bg-blue-600 rounded-full transition-all"
             style={{ width: `${status.progress}%` }}
           />
         </div>
       </div>
 
       {/* Step indicators */}
-      <div className="mb-8 flex gap-2">
-        {status.steps
-          .filter((s) => s.required)
-          .map((step, i) => (
-            <div
-              key={step.id}
-              className={`h-1 flex-1 rounded ${
-                step.completed ? "bg-green-500" : step.current ? "bg-blue-500" : "bg-gray-200"
-              }`}
-            />
-          ))}
+      <div className="flex gap-2 mb-8">
+        {status.steps.filter(s => s.required).map((step, i) => (
+          <div
+            key={step.id}
+            className={`flex-1 h-1 rounded ${
+              step.completed ? 'bg-green-500' :
+              step.current ? 'bg-blue-500' : 'bg-gray-200'
+            }`}
+          />
+        ))}
       </div>
 
       {/* Current step content */}
@@ -193,13 +193,19 @@ export function OnboardingWizard({ initialStatus, onComplete }: OnboardingWizard
 
       {/* Skip option for optional steps */}
       {!currentStep.required && (
-        <button onClick={() => completeStep()} className="mt-4 text-sm text-gray-500">
+        <button
+          onClick={() => completeStep()}
+          className="text-sm text-gray-500 mt-4"
+        >
           Skip this step
         </button>
       )}
 
       {/* Skip all option */}
-      <button onClick={skipOnboarding} className="mt-8 block text-sm text-gray-400">
+      <button
+        onClick={skipOnboarding}
+        className="text-sm text-gray-400 mt-8 block"
+      >
         Skip setup, I'll explore on my own
       </button>
     </div>
@@ -209,13 +215,13 @@ export function OnboardingWizard({ initialStatus, onComplete }: OnboardingWizard
 // Individual step content
 function OnboardingStepContent({ step, onComplete, isSubmitting }) {
   switch (step.id) {
-    case "welcome":
+    case 'welcome':
       return <WelcomeStep onComplete={onComplete} />;
-    case "profile":
+    case 'profile':
       return <ProfileStep onComplete={onComplete} isSubmitting={isSubmitting} />;
-    case "create_project":
+    case 'create_project':
       return <CreateProjectStep onComplete={onComplete} isSubmitting={isSubmitting} />;
-    case "invite_team":
+    case 'invite_team':
       return <InviteTeamStep onComplete={onComplete} isSubmitting={isSubmitting} />;
     default:
       return null;
@@ -237,7 +243,7 @@ const ACTIVATION_EVENTS = {
   created_first_project: { weight: 3, milestone: true },
   invited_team_member: { weight: 2, milestone: true },
   used_core_feature: { weight: 3, milestone: true }, // "Aha moment"
-  upgraded_plan: { weight: 5, milestone: true },
+  upgraded_plan: { weight: 5, milestone: true }
 } as const;
 
 // Track activation event
@@ -251,7 +257,7 @@ async function trackActivation(userId: string, event: string, metadata?: Record<
     event,
     metadata,
     weight: eventConfig.weight,
-    createdAt: new Date(),
+    createdAt: new Date()
   });
 
   // Check if this completes activation
@@ -260,24 +266,26 @@ async function trackActivation(userId: string, event: string, metadata?: Record<
   }
 
   // Analytics
-  await analytics.track(userId, "activation_event", { event, ...metadata });
+  await analytics.track(userId, 'activation_event', { event, ...metadata });
 }
 
 // Check if user is "activated"
 async function checkActivationComplete(userId: string) {
   const events = await db.query.activationEvents.findMany({
-    where: eq(activationEvents.userId, userId),
+    where: eq(activationEvents.userId, userId)
   });
 
   const completedMilestones = events
-    .filter((e) => ACTIVATION_EVENTS[e.event]?.milestone)
-    .map((e) => e.event);
+    .filter(e => ACTIVATION_EVENTS[e.event]?.milestone)
+    .map(e => e.event);
 
   // Activated = used core feature (aha moment)
-  const isActivated = completedMilestones.includes("used_core_feature");
+  const isActivated = completedMilestones.includes('used_core_feature');
 
   if (isActivated) {
-    await db.update(users).set({ activatedAt: new Date() }).where(eq(users.id, userId));
+    await db.update(users)
+      .set({ activatedAt: new Date() })
+      .where(eq(users.id, userId));
 
     // Trigger post-activation flow
     await triggerActivationCelebration(userId);
@@ -287,7 +295,7 @@ async function checkActivationComplete(userId: string) {
 }
 
 // API endpoint for tracking
-app.post("/api/track/activation", async (req, res) => {
+app.post('/api/track/activation', async (req, res) => {
   const { event, metadata } = req.body;
   await trackActivation(req.userId, event, metadata);
   res.json({ success: true });
@@ -306,21 +314,28 @@ function useFeatureTooltip(featureId: string) {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    const seenFeatures = JSON.parse(localStorage.getItem("seen_features") || "[]");
+    const seenFeatures = JSON.parse(
+      localStorage.getItem('seen_features') || '[]'
+    );
     if (seenFeatures.includes(featureId)) {
       setDismissed(true);
     }
   }, [featureId]);
 
   const dismiss = useCallback(() => {
-    const seenFeatures = JSON.parse(localStorage.getItem("seen_features") || "[]");
-    localStorage.setItem("seen_features", JSON.stringify([...seenFeatures, featureId]));
+    const seenFeatures = JSON.parse(
+      localStorage.getItem('seen_features') || '[]'
+    );
+    localStorage.setItem(
+      'seen_features',
+      JSON.stringify([...seenFeatures, featureId])
+    );
     setDismissed(true);
 
     // Track feature discovery
-    fetch("/api/track/activation", {
-      method: "POST",
-      body: JSON.stringify({ event: "discovered_feature", metadata: { featureId } }),
+    fetch('/api/track/activation', {
+      method: 'POST',
+      body: JSON.stringify({ event: 'discovered_feature', metadata: { featureId } })
     });
   }, [featureId]);
 
@@ -336,15 +351,11 @@ function FeatureTooltip({ featureId, title, description, children }) {
   return (
     <div className="relative">
       {children}
-      <div className="absolute top-full left-0 z-50 mt-2 w-64 rounded-lg bg-blue-600 p-4 text-white shadow-lg">
-        <button onClick={dismiss} className="absolute top-2 right-2 text-white/60">
-          ×
-        </button>
-        <h4 className="mb-1 font-semibold">{title}</h4>
+      <div className="absolute top-full left-0 mt-2 p-4 bg-blue-600 text-white rounded-lg shadow-lg z-50 w-64">
+        <button onClick={dismiss} className="absolute top-2 right-2 text-white/60">×</button>
+        <h4 className="font-semibold mb-1">{title}</h4>
         <p className="text-sm text-white/80">{description}</p>
-        <button onClick={dismiss} className="mt-3 text-sm font-medium">
-          Got it
-        </button>
+        <button onClick={dismiss} className="mt-3 text-sm font-medium">Got it</button>
       </div>
     </div>
   );
@@ -357,7 +368,7 @@ function FeatureTooltip({ featureId, title, description, children }) {
   description="Track your key metrics here. Click any chart to dive deeper."
 >
   <AnalyticsDashboard />
-</FeatureTooltip>;
+</FeatureTooltip>
 ```
 
 ## Stack Implementations
@@ -365,19 +376,18 @@ function FeatureTooltip({ featureId, title, description, children }) {
 ### {{stack.frontend.framework}} Integration
 
 **Route Protection**:
-
 ```typescript
 // Middleware to redirect incomplete onboarding
 export async function middleware(request: NextRequest) {
   const session = await getSession(request);
-  if (!session) return NextResponse.redirect("/login");
+  if (!session) return NextResponse.redirect('/login');
 
   const onboarding = await getOnboardingStatus(session.userId);
 
   // Redirect to onboarding if incomplete (except for onboarding routes)
   if (!onboarding.isComplete && !onboarding.isSkipped) {
-    if (!request.nextUrl.pathname.startsWith("/onboarding")) {
-      return NextResponse.redirect("/onboarding");
+    if (!request.nextUrl.pathname.startsWith('/onboarding')) {
+      return NextResponse.redirect('/onboarding');
     }
   }
 
@@ -401,23 +411,21 @@ export async function middleware(request: NextRequest) {
 ## Anti-Patterns
 
 ### Forcing All Steps
-
 ```typescript
 // WRONG: No way to skip
 const steps = [
-  { id: "profile", required: true },
-  { id: "connect_calendar", required: true }, // Not everyone uses calendars!
+  { id: 'profile', required: true },
+  { id: 'connect_calendar', required: true }, // Not everyone uses calendars!
 ];
 
 // RIGHT: Core steps required, extras optional
 const steps = [
-  { id: "profile", required: true },
-  { id: "connect_calendar", required: false },
+  { id: 'profile', required: true },
+  { id: 'connect_calendar', required: false },
 ];
 ```
 
 ### Blocking App Access
-
 ```typescript
 // WRONG: Can't use app until all steps done
 if (!onboarding.isComplete) return <OnboardingWizard />;

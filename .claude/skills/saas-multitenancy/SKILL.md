@@ -1,5 +1,6 @@
 ---
 name: saas-multitenancy
+description: Implement multi-tenancy in SaaS applications — organisation/workspace isolation, row-level security (RLS), tenant routing, role-based access control, and tenant lifecycle management. Use when building tenant, organisation, workspace, RLS, or multi-tenant data-isolation features.
 version: 1.0.0
 category: database
 triggers:
@@ -68,7 +69,9 @@ CREATE POLICY tenant_modify ON projects
 // Middleware to set tenant context
 async function setTenantContext(tenantId: string) {
   // Set session variable for RLS
-  await db.execute(sql`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`);
+  await db.execute(
+    sql`SELECT set_config('app.current_tenant_id', ${tenantId}, true)`
+  );
 }
 
 // Usage in API route
@@ -92,7 +95,7 @@ async function handleRequest(req: Request) {
 // Tenant context middleware
 async function tenantMiddleware(req: Request, next: NextFunction) {
   // Strategy 1: Subdomain (acme.app.com)
-  const subdomain = req.headers.host?.split(".")[0];
+  const subdomain = req.headers.host?.split('.')[0];
 
   // Strategy 2: Path (/org/acme/dashboard)
   const pathTenant = req.url.match(/^\/org\/([^\/]+)/)?.[1];
@@ -102,16 +105,16 @@ async function tenantMiddleware(req: Request, next: NextFunction) {
 
   const tenantSlug = subdomain || pathTenant || sessionTenant;
   if (!tenantSlug) {
-    throw new UnauthorizedError("Tenant context required");
+    throw new UnauthorizedError('Tenant context required');
   }
 
   // Resolve tenant
   const tenant = await db.query.tenants.findFirst({
-    where: eq(tenants.slug, tenantSlug),
+    where: eq(tenants.slug, tenantSlug)
   });
 
   if (!tenant) {
-    throw new NotFoundError("Tenant not found");
+    throw new NotFoundError('Tenant not found');
   }
 
   // Inject into request context
@@ -133,34 +136,37 @@ async function tenantMiddleware(req: Request, next: NextFunction) {
 
 ```typescript
 // Schema for org hierarchy
-const organizations = pgTable("organizations", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: text("name").notNull(),
-  slug: text("slug").unique().notNull(),
-  plan: text("plan").default("free"),
-  createdAt: timestamp("created_at").defaultNow(),
+const organizations = pgTable('organizations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  slug: text('slug').unique().notNull(),
+  plan: text('plan').default('free'),
+  createdAt: timestamp('created_at').defaultNow()
 });
 
-const teams = pgTable("teams", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  organizationId: uuid("organization_id").references(() => organizations.id),
-  name: text("name").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+const teams = pgTable('teams', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  organizationId: uuid('organization_id').references(() => organizations.id),
+  name: text('name').notNull(),
+  createdAt: timestamp('created_at').defaultNow()
 });
 
-const memberships = pgTable("memberships", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id").references(() => users.id),
-  organizationId: uuid("organization_id").references(() => organizations.id),
-  teamId: uuid("team_id").references(() => teams.id),
-  role: text("role").notNull(), // 'owner' | 'admin' | 'member'
-  createdAt: timestamp("created_at").defaultNow(),
+const memberships = pgTable('memberships', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id),
+  organizationId: uuid('organization_id').references(() => organizations.id),
+  teamId: uuid('team_id').references(() => teams.id),
+  role: text('role').notNull(), // 'owner' | 'admin' | 'member'
+  createdAt: timestamp('created_at').defaultNow()
 });
 
 // Check permission
 async function checkPermission(userId: string, orgId: string, requiredRole: string) {
   const membership = await db.query.memberships.findFirst({
-    where: and(eq(memberships.userId, userId), eq(memberships.organizationId, orgId)),
+    where: and(
+      eq(memberships.userId, userId),
+      eq(memberships.organizationId, orgId)
+    )
   });
 
   if (!membership) return false;
@@ -177,43 +183,44 @@ async function checkPermission(userId: string, orgId: string, requiredRole: stri
 **Implementation**: Atomic tenant creation with default resources.
 
 ```typescript
-async function provisionTenant(ownerUserId: string, orgName: string) {
+async function provisionTenant(
+  ownerUserId: string,
+  orgName: string
+) {
   return await db.transaction(async (tx) => {
     // 1. Generate unique slug
     const baseSlug = slugify(orgName);
     const slug = await generateUniqueSlug(baseSlug);
 
     // 2. Create organization
-    const [org] = await tx
-      .insert(organizations)
-      .values({
-        name: orgName,
-        slug,
-        plan: "free",
-      })
-      .returning();
+    const [org] = await tx.insert(organizations).values({
+      name: orgName,
+      slug,
+      plan: 'free'
+    }).returning();
 
     // 3. Create owner membership
     await tx.insert(memberships).values({
       userId: ownerUserId,
       organizationId: org.id,
-      role: "owner",
+      role: 'owner'
     });
 
     // 4. Create default team
-    const [defaultTeam] = await tx
-      .insert(teams)
-      .values({
-        organizationId: org.id,
-        name: "General",
-      })
-      .returning();
+    const [defaultTeam] = await tx.insert(teams).values({
+      organizationId: org.id,
+      name: 'General'
+    }).returning();
 
     // 5. Add owner to default team
-    await tx
-      .update(memberships)
+    await tx.update(memberships)
       .set({ teamId: defaultTeam.id })
-      .where(and(eq(memberships.userId, ownerUserId), eq(memberships.organizationId, org.id)));
+      .where(
+        and(
+          eq(memberships.userId, ownerUserId),
+          eq(memberships.organizationId, org.id)
+        )
+      );
 
     // 6. Initialize default resources
     await initializeDefaultResources(tx, org.id);
@@ -228,7 +235,6 @@ async function provisionTenant(ownerUserId: string, orgName: string) {
 ### {{stack.frontend.framework}} + {{stack.backend.database}}
 
 **Supabase RLS**:
-
 ```sql
 -- Supabase-specific RLS with auth.uid()
 CREATE POLICY "Users can view own org data" ON projects
@@ -241,7 +247,6 @@ CREATE POLICY "Users can view own org data" ON projects
 ```
 
 **Prisma Multi-tenant**:
-
 ```typescript
 // Prisma client extension for tenant scoping
 const prismaWithTenant = (tenantId: string) => {
@@ -251,9 +256,9 @@ const prismaWithTenant = (tenantId: string) => {
         async $allOperations({ args, query }) {
           args.where = { ...args.where, tenantId };
           return query(args);
-        },
-      },
-    },
+        }
+      }
+    }
   });
 };
 ```
@@ -274,7 +279,6 @@ const prismaWithTenant = (tenantId: string) => {
 ## Anti-Patterns
 
 ### Trusting Client-Provided Tenant ID
-
 ```typescript
 // WRONG: Client can send any tenant ID
 const projects = await getProjects(req.body.tenantId);
@@ -285,25 +289,23 @@ const projects = await getProjects(tenantId);
 ```
 
 ### Forgetting Tenant Context in Background Jobs
-
 ```typescript
 // WRONG: No tenant context in async job
-queue.process("sendReport", async (job) => {
+queue.process('sendReport', async (job) => {
   const data = await db.query.analytics.findMany(); // Gets ALL data!
 });
 
 // RIGHT: Pass and restore tenant context
-queue.process("sendReport", async (job) => {
+queue.process('sendReport', async (job) => {
   await setTenantContext(job.data.tenantId);
   const data = await db.query.analytics.findMany(); // Tenant-scoped
 });
 ```
 
 ### Global Cache Without Tenant Namespace
-
 ```typescript
 // WRONG: Cache key collision across tenants
-await cache.set("dashboard-stats", stats);
+await cache.set('dashboard-stats', stats);
 
 // RIGHT: Namespace cache keys by tenant
 await cache.set(`tenant:${tenantId}:dashboard-stats`, stats);
