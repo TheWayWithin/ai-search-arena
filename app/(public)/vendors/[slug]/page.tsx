@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: result.vendor.description
       ? `${result.vendor.companyName}: ${result.vendor.description}`
       : `View ${result.vendor.companyName}'s AI search tools and benchmark scores on AI Search Arena.`,
+    alternates: { canonical: `/vendors/${slug}` },
   };
 }
 

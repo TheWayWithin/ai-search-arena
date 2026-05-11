@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Vendor Directory",
   description:
     "Browse all vendors evaluated in AI Search Arena benchmarks. Independent rankings of AI search optimization tools by vendor.",
+  alternates: { canonical: "/vendors" },
 };
 
 export default async function VendorsPage() {

@@ -9,6 +9,7 @@ export const metadata: Metadata = {
     description:
       "Independent monthly benchmarks for AI search optimization tools. Built on transparency, rigor, and practitioner-first values.",
   },
+  alternates: { canonical: "/about" },
 };
 
 const jsonLd = {
