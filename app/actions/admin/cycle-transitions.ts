@@ -26,8 +26,7 @@ export async function transitionCycleAction(
     revalidatePath("/admin");
     return { ok: true, message: `Transitioned to ${targetState}.` };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to transition cycle.";
+    const message = error instanceof Error ? error.message : "Failed to transition cycle.";
     return { ok: false, message };
   }
 }

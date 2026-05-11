@@ -41,8 +41,7 @@ export async function createToolAction(
   } catch (error) {
     return {
       ok: false,
-      message:
-        error instanceof Error ? error.message : "Failed to create tool.",
+      message: error instanceof Error ? error.message : "Failed to create tool.",
     };
   }
 }
@@ -64,8 +63,7 @@ export async function archiveToolAction(
   } catch (error) {
     return {
       ok: false,
-      message:
-        error instanceof Error ? error.message : "Failed to archive tool.",
+      message: error instanceof Error ? error.message : "Failed to archive tool.",
     };
   }
 }

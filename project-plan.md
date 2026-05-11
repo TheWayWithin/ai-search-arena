@@ -667,12 +667,12 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 
 ### Sprint 2 Summary
 
-| Metric | Value |
-| --- | --- |
-| Tickets | 7 (T1-T7) + 3 shared components |
-| Server Actions | 7 files, 10 actions total |
-| Pages Created | 8 routes (15 files: pages + client components) |
-| Key Patterns | Server Components, useActionState, state machine UI |
+| Metric         | Value                                               |
+| -------------- | --------------------------------------------------- |
+| Tickets        | 7 (T1-T7) + 3 shared components                     |
+| Server Actions | 7 files, 10 actions total                           |
+| Pages Created  | 8 routes (15 files: pages + client components)      |
+| Key Patterns   | Server Components, useActionState, state machine UI |
 
 ---
 

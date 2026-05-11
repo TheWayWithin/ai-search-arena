@@ -58,20 +58,15 @@ export default async function ToolsPage() {
             </TableHeader>
             <TableBody>
               {tools.map((tool) => (
-                <TableRow
-                  key={tool.id}
-                  className={tool.isArchived ? "opacity-50" : ""}
-                >
+                <TableRow key={tool.id} className={tool.isArchived ? "opacity-50" : ""}>
                   <TableCell
                     className={`px-4 font-medium ${
-                      tool.isArchived ? "italic text-muted-foreground" : ""
+                      tool.isArchived ? "text-muted-foreground italic" : ""
                     }`}
                   >
                     {tool.name}
                   </TableCell>
-                  <TableCell className="px-4">
-                    {tool.vendor.companyName}
-                  </TableCell>
+                  <TableCell className="px-4">{tool.vendor.companyName}</TableCell>
                   <TableCell className="px-4">
                     <div className="flex flex-wrap gap-1">
                       {tool.trackMappings.map((tm) => (
@@ -99,10 +94,7 @@ export default async function ToolsPage() {
                   </TableCell>
                   <TableCell className="px-4">
                     {!tool.isArchived && (
-                      <ArchiveToolButton
-                        toolId={tool.id}
-                        toolName={tool.name}
-                      />
+                      <ArchiveToolButton toolId={tool.id} toolName={tool.name} />
                     )}
                   </TableCell>
                 </TableRow>

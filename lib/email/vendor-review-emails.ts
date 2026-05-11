@@ -148,7 +148,10 @@ export async function sendCorrectionAcceptedEmail(
     return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error(`[email] Failed to send correction-accepted email to ${vendor.contactEmail}:`, message);
+    console.error(
+      `[email] Failed to send correction-accepted email to ${vendor.contactEmail}:`,
+      message
+    );
     return { success: false, error: message };
   }
 }
@@ -214,7 +217,10 @@ export async function sendCorrectionRejectedEmail(
     return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error(`[email] Failed to send correction-rejected email to ${vendor.contactEmail}:`, message);
+    console.error(
+      `[email] Failed to send correction-rejected email to ${vendor.contactEmail}:`,
+      message
+    );
     return { success: false, error: message };
   }
 }

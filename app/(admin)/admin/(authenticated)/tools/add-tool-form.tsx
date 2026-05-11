@@ -17,10 +17,7 @@ export function AddToolForm({
   segments: { id: string; name: string }[];
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [state, formAction, isPending] = useActionState(
-    createToolAction,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState(createToolAction, initialState);
 
   if (!isOpen) {
     return (
@@ -31,7 +28,7 @@ export function AddToolForm({
   }
 
   return (
-    <div className="rounded-lg border bg-card p-6 space-y-4">
+    <div className="bg-card space-y-4 rounded-lg border p-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">New Tool</h3>
         <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
@@ -65,7 +62,7 @@ export function AddToolForm({
               id="vendorId"
               name="vendorId"
               required
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
             >
               <option value="">Select vendor...</option>
               {vendors.map((v) => (
@@ -93,7 +90,7 @@ export function AddToolForm({
             name="description"
             rows={2}
             placeholder="What does this tool do?"
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
           />
         </div>
 

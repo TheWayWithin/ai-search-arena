@@ -34,6 +34,7 @@ Each state transition is an explicit operator action. Guards enforce preconditio
 **Script**: `npx tsx scripts/run-cycle.ts`
 
 Fill in:
+
 - **Cycle identifier**: Format `YYYY-MM` (e.g., `2026-04`)
 - **Display name**: Human-readable (e.g., "April 2026 Benchmark")
 - **Start date**: When the cycle officially begins
@@ -74,6 +75,7 @@ The cycle is created in `Draft` state.
 **Script**: `npx tsx scripts/run-cycle.ts`
 
 This is the longest step. For each enrolled tool:
+
 - 51 dimensions × 6 AI models = 306 API calls per tool
 - All models queried in parallel per dimension
 - Retry with exponential backoff on failure
@@ -84,6 +86,7 @@ This is the longest step. For each enrolled tool:
 **Resumability**: Re-running the script skips tools that are already fully evaluated. Safe to restart if interrupted.
 
 **Monitoring**: Watch for:
+
 - Model timeouts (configurable per model, default 30s–60s)
 - Parse failures (model didn't return a score in expected format)
 - Rate limiting from OpenRouter
@@ -99,6 +102,7 @@ This is the longest step. For each enrolled tool:
 **Script**: Handled by run-cycle script
 
 Per tool × dimension:
+
 1. Collect all successful model scores (status=Success, parsedScore not null)
 2. Require minimum 4/6 successful scores
 3. Compute **median** score → dimension score
@@ -106,6 +110,7 @@ Per tool × dimension:
 5. Store `Score` and `SynthesisRecord`
 
 Then:
+
 1. Compute overall composite scores (weighted sum with N/A renormalization)
 2. Compute per-segment composite scores (7 segments)
 3. Apply dense ranking (ties get same rank)
@@ -121,6 +126,7 @@ Then:
 **Current process**: Manual review of scores for outliers or obvious errors.
 
 **What to check**:
+
 - Any tool with an unusually high or low composite score
 - Dimensions with `Low` confidence or `InsufficientData` tags
 - Score distributions that seem inconsistent with known tool capabilities
@@ -131,6 +137,7 @@ Then:
 ### 10. Review → VendorReview
 
 **What happens automatically** (side effect):
+
 1. `openReviewWindow()` creates a `VendorReview` record per enrolled vendor
 2. Each record gets a unique `accessToken` (32-byte hex) for a secure review URL
 3. Window opens now, closes in 5 business days (weekends skipped)
@@ -143,10 +150,12 @@ Then:
 **Duration**: 5 business days from window open.
 
 **What vendors can do**:
+
 - View their tools' dimension scores at their unique review URL
 - Submit factual corrections with: proposed value, justification, and evidence URLs
 
 **What you do when corrections come in**:
+
 - Review the justification and evidence
 - **Accept**: Score is updated, vendor notified by email
 - **Reject**: Must provide a reason, vendor notified by email. Vendor may resubmit before window closes.
@@ -177,15 +186,15 @@ In this order:
 
 ## Running via Script vs Admin UI
 
-| Step | Script (`run-cycle.ts`) | Admin UI (Sprint 2) |
-|------|------------------------|---------------------|
-| Create cycle | Auto-creates if none exists | "New Cycle" form |
-| Enroll tools | Auto-enrolls all non-archived | Checkbox per tool |
-| State transitions | Automatic progression | Button per transition |
-| Evaluations | Runs all in sequence | Triggered from UI (future) |
-| Synthesis | Runs automatically | Triggered from UI (future) |
-| Vendor review | Opens window automatically | Manage from admin |
-| Deliverables | Generated automatically | Buttons in UI (future) |
+| Step              | Script (`run-cycle.ts`)       | Admin UI (Sprint 2)        |
+| ----------------- | ----------------------------- | -------------------------- |
+| Create cycle      | Auto-creates if none exists   | "New Cycle" form           |
+| Enroll tools      | Auto-enrolls all non-archived | Checkbox per tool          |
+| State transitions | Automatic progression         | Button per transition      |
+| Evaluations       | Runs all in sequence          | Triggered from UI (future) |
+| Synthesis         | Runs automatically            | Triggered from UI (future) |
+| Vendor review     | Opens window automatically    | Manage from admin          |
+| Deliverables      | Generated automatically       | Buttons in UI (future)     |
 
 The script (`npx tsx scripts/run-cycle.ts`) handles the entire flow end-to-end. The admin UI gives you granular control over each step.
 
@@ -198,6 +207,7 @@ For the second benchmark, you can use either approach. The script is faster for 
 ### Score Corrections
 
 After publication, score corrections require dual approval:
+
 - `correctedBy`: person making the correction
 - `approvedBy`: different person approving it (cannot be the same)
 - Previous value preserved in `ScoreCorrection` record
@@ -210,15 +220,15 @@ Published cycles remain accessible via the cycle selector on the leaderboard and
 
 ## Timing Guide
 
-| Phase | Typical Duration |
-|-------|-----------------|
-| Draft + Planning | 1 day (tool roster review) |
-| Evaluation | 2–4 hours (API calls, depends on rate limits) |
-| Synthesis | Minutes (computation) |
-| Review | 1–2 days (manual review) |
-| Vendor Review | 5 business days (mandatory window) |
-| Publication | 1 day (generate deliverables, final checks) |
-| **Total** | **~8–10 business days** |
+| Phase            | Typical Duration                              |
+| ---------------- | --------------------------------------------- |
+| Draft + Planning | 1 day (tool roster review)                    |
+| Evaluation       | 2–4 hours (API calls, depends on rate limits) |
+| Synthesis        | Minutes (computation)                         |
+| Review           | 1–2 days (manual review)                      |
+| Vendor Review    | 5 business days (mandatory window)            |
+| Publication      | 1 day (generate deliverables, final checks)   |
+| **Total**        | **~8–10 business days**                       |
 
 ---
 

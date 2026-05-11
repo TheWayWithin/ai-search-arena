@@ -36,8 +36,7 @@ export async function createVendorAction(
   } catch (error) {
     return {
       ok: false,
-      message:
-        error instanceof Error ? error.message : "Failed to create vendor.",
+      message: error instanceof Error ? error.message : "Failed to create vendor.",
     };
   }
 }

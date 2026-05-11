@@ -5,13 +5,7 @@ import { getCycleById } from "@/lib/db/cycles";
 import { getEnrollments, getEnrollmentCountsByTrack } from "@/lib/db/enrollments";
 import { getTools } from "@/lib/db/vendors";
 import { StateBadge } from "@/components/admin/state-badge";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { EnrollmentList } from "./enrollment-list";
 
@@ -20,11 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function EnrollmentPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function EnrollmentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const cycle = await getCycleById(id);
 
@@ -81,12 +71,10 @@ export default async function EnrollmentPage({
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight">
-              Tool Enrollment
-            </h1>
+            <h1 className="text-2xl font-bold tracking-tight">Tool Enrollment</h1>
             <StateBadge state={cycle.state} />
           </div>
-          <p className="mt-1 text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             {cycle.displayName} ({cycle.cycleIdentifier})
           </p>
         </div>
@@ -101,23 +89,21 @@ export default async function EnrollmentPage({
         <CardHeader>
           <CardTitle className="text-base">Enrollment Summary</CardTitle>
           <CardDescription>
-            {enrollments.length} tool{enrollments.length !== 1 ? "s" : ""}{" "}
-            enrolled. Minimum 5 per track required for Evaluation (BR-T03).
+            {enrollments.length} tool{enrollments.length !== 1 ? "s" : ""} enrolled. Minimum 5 per
+            track required for Evaluation (BR-T03).
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-2 sm:grid-cols-3">
-            {Object.entries(trackCounts).map(
-              ([trackId, { trackName, count }]) => (
-                <div
-                  key={trackId}
-                  className={`rounded-md border px-3 py-2 text-sm ${count >= 5 ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}
-                >
-                  <span className="font-medium">{trackName}</span>:{" "}
-                  <span className="font-semibold">{count}</span>/5
-                </div>
-              )
-            )}
+            {Object.entries(trackCounts).map(([trackId, { trackName, count }]) => (
+              <div
+                key={trackId}
+                className={`rounded-md border px-3 py-2 text-sm ${count >= 5 ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}
+              >
+                <span className="font-medium">{trackName}</span>:{" "}
+                <span className="font-semibold">{count}</span>/5
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

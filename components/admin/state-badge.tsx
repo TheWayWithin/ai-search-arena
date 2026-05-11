@@ -61,11 +61,7 @@ export function StateBadge({
   return (
     <Badge
       variant="outline"
-      className={cn(
-        config.className,
-        size === "lg" && "px-3 py-1 text-sm",
-        className
-      )}
+      className={cn(config.className, size === "lg" && "px-3 py-1 text-sm", className)}
     >
       {config.label}
     </Badge>

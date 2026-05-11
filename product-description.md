@@ -64,43 +64,44 @@ All scores: 0.0–10.0, one decimal place, round half up.
 
 ### Scoring Rubric
 
-| Range | Label | Meaning |
-|-------|-------|---------|
-| 0–2 | Poor/Missing | Feature barely exists or is fundamentally broken |
-| 3–4 | Below Average | Basic functionality with significant gaps |
-| 5–6 | Average | Functional but nothing exceptional |
-| 7–8 | Good | Strong capability with minor gaps |
-| 9–10 | Excellent | Best-in-class implementation |
+| Range | Label         | Meaning                                          |
+| ----- | ------------- | ------------------------------------------------ |
+| 0–2   | Poor/Missing  | Feature barely exists or is fundamentally broken |
+| 3–4   | Below Average | Basic functionality with significant gaps        |
+| 5–6   | Average       | Functional but nothing exceptional               |
+| 7–8   | Good          | Strong capability with minor gaps                |
+| 9–10  | Excellent     | Best-in-class implementation                     |
 
 ### 6-Model AI Consensus
 
 Every tool × dimension is evaluated by 6 independent AI models via OpenRouter:
 
-| Provider | Model |
-|----------|-------|
-| OpenAI | GPT-5.2 |
+| Provider  | Model             |
+| --------- | ----------------- |
+| OpenAI    | GPT-5.2           |
 | Anthropic | Claude Sonnet 4.6 |
-| Google | Gemini 3 Flash |
-| xAI | Grok 4.1 Fast |
-| DeepSeek | DeepSeek V3.2 |
-| Mistral | Mistral Large 3 |
+| Google    | Gemini 3 Flash    |
+| xAI       | Grok 4.1 Fast     |
+| DeepSeek  | DeepSeek V3.2     |
+| Mistral   | Mistral Large 3   |
 
 All models queried in parallel. Temperature 0.1. Retry with exponential backoff (1s, 4s, 16s).
 
 ### Score Synthesis
 
 Per dimension per tool:
+
 - **Median** of successful model scores (not mean — reduces outlier influence)
 - Minimum 4 of 6 models must succeed; otherwise tagged `InsufficientData`
 - Round half up to one decimal place
 
 ### Confidence Tags
 
-| Tag | Condition |
-|-----|-----------|
-| High | Standard deviation ≤ 0.5 |
-| Medium | 0.5 < stdDev ≤ 1.5 |
-| Low | stdDev > 1.5 |
+| Tag              | Condition                       |
+| ---------------- | ------------------------------- |
+| High             | Standard deviation ≤ 0.5        |
+| Medium           | 0.5 < stdDev ≤ 1.5              |
+| Low              | stdDev > 1.5                    |
 | InsufficientData | Fewer than 4/6 models succeeded |
 
 ### Composite Score
@@ -151,23 +152,23 @@ Pricing Transparency (2%), Value for Investment (2%), Update Frequency (2%), Sca
 
 Tools are mapped to one or more of 7 segments. Segment-specific leaderboard rankings and badges are computed separately.
 
-| Segment | Description |
-|---------|-------------|
-| Enterprise SEO | Large organizations with complex SEO needs and dedicated teams |
-| SMB Marketing | Small and medium businesses with limited marketing resources |
-| E-commerce | Online retail businesses optimizing product and category pages |
-| Content Marketing | Content-driven organizations focused on organic visibility |
-| Technical SEO | Organizations requiring deep technical optimization capabilities |
-| Agency & Consulting | Agencies and consultants managing multiple client accounts |
+| Segment                | Description                                                       |
+| ---------------------- | ----------------------------------------------------------------- |
+| Enterprise SEO         | Large organizations with complex SEO needs and dedicated teams    |
+| SMB Marketing          | Small and medium businesses with limited marketing resources      |
+| E-commerce             | Online retail businesses optimizing product and category pages    |
+| Content Marketing      | Content-driven organizations focused on organic visibility        |
+| Technical SEO          | Organizations requiring deep technical optimization capabilities  |
+| Agency & Consulting    | Agencies and consultants managing multiple client accounts        |
 | Local & Multi-Location | Businesses with physical locations optimizing for local AI search |
 
 ---
 
 ## Benchmark Tracks
 
-| Track | Status |
-|-------|--------|
-| GEO Platform Track | Active — all 51 dimensions scored |
+| Track                  | Status                                          |
+| ---------------------- | ----------------------------------------------- |
+| GEO Platform Track     | Active — all 51 dimensions scored               |
 | llms.txt Tooling Track | Defined, no dimensions yet (Phase 3, Oct 2026+) |
 
 ---
@@ -178,16 +179,16 @@ Badges are awarded per cycle after composite scores are finalized.
 
 ### Overall Badges
 
-| Rank | Tier | Badge |
-|------|------|-------|
-| 1st | Gold | Overall Leader |
-| 2nd | Silver | Overall Runner-Up |
-| 3rd | Bronze | Overall Top Three |
+| Rank | Tier   | Badge             |
+| ---- | ------ | ----------------- |
+| 1st  | Gold   | Overall Leader    |
+| 2nd  | Silver | Overall Runner-Up |
+| 3rd  | Bronze | Overall Top Three |
 
 ### Segment Badges
 
-| Rank | Tier | Badge |
-|------|------|-------|
+| Rank            | Tier | Badge                          |
+| --------------- | ---- | ------------------------------ |
 | 1st per segment | Gold | Segment Leader: {Segment Name} |
 
 Maximum 10 badges per cycle (3 overall + 7 segment leaders).
@@ -235,13 +236,13 @@ AI Search Mastery (the parent organization) has 4 tools enrolled. These are scor
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 15 (App Router, RSC) |
-| Database | PostgreSQL via Prisma ORM |
-| Hosting | Vercel |
-| Object Storage | Cloudflare R2 |
-| Email | Resend |
-| Newsletter | Buttondown |
-| AI Evaluation | OpenRouter (unified gateway to 6 models) |
-| Methodology | v1.0.0, effective March 1, 2026 |
+| Layer          | Technology                               |
+| -------------- | ---------------------------------------- |
+| Framework      | Next.js 15 (App Router, RSC)             |
+| Database       | PostgreSQL via Prisma ORM                |
+| Hosting        | Vercel                                   |
+| Object Storage | Cloudflare R2                            |
+| Email          | Resend                                   |
+| Newsletter     | Buttondown                               |
+| AI Evaluation  | OpenRouter (unified gateway to 6 models) |
+| Methodology    | v1.0.0, effective March 1, 2026          |

@@ -6,22 +6,11 @@ import { Button } from "@/components/ui/button";
 
 const initialState = { ok: true, message: "" };
 
-export function ArchiveToolButton({
-  toolId,
-  toolName,
-}: {
-  toolId: string;
-  toolName: string;
-}) {
-  const [, formAction, isPending] = useActionState(
-    archiveToolAction,
-    initialState
-  );
+export function ArchiveToolButton({ toolId, toolName }: { toolId: string; toolName: string }) {
+  const [, formAction, isPending] = useActionState(archiveToolAction, initialState);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    if (
-      !confirm(`Archive "${toolName}"? This will hide it from benchmarks.`)
-    ) {
+    if (!confirm(`Archive "${toolName}"? This will hide it from benchmarks.`)) {
       e.preventDefault();
     }
   }

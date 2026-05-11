@@ -16,7 +16,10 @@ export function TrendIndicator({ trend }: TrendIndicatorProps) {
   // First cycle ever — no previous data
   if (trend.isNew && trend.previousRank === null) {
     return (
-      <Badge variant="outline" className="border-mastery-blue/20 bg-mastery-blue/10 text-mastery-blue text-xs">
+      <Badge
+        variant="outline"
+        className="border-mastery-blue/20 bg-mastery-blue/10 text-mastery-blue text-xs"
+      >
         NEW
       </Badge>
     );
