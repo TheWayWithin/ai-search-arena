@@ -9,6 +9,7 @@ export const metadata: Metadata = {
     description:
       "Transparency about our ownership, methodology, and editorial independence safeguards.",
   },
+  alternates: { canonical: "/disclosure" },
 };
 
 const jsonLd = {

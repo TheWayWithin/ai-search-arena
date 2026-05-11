@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "AI Search Arena — Independent AI Search Tool Benchmarks",
   description:
     "Monthly independent benchmarks evaluating 27+ AI search optimization (GEO/AEO) tools against 50+ standardized metrics using 6-model AI consensus methodology.",
+  alternates: { canonical: "/" },
 };
 
 function confidenceColor(tag: string) {

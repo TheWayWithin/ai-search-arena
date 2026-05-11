@@ -34,6 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${tool.name} — Benchmark Scores`,
     description: `Independent benchmark evaluation of ${tool.name}. ${tool.description}`,
+    alternates: { canonical: `/tools/${slug}` },
   };
 }
 

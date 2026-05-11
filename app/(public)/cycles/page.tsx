@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Benchmark Cycles",
   description:
     "Archive of all published AI Search Arena benchmark cycles with evaluation results and methodology versions.",
+  alternates: { canonical: "/cycles" },
 };
 
 export default async function CyclesPage() {
