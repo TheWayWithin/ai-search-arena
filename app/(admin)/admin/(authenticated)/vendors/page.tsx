@@ -46,23 +46,16 @@ export default async function VendorsPage() {
             <TableBody>
               {vendors.length === 0 ? (
                 <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="px-4 py-8 text-center text-muted-foreground"
-                  >
+                  <TableCell colSpan={5} className="text-muted-foreground px-4 py-8 text-center">
                     No vendors yet.
                   </TableCell>
                 </TableRow>
               ) : (
                 vendors.map((vendor) => (
                   <TableRow key={vendor.id}>
-                    <TableCell className="px-4 font-medium">
-                      {vendor.companyName}
-                    </TableCell>
+                    <TableCell className="px-4 font-medium">{vendor.companyName}</TableCell>
                     <TableCell className="px-4">
-                      {vendor.contactName ?? (
-                        <span className="text-muted-foreground">&mdash;</span>
-                      )}
+                      {vendor.contactName ?? <span className="text-muted-foreground">&mdash;</span>}
                     </TableCell>
                     <TableCell className="px-4">
                       {vendor.contactEmail ? (
@@ -76,9 +69,7 @@ export default async function VendorsPage() {
                         <span className="text-muted-foreground">&mdash;</span>
                       )}
                     </TableCell>
-                    <TableCell className="px-4">
-                      {vendor.tools.length}
-                    </TableCell>
+                    <TableCell className="px-4">{vendor.tools.length}</TableCell>
                     <TableCell className="px-4">
                       {vendor.websiteUrl ? (
                         <a

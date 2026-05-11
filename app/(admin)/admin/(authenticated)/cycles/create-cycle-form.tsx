@@ -15,10 +15,7 @@ export function CreateCycleForm({
   methodologyLabel: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [state, formAction, isPending] = useActionState(
-    createCycleAction,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState(createCycleAction, initialState);
 
   if (!isOpen) {
     return (
@@ -29,32 +26,20 @@ export function CreateCycleForm({
   }
 
   return (
-    <div className="space-y-6 rounded-lg border bg-card p-6">
+    <div className="bg-card space-y-6 rounded-lg border p-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Create New Cycle</h2>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsOpen(false)}
-          type="button"
-        >
+        <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} type="button">
           Cancel
         </Button>
       </div>
 
       <form action={formAction} className="space-y-4">
-        <input
-          type="hidden"
-          name="methodologyVersionId"
-          value={methodologyVersionId}
-        />
+        <input type="hidden" name="methodologyVersionId" value={methodologyVersionId} />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1">
-            <label
-              htmlFor="cycleIdentifier"
-              className="text-sm font-medium leading-none"
-            >
+            <label htmlFor="cycleIdentifier" className="text-sm leading-none font-medium">
               Cycle Identifier
             </label>
             <Input
@@ -67,10 +52,7 @@ export function CreateCycleForm({
           </div>
 
           <div className="space-y-1">
-            <label
-              htmlFor="displayName"
-              className="text-sm font-medium leading-none"
-            >
+            <label htmlFor="displayName" className="text-sm leading-none font-medium">
               Display Name
             </label>
             <Input
@@ -83,33 +65,22 @@ export function CreateCycleForm({
           </div>
 
           <div className="space-y-1">
-            <label
-              htmlFor="startDate"
-              className="text-sm font-medium leading-none"
-            >
+            <label htmlFor="startDate" className="text-sm leading-none font-medium">
               Start Date
             </label>
-            <Input
-              id="startDate"
-              name="startDate"
-              type="date"
-              required
-              disabled={isPending}
-            />
+            <Input id="startDate" name="startDate" type="date" required disabled={isPending} />
           </div>
 
           <div className="space-y-1">
-            <label className="text-sm font-medium leading-none">
-              Methodology Version
-            </label>
-            <div className="flex h-9 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
+            <label className="text-sm leading-none font-medium">Methodology Version</label>
+            <div className="bg-muted text-muted-foreground flex h-9 items-center rounded-md border px-3 text-sm">
               {methodologyLabel}
             </div>
           </div>
         </div>
 
         {!state.ok && state.message && (
-          <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <p className="bg-destructive/10 text-destructive rounded-md px-3 py-2 text-sm">
             {state.message}
           </p>
         )}

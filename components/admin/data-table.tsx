@@ -54,9 +54,7 @@ export function DataTable<T extends Record<string, unknown>>({
             >
               {columns.map((col) => (
                 <TableCell key={col.key} className={col.className}>
-                  {col.render
-                    ? col.render(row)
-                    : (row[col.key] as React.ReactNode) ?? "—"}
+                  {col.render ? col.render(row) : ((row[col.key] as React.ReactNode) ?? "—")}
                 </TableCell>
               ))}
             </TableRow>

@@ -16,12 +16,12 @@ AI Search Arena is part of the AI Search Mastery ecosystem alongside LLM.txt Mas
 
 The ideation brief recommended 4 changes. Two are already done, one isn't a code change, and two are valid:
 
-| # | Recommendation | Verdict | Reason |
-|---|---|---|---|
-| 1 | Include LLM.txt Mastery in benchmarks | **Already done** | Tool is seeded in `prisma/seed.ts` (line 1101). Enrolling it in a cycle is an admin-panel operation, not a code change. |
-| 2 | Add ecosystem footer links | **Valid** | Footer only links to aisearchmastery.com today. |
-| 3 | Enhance schema with sameAs | **Valid (small)** | Organization schema exists on about page but lacks `sameAs` array. |
-| 4 | Canonical reference sentence | **Not a code change** | Editorial guidance for benchmark descriptions. No implementation needed. |
+| #   | Recommendation                        | Verdict               | Reason                                                                                                                  |
+| --- | ------------------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| 1   | Include LLM.txt Mastery in benchmarks | **Already done**      | Tool is seeded in `prisma/seed.ts` (line 1101). Enrolling it in a cycle is an admin-panel operation, not a code change. |
+| 2   | Add ecosystem footer links            | **Valid**             | Footer only links to aisearchmastery.com today.                                                                         |
+| 3   | Enhance schema with sameAs            | **Valid (small)**     | Organization schema exists on about page but lacks `sameAs` array.                                                      |
+| 4   | Canonical reference sentence          | **Not a code change** | Editorial guidance for benchmark descriptions. No implementation needed.                                                |
 
 ---
 
@@ -45,12 +45,14 @@ AI Search Mastery · LLM.txt Mastery · AImpact Scanner
 ```
 
 **Implementation**:
+
 - Add a second line below the existing copyright text
 - Three external links separated by `·` (middle dot)
 - Same styling as existing AI Search Mastery link (`text-mastery-blue underline underline-offset-2`)
 - All links open in new tab with `rel="noopener noreferrer"`
 
 **Links**:
+
 - AI Search Mastery → https://aisearchmastery.com
 - LLM.txt Mastery → https://llmtxtmastery.com
 - AImpact Scanner → https://aimpactscanner.com

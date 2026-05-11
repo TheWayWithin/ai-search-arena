@@ -36,8 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "AI Search Arena - Independent AI SEO Tool Rankings",
-    description:
-      "Weekly benchmark cycles evaluating 32 AI SEO tools. See current rankings.",
+    description: "Weekly benchmark cycles evaluating 32 AI SEO tools. See current rankings.",
     images: ["https://aisearcharena.com/og-image.png"],
   },
   alternates: {

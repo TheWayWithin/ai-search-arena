@@ -19,18 +19,13 @@ export const metadata: Metadata = {
 };
 
 export default async function CyclesPage() {
-  const [cycles, methodology] = await Promise.all([
-    listCycles(),
-    getCurrentMethodology(),
-  ]);
+  const [cycles, methodology] = await Promise.all([listCycles(), getCurrentMethodology()]);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          Evaluation Cycles
-        </h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1 className="text-2xl font-bold tracking-tight">Evaluation Cycles</h1>
+        <p className="text-muted-foreground mt-1">
           Manage and track AI search tool evaluation cycles.
         </p>
       </div>
@@ -38,9 +33,7 @@ export default async function CyclesPage() {
       <CreateCycleForm
         methodologyVersionId={methodology?.id ?? ""}
         methodologyLabel={
-          methodology
-            ? `v${methodology.versionNumber}`
-            : "No methodology available"
+          methodology ? `v${methodology.versionNumber}` : "No methodology available"
         }
       />
 
@@ -67,10 +60,7 @@ export default async function CyclesPage() {
               {cycles.map((cycle) => (
                 <TableRow key={cycle.id}>
                   <TableCell className="font-mono font-medium">
-                    <Link
-                      href={`/admin/cycles/${cycle.id}`}
-                      className="hover:underline"
-                    >
+                    <Link href={`/admin/cycles/${cycle.id}`} className="hover:underline">
                       {cycle.cycleIdentifier}
                     </Link>
                   </TableCell>
@@ -85,10 +75,8 @@ export default async function CyclesPage() {
                       day: "numeric",
                     })}
                   </TableCell>
-                  <TableCell className="text-right">
-                    {cycle._count.enrollments}
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
+                  <TableCell className="text-right">{cycle._count.enrollments}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
                     v{cycle.methodologyVersion.versionNumber}
                   </TableCell>
                 </TableRow>

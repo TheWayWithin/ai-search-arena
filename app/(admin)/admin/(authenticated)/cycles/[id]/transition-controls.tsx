@@ -29,19 +29,14 @@ export function TransitionControls({
   currentState: string;
   validTransitions: string[];
 }) {
-  const [state, formAction, pending] = useActionState(
-    transitionCycleAction,
-    initialState
-  );
+  const [state, formAction, pending] = useActionState(transitionCycleAction, initialState);
   const [confirmTarget, setConfirmTarget] = useState<string | null>(null);
   const [formRef, setFormRef] = useState<HTMLFormElement | null>(null);
   const [hiddenTarget, setHiddenTarget] = useState("");
 
   if (validTransitions.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
-        No transitions available from {currentState}.
-      </p>
+      <p className="text-muted-foreground text-sm">No transitions available from {currentState}.</p>
     );
   }
 
@@ -75,20 +70,14 @@ export function TransitionControls({
                 setConfirmTarget(target);
               }}
             >
-              {pending && hiddenTarget === target
-                ? "Transitioning..."
-                : config.label}
+              {pending && hiddenTarget === target ? "Transitioning..." : config.label}
             </Button>
           );
         })}
       </div>
 
-      {!state.ok && state.message && (
-        <p className="text-sm text-red-600">{state.message}</p>
-      )}
-      {state.ok && state.message && (
-        <p className="text-sm text-green-600">{state.message}</p>
-      )}
+      {!state.ok && state.message && <p className="text-sm text-red-600">{state.message}</p>}
+      {state.ok && state.message && <p className="text-sm text-green-600">{state.message}</p>}
 
       <ConfirmDialog
         open={confirmTarget !== null}
