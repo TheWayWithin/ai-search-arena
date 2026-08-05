@@ -6,13 +6,7 @@ import { getActiveModels } from "@/lib/db/ai-models";
 import { getValidTransitions } from "@/lib/state-machine/cycle";
 import { StateBadge } from "@/components/admin/state-badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata: Metadata = {
@@ -34,15 +28,13 @@ export default async function AdminDashboardPage() {
 
   const recentCycles = allCycles.slice(0, 3);
   const vendorCount = new Set(tools.map((t) => t.vendorId)).size;
-  const validTransitions = activeCycle
-    ? getValidTransitions(activeCycle.state)
-    : [];
+  const validTransitions = activeCycle ? getValidTransitions(activeCycle.state) : [];
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Admin Dashboard</h1>
-        <p className="mt-1 text-muted-foreground">
+        <p className="text-muted-foreground mt-1">
           Overview of evaluation cycles and platform status.
         </p>
       </div>
@@ -52,9 +44,7 @@ export default async function AdminDashboardPage() {
           <CardHeader>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <CardTitle className="text-xl">
-                  {activeCycle.displayName}
-                </CardTitle>
+                <CardTitle className="text-xl">{activeCycle.displayName}</CardTitle>
                 <CardDescription className="mt-1 font-mono text-xs">
                   {activeCycle.cycleIdentifier}
                 </CardDescription>
@@ -65,25 +55,19 @@ export default async function AdminDashboardPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                <p className="text-muted-foreground text-xs tracking-wide uppercase">
                   Days in current state
                 </p>
-                <p className="mt-1 text-2xl font-semibold">
-                  {daysSince(activeCycle.updatedAt)}
-                </p>
+                <p className="mt-1 text-2xl font-semibold">{daysSince(activeCycle.updatedAt)}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                <p className="text-muted-foreground text-xs tracking-wide uppercase">
                   Enrolled tools
                 </p>
-                <p className="mt-1 text-2xl font-semibold">
-                  {activeCycle.enrollments.length}
-                </p>
+                <p className="mt-1 text-2xl font-semibold">{activeCycle.enrollments.length}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Start date
-                </p>
+                <p className="text-muted-foreground text-xs tracking-wide uppercase">Start date</p>
                 <p className="mt-1 text-sm font-medium">
                   {new Date(activeCycle.startDate).toLocaleDateString("en-US", {
                     year: "numeric",
@@ -96,7 +80,7 @@ export default async function AdminDashboardPage() {
 
             {validTransitions.length > 0 && (
               <div>
-                <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
+                <p className="text-muted-foreground mb-2 text-xs tracking-wide uppercase">
                   Next valid transitions
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -111,9 +95,7 @@ export default async function AdminDashboardPage() {
 
             <div className="pt-2">
               <Button asChild size="sm" variant="outline">
-                <Link href={`/admin/cycles/${activeCycle.id}`}>
-                  Manage cycle
-                </Link>
+                <Link href={`/admin/cycles/${activeCycle.id}`}>Manage cycle</Link>
               </Button>
             </div>
           </CardContent>
@@ -122,10 +104,8 @@ export default async function AdminDashboardPage() {
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center gap-4 py-12 text-center">
             <div>
-              <p className="text-lg font-semibold">
-                No active evaluation cycle
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-lg font-semibold">No active evaluation cycle</p>
+              <p className="text-muted-foreground mt-1 text-sm">
                 Create a new cycle to begin evaluating AI search tools.
               </p>
             </div>
@@ -170,16 +150,14 @@ export default async function AdminDashboardPage() {
               <Link
                 key={cycle.id}
                 href={`/admin/cycles/${cycle.id}`}
-                className="flex items-center justify-between rounded-lg border px-4 py-3 transition-colors hover:bg-muted/50"
+                className="hover:bg-muted/50 flex items-center justify-between rounded-lg border px-4 py-3 transition-colors"
               >
                 <div>
                   <p className="text-sm font-medium">{cycle.displayName}</p>
-                  <p className="font-mono text-xs text-muted-foreground">
-                    {cycle.cycleIdentifier}
-                  </p>
+                  <p className="text-muted-foreground font-mono text-xs">{cycle.cycleIdentifier}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     {cycle._count.enrollments} tools
                   </span>
                   <StateBadge state={cycle.state} />

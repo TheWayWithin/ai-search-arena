@@ -20,10 +20,7 @@ export async function lockMethodologyAction(
   } catch (error) {
     return {
       ok: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to lock methodology version.",
+      message: error instanceof Error ? error.message : "Failed to lock methodology version.",
     };
   }
 }

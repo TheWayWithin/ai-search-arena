@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     description:
       "Get in touch with questions about benchmarks, methodology, vendor participation, or partnerships.",
   },
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

@@ -8,10 +8,7 @@ import { lockMethodologyAction } from "@/app/actions/admin/methodology";
 const initialState = { ok: true, message: "" };
 
 export function LockButton({ versionId }: { versionId: string }) {
-  const [state, formAction, pending] = useActionState(
-    lockMethodologyAction,
-    initialState
-  );
+  const [state, formAction, pending] = useActionState(lockMethodologyAction, initialState);
   const [open, setOpen] = useState(false);
   const [formRef, setFormRef] = useState<HTMLFormElement | null>(null);
 
@@ -21,21 +18,12 @@ export function LockButton({ versionId }: { versionId: string }) {
         <input type="hidden" name="versionId" value={versionId} />
       </form>
 
-      <Button
-        type="button"
-        variant="destructive"
-        onClick={() => setOpen(true)}
-        disabled={pending}
-      >
+      <Button type="button" variant="destructive" onClick={() => setOpen(true)} disabled={pending}>
         {pending ? "Locking..." : "Lock Version"}
       </Button>
 
-      {!state.ok && state.message && (
-        <p className="text-sm text-red-600">{state.message}</p>
-      )}
-      {state.ok && state.message && (
-        <p className="text-sm text-green-600">{state.message}</p>
-      )}
+      {!state.ok && state.message && <p className="text-sm text-red-600">{state.message}</p>}
+      {state.ok && state.message && <p className="text-sm text-green-600">{state.message}</p>}
 
       <ConfirmDialog
         open={open}

@@ -24,6 +24,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
       title: "Compare Tools",
       description:
         "Compare AI search optimization tools side-by-side across all benchmark dimensions.",
+      alternates: { canonical: "/compare" },
     };
   }
 
@@ -33,6 +34,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   return {
     title: `Compare ${toolNames.join(" vs ")}`,
     description: `Side-by-side benchmark comparison of ${toolNames.join(", ")} across all evaluation dimensions.`,
+    alternates: { canonical: "/compare" },
   };
 }
 

@@ -2,12 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   enrollToolAction,
   withdrawToolAction,
@@ -28,13 +23,7 @@ type Track = {
   }[];
 };
 
-export function EnrollmentList({
-  cycleId,
-  tracks,
-}: {
-  cycleId: string;
-  tracks: Track[];
-}) {
+export function EnrollmentList({ cycleId, tracks }: { cycleId: string; tracks: Track[] }) {
   return (
     <div className="space-y-4">
       {tracks.map((track) => (
@@ -44,13 +33,7 @@ export function EnrollmentList({
   );
 }
 
-function TrackSection({
-  cycleId,
-  track,
-}: {
-  cycleId: string;
-  track: Track;
-}) {
+function TrackSection({ cycleId, track }: { cycleId: string; track: Track }) {
   const [enrollAllState, enrollAllAction, enrollAllPending] = useActionState(
     enrollAllInTrackAction,
     initialState
@@ -65,7 +48,7 @@ function TrackSection({
         <div className="flex items-center justify-between">
           <CardTitle className="text-base">
             {track.trackName}
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
+            <span className="text-muted-foreground ml-2 text-sm font-normal">
               ({track.count} enrolled, need 5)
             </span>
           </CardTitle>
@@ -73,20 +56,13 @@ function TrackSection({
             <form action={enrollAllAction}>
               <input type="hidden" name="cycleId" value={cycleId} />
               <input type="hidden" name="trackId" value={track.trackId} />
-              <Button
-                type="submit"
-                variant="outline"
-                size="sm"
-                disabled={enrollAllPending}
-              >
+              <Button type="submit" variant="outline" size="sm" disabled={enrollAllPending}>
                 {enrollAllPending ? "Enrolling..." : `Enroll All (${unenrolled.length})`}
               </Button>
             </form>
           )}
         </div>
-        {!enrollAllState.ok && (
-          <p className="text-xs text-red-600">{enrollAllState.message}</p>
-        )}
+        {!enrollAllState.ok && <p className="text-xs text-red-600">{enrollAllState.message}</p>}
         {enrollAllState.ok && enrollAllState.message && (
           <p className="text-xs text-green-600">{enrollAllState.message}</p>
         )}
@@ -94,11 +70,7 @@ function TrackSection({
       <CardContent className="p-0">
         <div className="divide-y">
           {track.tools.map((tool) => (
-            <ToolRow
-              key={tool.id}
-              cycleId={cycleId}
-              tool={tool}
-            />
+            <ToolRow key={tool.id} cycleId={cycleId} tool={tool} />
           ))}
         </div>
       </CardContent>
@@ -106,17 +78,8 @@ function TrackSection({
   );
 }
 
-function ToolRow({
-  cycleId,
-  tool,
-}: {
-  cycleId: string;
-  tool: Track["tools"][number];
-}) {
-  const [enrollState, enrollAction, enrollPending] = useActionState(
-    enrollToolAction,
-    initialState
-  );
+function ToolRow({ cycleId, tool }: { cycleId: string; tool: Track["tools"][number] }) {
+  const [enrollState, enrollAction, enrollPending] = useActionState(enrollToolAction, initialState);
   const [withdrawState, withdrawAction, withdrawPending] = useActionState(
     withdrawToolAction,
     initialState
@@ -131,9 +94,7 @@ function ToolRow({
       <div className="flex items-center justify-between">
         <div>
           <span className="font-medium">{tool.name}</span>
-          <span className="ml-2 text-sm text-muted-foreground">
-            {tool.vendorName}
-          </span>
+          <span className="text-muted-foreground ml-2 text-sm">{tool.vendorName}</span>
         </div>
 
         {tool.isEnrolled ? (
@@ -156,12 +117,7 @@ function ToolRow({
           <form action={enrollAction}>
             <input type="hidden" name="cycleId" value={cycleId} />
             <input type="hidden" name="toolId" value={tool.id} />
-            <Button
-              type="submit"
-              variant="outline"
-              size="sm"
-              disabled={pending}
-            >
+            <Button type="submit" variant="outline" size="sm" disabled={pending}>
               {enrollPending ? "..." : "Enroll"}
             </Button>
           </form>
@@ -181,7 +137,12 @@ function ToolRow({
             className="flex-1 rounded-md border px-2 py-1 text-sm"
             required
           />
-          <Button type="submit" variant="destructive" size="sm" disabled={withdrawPending || !reason.trim()}>
+          <Button
+            type="submit"
+            variant="destructive"
+            size="sm"
+            disabled={withdrawPending || !reason.trim()}
+          >
             {withdrawPending ? "..." : "Confirm"}
           </Button>
           <Button
@@ -198,12 +159,8 @@ function ToolRow({
         </form>
       )}
 
-      {!enrollState.ok && (
-        <p className="mt-1 text-xs text-red-600">{enrollState.message}</p>
-      )}
-      {!withdrawState.ok && (
-        <p className="mt-1 text-xs text-red-600">{withdrawState.message}</p>
-      )}
+      {!enrollState.ok && <p className="mt-1 text-xs text-red-600">{enrollState.message}</p>}
+      {!withdrawState.ok && <p className="mt-1 text-xs text-red-600">{withdrawState.message}</p>}
     </div>
   );
 }

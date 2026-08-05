@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "Leaderboard",
   description:
     "Ranked AI search optimization tools by composite score. Independent monthly benchmarks using 6-model AI consensus methodology.",
+  alternates: { canonical: "/leaderboard" },
 };
 
 type Props = {

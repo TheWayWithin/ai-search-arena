@@ -24,10 +24,7 @@ export async function toggleModelActiveAction(
   } catch (error) {
     return {
       ok: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to update model status.",
+      message: error instanceof Error ? error.message : "Failed to update model status.",
     };
   }
 }
@@ -53,8 +50,7 @@ export async function updateModelTimeoutAction(
   } catch (error) {
     return {
       ok: false,
-      message:
-        error instanceof Error ? error.message : "Failed to update timeout.",
+      message: error instanceof Error ? error.message : "Failed to update timeout.",
     };
   }
 }

@@ -5,13 +5,7 @@ import { getCycleById } from "@/lib/db/cycles";
 import { getValidTransitions } from "@/lib/state-machine/cycle";
 import { getEnrollmentCountsByTrack } from "@/lib/db/enrollments";
 import { StateBadge } from "@/components/admin/state-badge";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TransitionControls } from "./transition-controls";
 
@@ -20,11 +14,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function CycleDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function CycleDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const cycle = await getCycleById(id);
 
@@ -36,13 +26,10 @@ export default async function CycleDetailPage({
   const trackCounts = await getEnrollmentCountsByTrack(cycle.id);
   const enrolledTools = cycle.enrollments.length;
 
-  const canManageEnrollment =
-    cycle.state === "Draft" || cycle.state === "Planning";
+  const canManageEnrollment = cycle.state === "Draft" || cycle.state === "Planning";
 
   const daysSinceStart = cycle.startDate
-    ? Math.floor(
-        (Date.now() - new Date(cycle.startDate).getTime()) / 86_400_000
-      )
+    ? Math.floor((Date.now() - new Date(cycle.startDate).getTime()) / 86_400_000)
     : null;
 
   return (
@@ -50,12 +37,10 @@ export default async function CycleDetailPage({
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight">
-              {cycle.displayName}
-            </h1>
+            <h1 className="text-2xl font-bold tracking-tight">{cycle.displayName}</h1>
             <StateBadge state={cycle.state} size="lg" />
           </div>
-          <p className="mt-1 text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             {cycle.cycleIdentifier}
             {cycle.methodologyVersion &&
               ` · Methodology v${cycle.methodologyVersion.versionNumber}`}
@@ -83,7 +68,7 @@ export default async function CycleDetailPage({
               })}
             </p>
             {daysSinceStart !== null && daysSinceStart >= 0 && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 {daysSinceStart} day{daysSinceStart !== 1 ? "s" : ""} ago
               </p>
             )}
@@ -96,7 +81,7 @@ export default async function CycleDetailPage({
           </CardHeader>
           <CardContent>
             <p className="text-lg font-semibold">{enrolledTools}</p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               across {Object.keys(trackCounts).length} track
               {Object.keys(trackCounts).length !== 1 ? "s" : ""}
             </p>
@@ -117,7 +102,7 @@ export default async function CycleDetailPage({
                 })}
               </p>
             ) : (
-              <p className="text-lg text-muted-foreground">In progress</p>
+              <p className="text-muted-foreground text-lg">In progress</p>
             )}
           </CardContent>
         </Card>
@@ -149,8 +134,7 @@ export default async function CycleDetailPage({
             <div>
               <CardTitle className="text-base">Enrollment by Track</CardTitle>
               <CardDescription>
-                Minimum 5 tools per track required before advancing to
-                Evaluation (BR-T03).
+                Minimum 5 tools per track required before advancing to Evaluation (BR-T03).
               </CardDescription>
             </div>
             {canManageEnrollment && (
@@ -162,32 +146,28 @@ export default async function CycleDetailPage({
         </CardHeader>
         <CardContent>
           {Object.keys(trackCounts).length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               No tools enrolled yet.
               {canManageEnrollment && " Use Manage Enrollment to add tools."}
             </p>
           ) : (
             <div className="space-y-3">
-              {Object.entries(trackCounts).map(
-                ([trackId, { trackName, count }]) => (
-                  <div
-                    key={trackId}
-                    className="flex items-center justify-between rounded-md border px-4 py-2"
+              {Object.entries(trackCounts).map(([trackId, { trackName, count }]) => (
+                <div
+                  key={trackId}
+                  className="flex items-center justify-between rounded-md border px-4 py-2"
+                >
+                  <span className="font-medium">{trackName}</span>
+                  <span
+                    className={`text-sm font-semibold ${count >= 5 ? "text-green-600" : "text-red-600"}`}
                   >
-                    <span className="font-medium">{trackName}</span>
-                    <span
-                      className={`text-sm font-semibold ${count >= 5 ? "text-green-600" : "text-red-600"}`}
-                    >
-                      {count} tool{count !== 1 ? "s" : ""}
-                      {count < 5 && (
-                        <span className="ml-1 font-normal text-red-500">
-                          (need {5 - count} more)
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                )
-              )}
+                    {count} tool{count !== 1 ? "s" : ""}
+                    {count < 5 && (
+                      <span className="ml-1 font-normal text-red-500">(need {5 - count} more)</span>
+                    )}
+                  </span>
+                </div>
+              ))}
             </div>
           )}
         </CardContent>
@@ -197,29 +177,21 @@ export default async function CycleDetailPage({
       {enrolledTools > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">
-              Enrolled Tools ({enrolledTools})
-            </CardTitle>
+            <CardTitle className="text-base">Enrolled Tools ({enrolledTools})</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y">
               {cycle.enrollments.map((enrollment) => (
-                <div
-                  key={enrollment.id}
-                  className="flex items-center justify-between px-4 py-3"
-                >
+                <div key={enrollment.id} className="flex items-center justify-between px-4 py-3">
                   <div>
                     <p className="font-medium">{enrollment.tool.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {enrollment.tool.vendor.companyName}
                     </p>
                   </div>
                   <div className="flex gap-1">
                     {enrollment.tool.trackMappings.map((tm) => (
-                      <span
-                        key={tm.trackId}
-                        className="rounded bg-muted px-1.5 py-0.5 text-xs"
-                      >
+                      <span key={tm.trackId} className="bg-muted rounded px-1.5 py-0.5 text-xs">
                         {tm.track.name}
                       </span>
                     ))}

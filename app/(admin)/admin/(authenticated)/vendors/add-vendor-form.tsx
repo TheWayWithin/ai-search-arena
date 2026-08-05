@@ -9,10 +9,7 @@ const initialState = { ok: true, message: "" };
 
 export function AddVendorForm() {
   const [isOpen, setIsOpen] = useState(false);
-  const [state, formAction, isPending] = useActionState(
-    createVendorAction,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState(createVendorAction, initialState);
 
   if (!isOpen) {
     return (
@@ -23,7 +20,7 @@ export function AddVendorForm() {
   }
 
   return (
-    <div className="rounded-lg border bg-card p-6 space-y-4">
+    <div className="bg-card space-y-4 rounded-lg border p-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">New Vendor</h3>
         <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
@@ -34,9 +31,7 @@ export function AddVendorForm() {
       {state.message && (
         <div
           className={`rounded px-4 py-2 text-sm ${
-            state.ok
-              ? "bg-green-50 text-green-800"
-              : "bg-red-50 text-red-800"
+            state.ok ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
           }`}
         >
           {state.message}
@@ -69,7 +64,12 @@ export function AddVendorForm() {
             <label htmlFor="contactEmail" className="mb-1 block text-sm font-medium">
               Contact Email
             </label>
-            <Input id="contactEmail" name="contactEmail" type="email" placeholder="jane@example.com" />
+            <Input
+              id="contactEmail"
+              name="contactEmail"
+              type="email"
+              placeholder="jane@example.com"
+            />
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export function AddVendorForm() {
             name="description"
             rows={3}
             placeholder="Brief description..."
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:outline-none"
           />
         </div>
 

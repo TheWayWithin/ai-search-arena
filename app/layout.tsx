@@ -23,7 +23,6 @@ export const metadata: Metadata = {
     title: "AI Search Arena - Independent AI SEO Tool Rankings",
     description:
       "Weekly benchmark cycles evaluating 32 AI SEO tools across 51 dimensions with 6 independent AI judges. See current rankings.",
-    url: "https://aisearcharena.com",
     images: [
       {
         url: "https://aisearcharena.com/og-image.png",
@@ -36,12 +35,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "AI Search Arena - Independent AI SEO Tool Rankings",
-    description:
-      "Weekly benchmark cycles evaluating 32 AI SEO tools. See current rankings.",
+    description: "Weekly benchmark cycles evaluating 32 AI SEO tools. See current rankings.",
     images: ["https://aisearcharena.com/og-image.png"],
-  },
-  alternates: {
-    canonical: "https://aisearcharena.com",
   },
 };
 

@@ -34,8 +34,7 @@ export async function createCycleAction(
     redirect(`/admin/cycles/${cycle.id}`);
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") throw error;
-    const message =
-      error instanceof Error ? error.message : "Failed to create cycle.";
+    const message = error instanceof Error ? error.message : "Failed to create cycle.";
     return { ok: false, message };
   }
 }

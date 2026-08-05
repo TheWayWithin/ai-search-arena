@@ -4,10 +4,7 @@ import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  toggleModelActiveAction,
-  updateModelTimeoutAction,
-} from "@/app/actions/admin/models";
+import { toggleModelActiveAction, updateModelTimeoutAction } from "@/app/actions/admin/models";
 
 const initialState = { ok: true, message: "" };
 
@@ -39,16 +36,8 @@ export function ModelRowActions({
       <td className="px-4 py-3">
         <form action={toggleAction}>
           <input type="hidden" name="modelId" value={model.id} />
-          <input
-            type="hidden"
-            name="isActive"
-            value={model.isActive ? "false" : "true"}
-          />
-          <button
-            type="submit"
-            disabled={togglePending}
-            className="focus:outline-none"
-          >
+          <input type="hidden" name="isActive" value={model.isActive ? "false" : "true"} />
+          <button type="submit" disabled={togglePending} className="focus:outline-none">
             <Badge
               variant="outline"
               className={
@@ -61,9 +50,7 @@ export function ModelRowActions({
             </Badge>
           </button>
         </form>
-        {!toggleState.ok && (
-          <p className="mt-1 text-xs text-red-600">{toggleState.message}</p>
-        )}
+        {!toggleState.ok && <p className="mt-1 text-xs text-red-600">{toggleState.message}</p>}
       </td>
 
       <td className="px-4 py-3">
@@ -109,9 +96,7 @@ export function ModelRowActions({
             {model.timeoutMs.toLocaleString()} ms
           </button>
         )}
-        {!timeoutState.ok && (
-          <p className="mt-1 text-xs text-red-600">{timeoutState.message}</p>
-        )}
+        {!timeoutState.ok && <p className="mt-1 text-xs text-red-600">{timeoutState.message}</p>}
       </td>
     </>
   );

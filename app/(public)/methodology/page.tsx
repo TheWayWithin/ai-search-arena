@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   title: "Methodology",
   description:
     "Complete scoring methodology for AI Search Arena benchmarks. 50+ dimensions, 6-model consensus, weighted composite scores, and confidence tags.",
+  alternates: { canonical: "/methodology" },
 };
 
 export default async function MethodologyPage() {

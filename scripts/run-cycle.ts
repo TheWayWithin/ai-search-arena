@@ -679,7 +679,10 @@ Provide your score and rationale.`;
     });
 
     if (existingSynthCount >= expectedGroups.length) {
-      log("SYNTH", `Synthesis already complete (${existingSynthCount} records), skipping to composites...`);
+      log(
+        "SYNTH",
+        `Synthesis already complete (${existingSynthCount} records), skipping to composites...`
+      );
     } else {
       log("SYNTH", "Synthesizing scores (median aggregation)...");
 
@@ -1111,14 +1114,14 @@ Provide your score and rationale.`;
       update: {
         title: reportTitle,
         slug: reportSlug,
-        executiveSummary: `Benchmark cycle evaluating ${compositeScores.length} GEO/AEO tools across ${scoreCount} dimension-scores using ${(await prisma.aIModel.count({ where: { isActive: true } }))} AI models.`,
+        executiveSummary: `Benchmark cycle evaluating ${compositeScores.length} GEO/AEO tools across ${scoreCount} dimension-scores using ${await prisma.aIModel.count({ where: { isActive: true } })} AI models.`,
         content: reportContent,
       },
       create: {
         cycleId,
         title: reportTitle,
         slug: reportSlug,
-        executiveSummary: `Benchmark cycle evaluating ${compositeScores.length} GEO/AEO tools across ${scoreCount} dimension-scores using ${(await prisma.aIModel.count({ where: { isActive: true } }))} AI models.`,
+        executiveSummary: `Benchmark cycle evaluating ${compositeScores.length} GEO/AEO tools across ${scoreCount} dimension-scores using ${await prisma.aIModel.count({ where: { isActive: true } })} AI models.`,
         content: reportContent,
       },
     });

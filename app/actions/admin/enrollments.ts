@@ -51,8 +51,7 @@ export async function withdrawToolAction(
   } catch (error) {
     return {
       ok: false,
-      message:
-        error instanceof Error ? error.message : "Failed to withdraw tool.",
+      message: error instanceof Error ? error.message : "Failed to withdraw tool.",
     };
   }
 }
@@ -101,8 +100,7 @@ export async function enrollAllInTrackAction(
   } catch (error) {
     return {
       ok: false,
-      message:
-        error instanceof Error ? error.message : "Failed to enroll tools.",
+      message: error instanceof Error ? error.message : "Failed to enroll tools.",
     };
   }
 }
