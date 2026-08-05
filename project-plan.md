@@ -676,6 +676,104 @@ Function points (FP) are used to measure deliverable complexity based on inputs,
 
 ---
 
+## Sprint 4: Track Architecture
+
+**Status**: planned
+**Objective**: Evolve AISearchArena from a single monolithic leaderboard into 6 specialized track-based leaderboards, enabling apples-to-apples comparison within tool categories while preserving all existing multi-cycle, badge, and comparison functionality.
+**Source**: [Business Requirements Document: Track Architecture](docs/ideation/Business%20Requirements%20Document_%20AISearchArena%20Track%20Architecture%20(1).md)
+**Last Updated**: 2026-03-30
+
+### Key Architectural Decisions
+
+| Decision | Choice | Rationale |
+| --- | --- | --- |
+| Tool primary track | Add `primaryTrackId` FK on `Tool` | BRD mandates "exactly one primary track" per tool |
+| Per-track composites | Add `trackId` FK on `CompositeScore` | Enables per-track rankings; each cycle produces composite per tool per track |
+| Per-track dimension weights | New `TrackDimensionWeight` join table | Decouples weights from single `ScoringDimension.weight`; same dimension can have different weights across tracks |
+| Secondary tags | New `Tag` + `ToolTag` models with `TagCategory` enum | Three families: UseCase, Capability, BuyerFit — orthogonal to existing MarketSegment |
+| Existing /leaderboard URL | Convert to track selector page (no redirect) | Preserves SEO value; funnels users into track-specific views |
+| Track 5 (Agencies) | Directory page + evaluation-ready dimensions | Build scoring capability now; launch directory empty, flip leaderboard on when agencies added |
+| Public repo sync | Update geo-benchmark-framework simultaneously | BRD hard requirement: "audit it yourself" positioning |
+
+### Phase 1: Data Model and Migration
+
+- [ ] T4.1.1: Add `TrackDimensionWeight` model to Prisma schema (trackId, dimensionId, weight, isActive) — developer
+- [ ] T4.1.2: Add `trackId` (nullable FK) to `CompositeScore`, update unique constraint — developer
+- [ ] T4.1.3: Add `primaryTrackId` (nullable FK) to `Tool` — developer
+- [ ] T4.1.4: Add `hasLeaderboard`, `displayOrder`, `methodology` fields to `BenchmarkTrackDefinition` — developer
+- [ ] T4.1.5: Create `TagCategory` enum, `Tag` model, `ToolTag` join model — developer
+- [ ] T4.1.6: Run all migrations — developer (depends: T4.1.1-T4.1.5)
+- [ ] T4.1.7: Seed 6 track definitions per BRD (ai-visibility-monitoring, content-optimization-ai, technical-ai-readiness, end-to-end-geo-platforms, geo-agencies, ai-content-generation-search) — developer
+- [ ] T4.1.8: Seed tool-to-track mappings + set `primaryTrackId` per BRD Appendix A — developer
+- [ ] T4.1.9: Seed `TrackDimensionWeight` records (per-track dimension weights) — developer
+- [ ] T4.1.10: Seed secondary tags (UseCase, Capability, BuyerFit) and assign to tools — developer
+- [ ] T4.1.11: Design and seed agency evaluation dimensions (~15-20 dimensions) with prompts for Track 5 — strategist/developer
+- [ ] T4.1.12: Design and seed Transparency Profile sub-dimensions (Methodology Clarity, Evidence Disclosure, Data Portability) with prompts — strategist/developer
+
+### Phase 2: Backend and Data Layer
+
+- [ ] T4.2.1: Update `calculateCompositeScores()` for per-track scoring using `TrackDimensionWeight` — developer
+- [ ] T4.2.2: Create `getTrackLeaderboardData(cycleId, trackSlug, segmentId?)` query — developer
+- [ ] T4.2.3: Create `getTrackDefinitions()` and `getTrackBySlug(slug)` queries — developer
+- [ ] T4.2.4: Update `getToolDetail()` to include primary track, all track memberships, and tags — developer
+- [ ] T4.2.5: Update `getRankMovement()` for per-track rank comparison — developer
+- [ ] T4.2.6: Update badge awarding to be track-aware (per-track "Top Performer", "Most Improved") — developer
+- [ ] T4.2.7: Update `getToolScoreHistory()` to accept trackId parameter — developer
+- [ ] T4.2.8: Backfill existing CompositeScore rows with trackId; generate per-track composites for prior cycles — developer
+
+### Phase 3: Frontend and UI
+
+- [ ] T4.3.1: Create `/leaderboard/[track-slug]` dynamic route with track-specific leaderboard, methodology section, and filters — developer
+- [ ] T4.3.2: Create Track 5 GEO Agencies directory page ("Benchmark Coming Soon") — developer
+- [ ] T4.3.3: Convert `/leaderboard` to track selector page showing 6 track cards — developer
+- [ ] T4.3.4: Update site navigation with track dropdown (desktop) and expandable section (mobile) — developer
+- [ ] T4.3.5: Update tool detail page with primary track badge, per-track rankings, and tags — developer
+- [ ] T4.3.6: Update comparison page with optional track filter — developer
+- [ ] T4.3.7: Add track links to site footer — developer
+- [ ] T4.3.8: Add `generateMetadata()` for SEO on track pages (unique title, description, OG tags) — developer
+- [ ] T4.3.9: Add tag-based filter pills/dropdowns on track leaderboard pages — developer
+- [ ] T4.3.10: Add Transparency Profile display component on tool detail pages — developer
+
+### Phase 4: Polish and QA
+
+- [ ] T4.4.1: Validate per-track composite scores against manual calculation (2-3 tools) — tester
+- [ ] T4.4.2: Validate multi-cycle features per track (trends, score history, badges) — tester
+- [ ] T4.4.3: Edge case handling (multi-track tools, tracks with <5 tools, new tracks with no history, Track 5 tools) — developer
+- [ ] T4.4.4: Update `run-cycle.ts` / `pipeline.ts` to trigger per-track composite scoring — developer
+- [ ] T4.4.5: Update methodology page with track system explanation and links — developer
+- [ ] T4.4.6: Regression testing (existing pages, cycle selector, badges, score history) — tester
+
+### Phase 5: Public Repo Sync (geo-benchmark-framework)
+
+- [ ] T4.5.1: Create 5 new track YAML files in `tracks/` (ai-visibility-monitoring, content-optimization-ai, technical-ai-readiness, geo-agencies, ai-content-generation-search) with per-track dimension slugs and weights — developer
+- [ ] T4.5.2: Rename/update `tracks/geo-platform.yaml` → `tracks/end-to-end-geo-platforms.yaml` — developer
+- [ ] T4.5.3: Add agency evaluation dimensions and Transparency Profile dimensions to `methodology/v1.0/dimensions.yaml` (or create v1.1) — developer
+- [ ] T4.5.4: Update README.md with track system description, 6-track table, updated repo structure — documenter
+- [ ] T4.5.5: Update CHANGELOG.md with track architecture release notes — documenter
+- [ ] T4.5.6: Push to TheWayWithin/geo-benchmark-framework synchronized with site deployment — operator
+
+### Sprint 4 Risk Assessment
+
+| Risk | Likelihood | Impact | Mitigation |
+| --- | --- | --- | --- |
+| CompositeScore migration breaks existing data | Medium | High | Make trackId nullable; backfill script with row-count verification |
+| Dimension weight misconfiguration | Medium | High | Seed validation: weights sum correctly per track |
+| Existing SEO rankings disrupted | Medium | Medium | Keep /leaderboard alive as selector; canonical tags on track pages |
+| Seed data for 6 tracks x 51 dimensions error-prone | High | Medium | Structured JSON source; programmatic validation before seeding |
+| Public repo out of sync with site | Medium | High | Phase 5 tasks; deploy site and push repo in same session |
+| Agency dimensions untested (no agencies yet) | Low | Low | Dimensions seeded and ready; flip hasLeaderboard when agencies added |
+
+### Sprint 4 Scope Exclusions (Deferred)
+
+- Stack Benchmark — tool combinations across tracks (BRD Phase 3, needs tracks live first)
+- Vendor PR asset generation — badge images, one-pagers, embeddable widgets (BRD Phase 2)
+- Headline composite "AI Visibility Score" — cross-track single number (BRD Phase 2, needs formula design)
+- Admin UI for managing track weights (seed scripts sufficient for now)
+- Admin UI for managing track weights
+- Track-specific OG images
+
+---
+
 ## P1 Backlog (Post-Launch)
 
 | ID        | Feature                           | Dependencies | FP Estimate |

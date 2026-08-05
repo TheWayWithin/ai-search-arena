@@ -815,3 +815,35 @@ Fix: Replaced custom parser with `yaml` npm package (`yaml@^2.8.2`). The 5KB dep
 - `useActionState` hook (React 19) for form state management
 - Next.js 15 Promise-based params: `params: Promise<{ id: string }>`
 - Separate `<form>` + `requestSubmit()` pattern for ConfirmDialog integration
+
+---
+
+## Sprint 4: Track Architecture
+
+### 2026-03-30 - Sprint Planning Complete
+
+**Source**: Business Requirements Document: AISearchArena Track Architecture
+**Objective**: Evolve from single leaderboard into 6 track-based leaderboards
+
+**Gap Analysis Completed:**
+- 6 tracks need seeding (currently 1 "GEO Platform Track")
+- `CompositeScore` needs `trackId` for per-track rankings
+- `Tool` needs `primaryTrackId` for primary track assignment
+- New `TrackDimensionWeight` join table needed for per-track dimension weights
+- New `Tag`/`ToolTag` models needed for secondary tagging (UseCase, Capability, BuyerFit)
+- Navigation needs track dropdown, `/leaderboard` becomes track selector
+- New `/leaderboard/[track-slug]` dynamic routes needed
+
+**Sprint Plan Created:**
+- Phase 1: Data Model and Migration (10 tasks)
+- Phase 2: Backend and Data Layer (8 tasks)
+- Phase 3: Frontend and UI (8 tasks)
+- Phase 4: Polish and QA (6 tasks)
+- Total: 32 tasks across 4 phases
+
+**Key Decisions:**
+- Keep `/leaderboard` URL as track selector page (preserves SEO)
+- Make `trackId` nullable initially on `CompositeScore` for backward compat
+- Track 5 (Agencies) gets directory page with "Benchmark Coming Soon"
+- Existing MarketSegment kept intact; tags are a separate parallel system
+- Deferred: Transparency Profile, Stack Benchmark, agency evaluation framework
