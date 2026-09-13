@@ -10,8 +10,7 @@
 > I decided to kill it on 13 September 2026. The site had been returning a server
 > error since at least 12 September, the monthly cadence had broken after two
 > cycles, and I chose not to fix it. The Vercel project was deleted on
-> 13 September 2026 and the domain aisearcharena.com is being allowed to lapse.
-> The Neon database is to be deleted separately.
+> 13 September 2026. The Neon database has not been deleted.
 >
 > The repo stays public and read-only as the record of what was built. The
 > methodology repo above is unaffected and remains open.
